@@ -40,3 +40,8 @@ completed_stories:
     title: Game core types — Disposition, NonBlankString, clamp_hp, Combatant trait, Character, NPC, Inventory
     points: 5
     completed: '2026-03-25'
+  - id: 1-5
+    epic: ''
+    title: Trope inheritance + scenario packs — extends resolution, cycle detection, ScenarioPack
+    points: 3
+    completed: '2026-03-25'
