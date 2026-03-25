@@ -1,0 +1,89 @@
+mood_tracks:
+  - mood: driving
+    description: >-
+      Open road, steady cruising. Engine drone underneath. Desert rock,
+      stoner metal, or dusty country. Interstate '76 funk energy.
+    tags: [road, travel, cruising, calm]
+
+  - mood: chase
+    description: >-
+      High-energy pursuit. Driving percussion, distorted guitars, rising
+      tempo. The speedometer is climbing and so is the music.
+    tags: [chase, pursuit, combat, tension]
+
+  - mood: garage
+    description: >-
+      Downtime. Repairs. Planning. Low-key blues or acoustic. The radio
+      plays in the background. Wrenches clink. This is home.
+    tags: [rest, repair, camp, safe]
+
+  - mood: arena
+    description: >-
+      Blood sport energy. Crowd roar, arena rock, theatrical bombast.
+      The Announcer's voice cuts through. Engines rev in the starting
+      grid.
+    tags: [arena, race, spectacle, competition]
+
+  - mood: desolation
+    description: >-
+      Empty road. Wind and silence. Sparse ambient. The loneliness of
+      driving alone through nothing. A single drone note and dust.
+    tags: [alone, wasteland, loss, aftermath]
+
+  - mood: convoy
+    description: >-
+      Community on wheels. Warm but wary. Folk-tinged, rhythmic,
+      communal. The sound of many engines in formation.
+    tags: [crew, convoy, camp, loyalty]
+
+  - mood: confrontation
+    description: >-
+      Pre-violence tension. Low rumble, rising threat. Two rigs facing
+      each other on a narrow road. Someone's about to move.
+    tags: [standoff, threat, negotiation, danger]
+
+sfx_library:
+  - id: engine_start
+    description: "Rig engine turning over and catching — the most hopeful sound in the world"
+    tags: [rig, start, hope]
+
+  - id: engine_die
+    description: "Engine sputtering out. Silence. The worst sound in the world."
+    tags: [rig, death, failure]
+
+  - id: metal_impact
+    description: "Rig-on-rig contact. Crunch of metal, scrape of chrome."
+    tags: [combat, chase, damage]
+
+  - id: tire_blow
+    description: "Explosive tire blowout. Bang, then rubber flapping on road."
+    tags: [damage, chase, crisis]
+
+  - id: crash
+    description: "Full rig crash. Rolling metal, shattering glass, grinding halt."
+    tags: [combat, death, spectacle]
+
+  - id: radio_crackle
+    description: "Radio static, then a voice cutting through."
+    tags: [communication, news, warning]
+
+  - id: crowd_roar
+    description: "Arena crowd reacting. Cheers, boos, stomping."
+    tags: [arena, spectacle]
+
+  - id: fuel_pour
+    description: "Liquid pouring into a tank. The sound of wealth."
+    tags: [fuel, trade, relief]
+
+  - id: wind
+    description: "Desert wind through a broken windshield."
+    tags: [ambient, driving, desolation]
+
+  - id: horn_blast
+    description: "War rig horn. Convoy signal or threat display."
+    tags: [convoy, warning, arrival]
+
+mixer_defaults:
+  music_volume: 0.6
+  sfx_volume: 0.8
+  ambience_volume: 0.4
