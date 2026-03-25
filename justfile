@@ -44,10 +44,16 @@ ui-install:
 
 # Daemon (Python media services)
 daemon-run:
-    cd sidequest-daemon && python -m sidequest_daemon
+    cd sidequest-daemon && SIDEQUEST_GENRE_PACKS={{root}}/genre_packs sidequest-renderer
+
+daemon-status:
+    cd sidequest-daemon && sidequest-renderer --status
+
+daemon-stop:
+    cd sidequest-daemon && sidequest-renderer --shutdown
 
 daemon-test:
-    cd sidequest-daemon && pytest
+    cd sidequest-daemon && SIDEQUEST_GENRE_PACKS={{root}}/genre_packs pytest
 
 daemon-lint:
     cd sidequest-daemon && ruff check .
