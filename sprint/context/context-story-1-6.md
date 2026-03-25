@@ -2,89 +2,79 @@
 parent: context-epic-1.md
 ---
 
-# Story 1-6: Server — Axum Router, WebSocket, Genres Endpoint, Service Facade, Structured Logging
+# Story 1-6: Game Core Types — Disposition, NonBlankString, clamp_hp, Combatant Trait, Character, NPC, Inventory
 
 ## Business Context
 
-Port `server/app.py`, `server/session_handler.py`, and `server/cli.py`. The Python
-server is 1,177 lines of aiohttp with the #1 finding from the debt audit: 35+ direct
-accesses into orchestrator internals. The Rust version enforces the facade boundary
-from the start — the server talks to a `GameService` trait, never to game state directly.
+This is the type foundation for all game logic. Every story after this that touches
+characters, NPCs, combat, or inventory depends on these types being correct. The specific
+items — `Disposition`, `NonBlankString`, `clamp_hp` — are all responses to documented
+Python debt:
+- Duplicate enums with conflicting thresholds (port lesson #5)
+- Unvalidated strings causing empty-name bugs (port lesson #9)
+- HP clamping bug in `progression.py` (port lesson #6)
+
+This story is where "don't port the debt" becomes concrete.
 
 **Python sources:**
-- `sq-2/sidequest/server/app.py` — GameServer (aiohttp WebSocket, 1177 lines)
-- `sq-2/sidequest/server/session_handler.py` — character selection, recap delivery
-- `sq-2/sidequest/server/action_queue.py` — player action queuing
-- `sq-2/sidequest/server/turn_mode.py` — turn mode management
-- `sq-2/sidequest/server/collect_window.py` — action collection window
-- `sq-2/sidequest/server/idle_timer.py` — idle detection
-- `sq-2/sidequest/server/cli.py` — server startup
+- `sq-2/sidequest/game/character.py` — Character, ProgressionState, NarrativeHook
+- `sq-2/sidequest/game/npc.py` — NPC, NPCRegistry, Attitude, derive_attitude
+- `sq-2/sidequest/game/item.py` — Item, ItemCategory, ItemRarity, Inventory
+- `sq-2/sidequest/game/validators.py` — shared validation helpers
 
 ## Technical Guardrails
 
-- **Port lesson #1 (CRITICAL — server/orchestrator coupling):** The server MUST NOT access
-  game state directly. It calls `GameService` trait methods. The trait is defined in
-  story 1-5. Server depends on the trait, not the implementation
-- **Port lesson #12 (structured logging):** Configure `tracing-subscriber` with structured
-  JSON output. Every request gets a span with `component`, `operation`, `player_id`
-- **ADR-003 (Session as Actor):** One tokio task per WebSocket connection. Task owns a
-  `Session` struct. Communication via `tokio::sync::mpsc`
-- **Message dispatch:** Incoming `GameMessage` (from story 1-2) is deserialized and
-  dispatched to the `GameService`. Outgoing messages are broadcast via
-  `tokio::sync::broadcast` channel
-- **CORS:** `tower-http::cors` — React UI runs on different port
-- **CLI:** `clap` for server startup (host, port, genre_packs_path, soul_path)
+- **Port lesson #5 (Disposition newtype):** `Disposition(i8)` replaces both `Attitude` (+-10)
+  and `DispositionLevel` (+-25) with a single type and single threshold definition
+- **Port lesson #6 (HP clamping):** Single `fn clamp_hp(current: i32, delta: i32, max: i32) -> i32`
+  that clamps to `0..=max`. Fixes Python bug where `progression.py` allows negative HP
+- **Port lesson #9 (validation):** `NonBlankString` newtype validates at construction. All
+  inline `if not v.strip()` validators become type-level guarantees
+- **Port lesson #10 (Combatant trait):** Characters, NPCs, and enemies implement a shared
+  trait with `name/hp/max_hp/ac/level` methods. Eliminates duplicated field definitions
+- **ADR-007 (Unified Character Model):** Single character model for player and NPC types
+- **ADR-020 (NPC Disposition System):** Disposition as clamped numeric value
 
-### Python → Rust Translation
+### Python -> Rust Translation
 
-| Python (aiohttp) | Rust (axum) |
+| Python | Rust |
 |---|---|
-| `GameServer` class with mutable state | `AppState` in `Arc`, routes as functions |
-| `handle_ws(request)` | `async fn ws_handler(ws: WebSocketUpgrade)` |
-| `self.clients: dict[str, WebSocket]` | `DashMap<PlayerId, mpsc::Sender>` |
-| `broadcast_to_clients()` | `broadcast::Sender<GameMessage>` |
-| `_processing` set (action gate) | Scoped guard pattern |
-| `_init_orchestrator()` (lazy) | Initialized at startup, shared via `Arc` |
-| Silent broadcast failures (app.py:1049) | Log every failure before evicting |
-
-### Session lifecycle
-
-1. Client opens WS → server spawns tokio task, assigns PlayerId
-2. Client sends `SESSION_EVENT { event: "connect" }` → server loads/creates session
-3. If no character → character creation flow
-4. Game loop: `PLAYER_ACTION` → `GameService::handle_action()` → response messages
-5. Client disconnects → task cleans up, session persisted
+| `Attitude` enum (friendly/neutral/hostile, +-10) | `Disposition(i8)` with `attitude()` method |
+| `DispositionLevel` enum (same values, +-25) | Same `Disposition` — one type, one threshold |
+| `validate_not_blank()` in validators.py | `NonBlankString::new() -> Result` |
+| `Character` (Pydantic) | `struct Character` with `CreatureCore` composition |
+| `NPC` (Pydantic) | `struct NPC` with `CreatureCore` composition |
+| `Inventory` (list + helpers) | `struct Inventory` with typed items |
 
 ## Scope Boundaries
 
 **In scope:**
-- axum Router with routes: `GET /api/genres`, WebSocket upgrade
-- WebSocket handler dispatching GameMessage to GameService
-- Session lifecycle (connect, character selection, game loop, disconnect)
-- Broadcast via tokio channels
-- CORS middleware
-- Structured tracing with request spans
-- CLI args via clap
-- Action queue and turn mode
-- Idle timer and collection window
-- Reconnection handling (evict stale connections)
+- `Disposition` newtype with validated construction (-15..=15), `attitude()` method
+- `NonBlankString` newtype with construction-time validation
+- `clamp_hp()` function fixing the Python floor bug
+- `Combatant` trait shared by Character and NPC
+- `Character`, `NPC`, `Inventory`, `Item` structs with serde derives
+- Unit tests proving validation rejects bad inputs
 
 **Out of scope:**
-- Game logic (story 1-4, behind GameService facade)
-- Agent orchestration (story 1-5, behind GameService facade)
-- TTS/audio streaming (daemon territory)
-- Static file serving (React UI serves itself)
+- `Enemy` type (story 1-7, combat subsystem)
+- Combat/chase state machines (story 1-7)
+- Game state composition (story 1-8)
+- NPC dialogue/behavior (story 1-11, agent layer)
 
 ## AC Context
 
 | AC | Detail |
 |----|--------|
-| Server starts | `cargo run` binds to configured host:port |
-| REST endpoint | `GET /api/genres` returns genre pack summaries |
-| WebSocket works | Client connects, sends GameMessage, receives response |
-| Service facade | Server calls GameService trait, never accesses game state directly |
-| Session lifecycle | Connect → character select → game loop → disconnect |
-| Structured logging | Requests produce tracing spans with component/operation/player_id |
-| CORS | Cross-origin requests from React dev server allowed |
-| Reconnection | Stale connections evicted with logged reason |
-| Broadcast | Messages delivered to all connected clients via channel |
+| Disposition newtype | Validates -15..=15, derives attitude from thresholds |
+| NonBlankString | `::new("")` returns Err, `::new("valid")` returns Ok |
+| clamp_hp | `clamp_hp(5, -10, 20)` returns 0, not -5 |
+| Combatant trait | Character and NPC both implement it |
+| Serde round-trips | All structs serialize/deserialize losslessly |
+| deny_unknown_fields | Unexpected JSON keys are rejected |
+
+## Assumptions
+
+- Combatant trait abstraction works for both Character and NPC without awkward workarounds
+- Inventory is simple enough to be part of core types rather than its own subsystem
+- CreatureCore extraction (story 1-13) will follow to DRY up shared fields
