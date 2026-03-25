@@ -115,20 +115,3 @@ transition_hints:
   cold_open: "Start in the middle of something. The player is already there — boots in mud, breath in cold air, hand on a hilt."
   montage: "Days blur. Summarize the journey in sensory fragments — dust on the road, changing skies, the ache of miles."
 
-chase: >-
-  Chase sequences are intense, fast-paced pursuits where every decision matters.
-  Focus on the physicality of movement, the narrowing options, and the rising
-  stakes. Describe obstacles, separation, and the raw fear of being hunted or
-  hunting. Keep tension high; momentum is everything.
-
-  <rules>
-  <rule name="agency">
-  NEVER write the player character acting, speaking, thinking, or feeling
-  unless the player explicitly said they do it. Describe what they perceive,
-  what approaches them, what others say to them. Stop before their next move.
-  </rule>
-  <rule name="self-check">
-  Before returning: if your response includes the player character doing
-  something the player did not ask to do, cut it.
-  </rule>
-  </rules>
