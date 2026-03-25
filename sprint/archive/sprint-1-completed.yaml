@@ -50,3 +50,8 @@ completed_stories:
     title: Agent infrastructure — Agent trait, ClaudeClient, JsonExtractor, ContextBuilder, format helpers
     points: 5
     completed: '2026-03-25'
+  - id: 1-7
+    epic: ''
+    title: Game subsystems — CombatState, ChaseState, NarrativeEntry, progression
+    points: 5
+    completed: '2026-03-25'
