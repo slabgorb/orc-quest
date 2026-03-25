@@ -45,3 +45,8 @@ completed_stories:
     title: Trope inheritance + scenario packs — extends resolution, cycle detection, ScenarioPack
     points: 3
     completed: '2026-03-25'
+  - id: 1-10
+    epic: ''
+    title: Agent infrastructure — Agent trait, ClaudeClient, JsonExtractor, ContextBuilder, format helpers
+    points: 5
+    completed: '2026-03-25'

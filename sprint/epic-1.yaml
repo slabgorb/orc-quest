@@ -101,10 +101,14 @@ stories:
     title: Agent infrastructure — Agent trait, ClaudeClient, JsonExtractor, ContextBuilder, format helpers
     points: 5
     priority: p1
-    status: backlog
+    status: done
+    started: '2026-03-25'
     repos: sidequest-api
     workflow: tdd
     depends_on: 1-9
+    completed: '2026-03-25'
+    branch: feat/1-10-agent-infrastructure
+    review_verdict: approved
   - id: 1-11
     title: Agent implementations + Orchestrator — all 8 agents, state machine, GameService trait
     points: 8
