@@ -48,10 +48,12 @@ stories:
     title: Trope inheritance + scenario packs — extends resolution, cycle detection, ScenarioPack
     points: 3
     priority: p1
-    status: backlog
+    status: in_progress
     repos: sidequest-api
     workflow: tdd
     depends_on: 1-4
+    started: '2026-03-25'
+    branch: feat/1-5-trope-inheritance-scenario-packs
   - id: 1-6
     title: Game core types — Disposition, NonBlankString, clamp_hp, Combatant trait, Character, NPC, Inventory
     points: 5
