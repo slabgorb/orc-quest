@@ -73,10 +73,13 @@ stories:
     title: Game subsystems — CombatState, ChaseState, NarrativeEntry, progression
     points: 5
     priority: p1
-    status: backlog
+    status: in-progress
     repos: sidequest-api
     workflow: tdd
     depends_on: 1-6
+    assigned_to: keith.avery@1898andco.io
+    started: '2026-03-25'
+    branch: feat/1-7-game-subsystems
   - id: 1-8
     title: Game state composition — GameSnapshot, typed patches, state delta, TurnManager, session persistence
     points: 3
