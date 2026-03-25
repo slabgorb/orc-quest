@@ -15,3 +15,8 @@ completed_stories:
     title: Protocol crate — full GameMessage enum, all 23 payload types, serde round-trips
     points: 8
     completed: '2026-03-25'
+  - id: 1-3
+    epic: ''
+    title: Genre pack models — all structs, serde derives, deny_unknown_fields
+    points: 5
+    completed: '2026-03-25'
