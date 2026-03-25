@@ -119,10 +119,13 @@ stories:
     title: Agent implementations + Orchestrator — all 8 agents, state machine, GameService trait
     points: 8
     priority: p1
-    status: backlog
+    status: done
+    assigned_to: keith.avery@1898andco.io
+    started: '2026-03-25'
     repos: sidequest-api
     workflow: tdd
     depends_on: 1-10
+    completed: '2026-03-25'
   - id: 1-12
     title: Server — axum router, WebSocket, genres endpoint, service facade, structured logging
     points: 8
