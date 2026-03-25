@@ -20,3 +20,8 @@ completed_stories:
     title: Genre pack models — all structs, serde derives, deny_unknown_fields
     points: 5
     completed: '2026-03-25'
+  - id: 1-4
+    epic: ''
+    title: Genre loader — unified loading, two-phase validation, real YAML tests
+    points: 5
+    completed: '2026-03-25'
