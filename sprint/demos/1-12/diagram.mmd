@@ -1,0 +1,4 @@
+graph LR
+  A["Client"] --> B["API Gateway"]
+  B --> C["Server — axum router, WebSocket, genres endpoint, service facade, structured logging"]
+  C --> D["Database"]

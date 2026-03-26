@@ -10,18 +10,23 @@ stories:
     title: Server bootstrap — axum router, WebSocket upgrade, /api/genres REST, CORS, graceful shutdown
     points: 5
     priority: p0
-    status: backlog
+    status: done
     repos: sidequest-api
     workflow: tdd
     depends_on: 1-12
+    completed: '2026-03-25'
+    review_verdict: approved
   - id: 2-2
     title: Session actor — per-connection tokio task, Connect/Create/Play state machine, genre binding
     points: 5
     priority: p0
-    status: backlog
+    status: done
     repos: sidequest-api
     workflow: tdd
     depends_on: 2-1
+    completed: '2026-03-25'
+    branch: feat/2-2-session-actor
+    review_verdict: approved
   - id: 2-3
     title: Character creation flow — CharacterBuilder state machine, genre scenes over WebSocket, mechanical effects
     points: 5
