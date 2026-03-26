@@ -59,8 +59,15 @@ def load_yaml(path: Path) -> dict:
         return yaml.safe_load(f) or {}
 
 
-def load_visual_style(genre_dir: Path) -> dict:
-    """Load visual_style.yaml for a genre pack."""
+def load_visual_style(genre_dir: Path, world: str = "") -> dict:
+    """Load visual_style.yaml, preferring world-level over genre-level."""
+    # Try world-level first
+    if world:
+        world_vs = genre_dir / "worlds" / world / "visual_style.yaml"
+        if world_vs.exists():
+            log.debug("Using world visual_style: %s", world_vs)
+            return load_yaml(world_vs)
+    # Fall back to genre-level
     vs_path = genre_dir / "visual_style.yaml"
     if not vs_path.exists():
         return {}
@@ -95,6 +102,7 @@ def collect_pois(genre_dir: Path) -> list[dict]:
                     "chapter_location": location,
                     "name": poi.get("name", "unknown"),
                     "description": poi.get("description", ""),
+                    "region": poi.get("region", ""),
                     "type": poi.get("type", ""),
                 })
 
@@ -130,17 +138,24 @@ def compose_prompt(poi: dict, visual_style: dict) -> tuple[str, str, int]:
     if poi["atmosphere"]:
         parts.append(poi["atmosphere"])
 
-    # Try to match location tags
-    location_text = poi["name"]
-    location_tags = resolve_location_tags(location_text, tag_overrides)
-    if location_tags != location_text:
-        parts.append(location_tags)
-
-    # Also try matching chapter location
-    if poi["chapter_location"]:
-        chapter_tags = resolve_location_tags(poi["chapter_location"], tag_overrides)
-        if chapter_tags != poi["chapter_location"] and chapter_tags not in parts:
-            parts.append(chapter_tags)
+    # Match POI region against visual tag overrides (exact match first, then fuzzy)
+    region = poi.get("region", "")
+    if region and region in tag_overrides:
+        region_style = tag_overrides[region]
+        if isinstance(region_style, dict):
+            parts.append(region_style.get("positive_suffix", ""))
+        else:
+            parts.append(region_style)
+    else:
+        # Fall back to matching POI name or chapter location
+        location_text = poi["name"]
+        location_tags = resolve_location_tags(location_text, tag_overrides)
+        if location_tags != location_text:
+            parts.append(location_tags)
+        if poi["chapter_location"]:
+            chapter_tags = resolve_location_tags(poi["chapter_location"], tag_overrides)
+            if chapter_tags != poi["chapter_location"] and chapter_tags not in parts:
+                parts.append(chapter_tags)
 
     # Token budget: style goes after narrative
     style_tokens = estimate_tokens(style_suffix)
@@ -249,9 +264,13 @@ async def main() -> None:
             continue
         pois = collect_pois(genre_dir)
         if pois:
-            visual_style = load_visual_style(genre_dir)
+            # Group by world so each gets its own visual_style
+            worlds_seen = {}
             for poi in pois:
-                poi["_visual_style"] = visual_style
+                w = poi["world"]
+                if w not in worlds_seen:
+                    worlds_seen[w] = load_visual_style(genre_dir, w)
+                poi["_visual_style"] = worlds_seen[w]
             all_pois.extend(pois)
 
     if not all_pois:

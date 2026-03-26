@@ -104,6 +104,17 @@ GENRE_MOODS: dict[str, dict[str, tuple[str, int]]] = {
         "rest": ("acoustic blues, campfire, desert night, stars, harmonica, reflective, weary, road song, folk, peaceful", 60),
         "chase": ("high tempo rock, V8 roar, pursuit, highway, adrenaline, guitar shred, drums pounding, road warrior chase, relentless", 60),
         "convoy": ("driving rock, steady rhythm, engines in formation, road, powerful, united, heavy bass, convoy, rolling thunder, epic", 60),
+        # --- The Circuit: faction themes ---
+        "faction_bosozoku": ("Japanese punk rock, distorted guitar, aggressive drums, engine revving percussion, synchronized exhaust rhythm, Guitar Wolf energy, fast tempo, rebellious, raw, 1970s Japanese garage punk", 60),
+        "faction_mods": ("Northern Soul, urgent rhythm and blues, Motown energy, mod revival, The Jam, driving bass, Hammond organ, amphetamine energy, danceable, 1979 London, all-night club", 60),
+        "faction_one_percenters": ("heavy blues rock, Southern rock, Steppenwolf, ZZ Top, rolling Harley-Davidson rumble, menacing slide guitar, open highway, leather and chrome, 1970s biker rock", 60),
+        "faction_cafe_racers": ("instrumental surf rock, Dick Dale, Link Wray, reverb guitar, pure velocity, no vocals, driving tempo, clean tone, Fender twang, speed and precision, 1960s", 60),
+        "faction_rockers": ("1950s rock and roll, rockabilly, Gene Vincent, Eddie Cochran, slap bass, raw guitar, leather jacket energy, greasy, pub rock, brawling, sneer", 60),
+        "faction_lowriders": ("Chicano soul, oldies, War Low Rider, slow cruise bass, Thee Midniters, warm, low and slow, hydraulic bounce, candy paint, East LA, heartbreak and pride, 1970s", 60),
+        "faction_matatu": ("Afrobeat, Kenyan benga guitar, Fela Kuti energy, massive bass, percussive, polyrhythmic, joyful chaos, subwoofer pressure, Nairobi, painted bus, dancehall energy", 60),
+        "faction_tuk_tuk": ("Thai funk, Molam psychedelic, Khruangbin, hypnotic bass groove, Southeast Asian psych rock, three-wheeled groove, mysterious, wah guitar, nocturnal, alley music", 60),
+        "faction_raggare": ("1950s doo-wop, Buddy Holly, The Penguins, American rock and roll, jukebox at midnight, V8 idle rumble, cruising, Swedish summer night, warm nostalgia, pompadour rock", 60),
+        "faction_dekotora": ("Japanese enka ballad, dramatic vocal melody, sentimental, trucker highway opera, melancholy, convoy grandeur, Torakku Yaro film soundtrack, 1970s Japanese pop, orchestral, emotional", 60),
     },
 }
 
