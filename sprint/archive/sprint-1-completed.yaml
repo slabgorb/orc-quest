@@ -101,3 +101,8 @@ completed_stories:
     title: SQLite persistence — rusqlite schema, save/load GameSnapshot, narrative log, 'Previously On' recap
     points: 5
     completed: '2026-03-25'
+  - id: 2-5
+    epic: ''
+    title: Orchestrator turn loop — intent routing, agent dispatch, response streaming, state patch, broadcast
+    points: 8
+    completed: '2026-03-25'
