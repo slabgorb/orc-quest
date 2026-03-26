@@ -1,0 +1,90 @@
+id: '7'
+type: epic
+title: Scenario System — Bottle Episodes, Whodunit, Belief State
+description: >-
+  Port the scenario/mystery system from sq-2. Scenarios are structured
+  narrative arcs (whodunit, rat-hunt) with NPC belief modeling, gossip
+  propagation, and accusation mechanics. This is what makes "who killed the
+  merchant?" work as a game mechanic. BeliefState tracks per-NPC knowledge
+  bubbles with facts, suspicions, and credibility scores. Gossip propagation
+  spreads claims between turns. Clue activation evaluates semantic triggers
+  against game state. The accusation system resolves evidence quality when
+  a player makes an accusation. NPCs act autonomously within scenarios —
+  creating alibis, confessing, fleeing, or destroying evidence.
+  Key reference: sq-2/sidequest/scenario/*.py, oq-2/docs/adr/030-scenario-packs.md.
+priority: p1
+status: ready
+repos: sidequest-api
+stories:
+  - id: 7-1
+    title: BeliefState model — per-NPC knowledge bubbles with facts, suspicions, claims, and credibility scores
+    points: 5
+    priority: p0
+    status: backlog
+    repos: sidequest-api
+    workflow: tdd
+    depends_on: 2-5
+  - id: 7-2
+    title: Gossip propagation — NPCs spread claims between turns, contradictions decay credibility
+    points: 5
+    priority: p0
+    status: backlog
+    repos: sidequest-api
+    workflow: tdd
+    depends_on: 7-1
+  - id: 7-3
+    title: Clue activation — semantic trigger evaluation for clue availability based on game state
+    points: 3
+    priority: p0
+    status: backlog
+    repos: sidequest-api
+    workflow: tdd
+    depends_on: 7-1
+  - id: 7-4
+    title: Accusation system — player accuses NPC, system evaluates evidence quality and resolves
+    points: 5
+    priority: p0
+    status: backlog
+    repos: sidequest-api
+    workflow: tdd
+    depends_on: 7-3
+  - id: 7-5
+    title: NPC autonomous actions — scenario-driven NPC behaviors (alibi, confess, flee, destroy evidence)
+    points: 5
+    priority: p1
+    status: backlog
+    repos: sidequest-api
+    workflow: tdd
+    depends_on: 7-1
+  - id: 7-6
+    title: Scenario pacing — turn-based pressure escalation, tension ramp over scenario arc
+    points: 3
+    priority: p1
+    status: backlog
+    repos: sidequest-api
+    workflow: tdd
+    depends_on: 7-2
+  - id: 7-7
+    title: Scenario archiver — save/resume mid-scenario state, session boundary handling
+    points: 3
+    priority: p1
+    status: backlog
+    repos: sidequest-api
+    workflow: tdd
+    depends_on: 7-1
+  - id: 7-8
+    title: Scenario scoring — evidence collection metrics, accusation accuracy, deduction quality
+    points: 3
+    priority: p2
+    status: backlog
+    repos: sidequest-api
+    workflow: tdd
+    depends_on: 7-4
+  - id: 7-9
+    title: ScenarioEngine integration — wire scenario lifecycle into orchestrator turn loop
+    points: 5
+    priority: p1
+    status: backlog
+    repos: sidequest-api
+    workflow: tdd
+    depends_on: 7-5
