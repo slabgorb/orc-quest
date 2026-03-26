@@ -4,32 +4,38 @@
     The world ended a long time ago. Nobody agrees on when or how — the
     stories change with every settlement. What matters is what came after.
     You survived. You always survive. But where did you come from?
+  allows_freeform: true
   choices:
     - label: "The Heaps"
       description: "A city built from stacked ruins, where everything is salvage and everyone has a price."
       mechanical_effects:
         class_hint: Scavenger
         race_hint: Mutant Human
+        background: Heap Rat
     - label: "The Overgrowth"
       description: "A forest that swallowed a city, where plant-folk tend the green and distrust outsiders."
       mechanical_effects:
         class_hint: Mutant
         race_hint: Plant Person
+        background: Overgrowth Tender
     - label: "The Open Dust"
       description: "Endless wastes between settlements, where nomad clans ride mutant beasts and follow the rain."
       mechanical_effects:
         class_hint: Beastkin
         race_hint: Uplifted Animal
+        background: Dust Nomad
     - label: "A Sealed Vault"
       description: "Recently breached — sterile corridors, recycled air, and a door that finally opened."
       mechanical_effects:
         class_hint: Pureblood
         race_hint: Pure Strain Human
+        background: Vault Dweller
     - label: "A Ruin You Don't Remember"
       description: "You woke up on a metal slab with gaps in your memory and parts that aren't organic."
       mechanical_effects:
         class_hint: Synth
         race_hint: Synthetic
+        background: Memory Fragment
 
 - id: mutation
   title: "What Makes You Different"
@@ -43,26 +49,32 @@
       description: "A third arm, useful for carrying things and unsettling handshakes."
       mechanical_effects:
         mutation_hint: extra_limbs
+        personality_trait: Resourceful
     - label: "Bioluminescence"
       description: "Your skin glows faintly in the dark. You are your own lantern and everyone's target."
       mechanical_effects:
         mutation_hint: bioluminescence
+        personality_trait: Cautious
     - label: "Chitinous Plates"
       description: "Patches of natural armor that itch when it rains."
       mechanical_effects:
         mutation_hint: natural_armor
+        personality_trait: Tough
     - label: "Psychic Static"
       description: "You hear whispers from nearby minds. Most of it is useless noise."
       mechanical_effects:
         mutation_hint: psychic
+        personality_trait: Perceptive
     - label: "Regeneration"
       description: "You heal fast, but it hurts, and sometimes things grow back wrong."
       mechanical_effects:
         mutation_hint: regeneration
+        personality_trait: Reckless
     - label: "Nothing Visible"
       description: "You pass for normal. In the wasteland, that's its own kind of mutation."
       mechanical_effects:
         mutation_hint: none
+        personality_trait: Adaptable
 
 - id: artifact
   title: "The Thing You Found"

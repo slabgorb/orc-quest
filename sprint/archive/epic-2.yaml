@@ -3,7 +3,7 @@ type: epic
 title: Core Game Loop Integration
 description: Wire the Rust workspace into a playable game loop. Connect server, session lifecycle, orchestrator turn processing, agent execution, and persistence so a player can start a session, create a character, take actions, and receive narrated responses. Defers media (image/audio/TTS), multiplayer sync, and scenario-specific logic.
 priority: p0
-status: ready
+status: done
 repos: sidequest-api
 stories:
   - id: 2-1
@@ -89,7 +89,11 @@ stories:
     title: End-to-end integration — UI connects to API, full turn cycle, narration renders in client
     points: 5
     priority: p1
-    status: backlog
+    status: done
+    started: '2026-03-26'
     repos: sidequest-api,sidequest-ui
     workflow: tdd
     depends_on: 2-6
+    completed: '2026-03-26'
+    branch: feat/2-9-e2e-integration-ui-api-turn-cycle
+completed: '2026-03-26'

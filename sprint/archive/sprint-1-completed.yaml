@@ -10,6 +10,7 @@ sprint:
 
 completed_epics:
   - '1'
+  - '2'
 completed_stories:
   - id: 1-2
     epic: ''
@@ -130,4 +131,9 @@ completed_stories:
     epic: ''
     title: Trope engine runtime — tick progression, escalation beats, beat injection into narrator context
     points: 3
+    completed: '2026-03-26'
+  - id: 2-9
+    epic: ''
+    title: End-to-end integration — UI connects to API, full turn cycle, narration renders in client
+    points: 5
     completed: '2026-03-26'
