@@ -84,10 +84,11 @@ stories:
       reduce false positives. This is a flag for human review, not a verdict.
     points: 5
     priority: p1
-    status: backlog
+    status: done
     repos: sidequest-api
     workflow: tdd
     depends_on: 3-2
+    completed: '2026-03-26'
   - id: 3-5
     title: "Subsystem exercise tracker — agent invocation histogram, coverage gap detection"
     description: >-
