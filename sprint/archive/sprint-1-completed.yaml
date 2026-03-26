@@ -91,3 +91,8 @@ completed_stories:
     title: Session actor — per-connection tokio task, Connect/Create/Play state machine, genre binding
     points: 5
     completed: '2026-03-25'
+  - id: 2-3
+    epic: ''
+    title: Character creation flow — CharacterBuilder state machine, genre scenes over WebSocket, mechanical effects
+    points: 5
+    completed: '2026-03-25'
