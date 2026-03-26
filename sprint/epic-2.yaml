@@ -61,10 +61,11 @@ stories:
     title: Agent execution — Claude CLI subprocess calls, prompt composition with genre/state context, JSON extraction
     points: 5
     priority: p0
-    status: in_progress
+    status: done
     repos: sidequest-api
     workflow: tdd
     depends_on: 2-5
+    completed: '2026-03-25'
     branch: feat/2-6-agent-execution
   - id: 2-7
     title: State patch pipeline — combat/chase/world JSON patches applied, state delta computation, client broadcast

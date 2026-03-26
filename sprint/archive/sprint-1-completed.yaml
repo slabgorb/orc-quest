@@ -106,3 +106,8 @@ completed_stories:
     title: Orchestrator turn loop — intent routing, agent dispatch, response streaming, state patch, broadcast
     points: 8
     completed: '2026-03-25'
+  - id: 2-6
+    epic: ''
+    title: Agent execution — Claude CLI subprocess calls, prompt composition with genre/state context, JSON extraction
+    points: 5
+    completed: '2026-03-25'
