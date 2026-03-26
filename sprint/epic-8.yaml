@@ -37,10 +37,12 @@ stories:
     title: Adaptive action batching — collect window scales by player count (3s for 2-3, 5s for 4+)
     points: 3
     priority: p0
-    status: backlog
+    status: in-progress
+    started: '2026-03-26'
     repos: sidequest-api
     workflow: tdd
     depends_on: 8-2
+    branch: feat/8-3-adaptive-batching
   - id: 8-4
     title: Party action composition — compose multi-character PARTY ACTIONS block for orchestrator
     points: 3
