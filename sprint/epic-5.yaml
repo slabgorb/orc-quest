@@ -1,0 +1,85 @@
+id: '5'
+type: epic
+title: Pacing & Drama Engine — Tension Model, Drama-Aware Delivery, Beat Filter
+description: >-
+  Port the dual-track tension model from sq-2. This is the "game engine tuning"
+  work from extensive playtesting. Makes combat feel cinematic by tracking
+  dramatic weight and driving narration length, text delivery speed, and media
+  generation decisions. Key reference: sq-2/docs/prd-combat-pacing.md,
+  sq-2/docs/adr-dual-track-tension-model.md,
+  sq-2/docs/adr-drama-aware-delivery.md, sq-2/docs/adr-pacing-detection.md.
+priority: p1
+status: ready
+repos: sidequest-api
+stories:
+  - id: 5-1
+    title: TensionTracker struct — dual-track model with action tension (gambler's ramp) and stakes tension (HP-based)
+    points: 5
+    priority: p0
+    status: backlog
+    repos: sidequest-api
+    workflow: tdd
+    depends_on: 2-7
+
+  - id: 5-2
+    title: Combat event classification — categorize combat outcomes as boring/dramatic, track boring_streak
+    points: 3
+    priority: p0
+    status: backlog
+    repos: sidequest-api
+    workflow: tdd
+    depends_on: 5-1
+
+  - id: 5-3
+    title: Drama weight computation — max(action_tension, stakes_tension), event spike injection with decay
+    points: 3
+    priority: p0
+    status: backlog
+    repos: sidequest-api
+    workflow: tdd
+    depends_on: 5-2
+
+  - id: 5-4
+    title: Pacing hint generation — drama_weight to narrator sentence count guidance (1-6 sentences)
+    points: 3
+    priority: p0
+    status: backlog
+    repos: sidequest-api
+    workflow: tdd
+    depends_on: 5-3
+
+  - id: 5-5
+    title: Drama-aware text delivery — INSTANT/SENTENCE/STREAMING modes based on drama_weight thresholds
+    points: 5
+    priority: p1
+    status: backlog
+    repos: sidequest-api
+    workflow: tdd
+    depends_on: 5-3
+
+  - id: 5-6
+    title: Quiet turn detection — count consecutive low-action turns, inject escalation beat hints
+    points: 3
+    priority: p1
+    status: backlog
+    repos: sidequest-api
+    workflow: tdd
+    depends_on: 5-1
+
+  - id: 5-7
+    title: Wire pacing into orchestrator — drama_weight flows from TensionTracker through turn pipeline to narrator prompt
+    points: 5
+    priority: p1
+    status: backlog
+    repos: sidequest-api
+    workflow: tdd
+    depends_on: 5-4
+
+  - id: 5-8
+    title: Genre-tunable thresholds — drama_weight breakpoints configurable per genre pack
+    points: 2
+    priority: p2
+    status: backlog
+    repos: sidequest-api
+    workflow: tdd
+    depends_on: 5-5

@@ -1,0 +1,98 @@
+id: '8'
+type: epic
+title: Multiplayer — Turn Barrier, Party Coordination, Perception Rewriter
+description: >-
+  Multi-player coordination. The Python version supports multiple WebSocket
+  clients with barrier-sync turns, adaptive action batching, and per-character
+  perception rewriting. Port the multiplayer session, turn manager, and
+  perception rewriter to Rust, wiring into the existing session actor and
+  orchestrator turn loop.
+priority: p1
+status: ready
+repos: sidequest-api
+key_references:
+  - sq-2/sidequest/game/multiplayer_session.py
+  - sq-2/sidequest/game/turn_manager.py
+  - oq-2/docs/adr/028-perception-rewriter.md
+  - oq-2/docs/adr/029-guest-npc-players.md
+stories:
+  - id: 8-1
+    title: MultiplayerSession — coordinate multiple WebSocket clients in a single game session, player_id mapping
+    points: 5
+    priority: p0
+    status: backlog
+    repos: sidequest-api
+    workflow: tdd
+    depends_on: 2-2
+
+  - id: 8-2
+    title: Turn barrier — wait for all players before resolving turn, configurable timeout
+    points: 5
+    priority: p0
+    status: backlog
+    repos: sidequest-api
+    workflow: tdd
+    depends_on: 8-1
+
+  - id: 8-3
+    title: Adaptive action batching — collect window scales by player count (3s for 2-3, 5s for 4+)
+    points: 3
+    priority: p0
+    status: backlog
+    repos: sidequest-api
+    workflow: tdd
+    depends_on: 8-2
+
+  - id: 8-4
+    title: Party action composition — compose multi-character PARTY ACTIONS block for orchestrator
+    points: 3
+    priority: p1
+    status: backlog
+    repos: sidequest-api
+    workflow: tdd
+    depends_on: 8-2
+
+  - id: 8-5
+    title: Turn modes — FREE_PLAY (immediate), STRUCTURED (blind simultaneous), CINEMATIC (narrator-paced)
+    points: 5
+    priority: p1
+    status: backlog
+    repos: sidequest-api
+    workflow: tdd
+    depends_on: 8-2
+
+  - id: 8-6
+    title: Perception rewriter — per-character narration variants based on status effects (blinded, charmed, etc.)
+    points: 8
+    priority: p1
+    status: backlog
+    repos: sidequest-api
+    workflow: tdd
+    depends_on: 8-1
+
+  - id: 8-7
+    title: Guest NPC players — human-controlled NPC characters with limited agency
+    points: 5
+    priority: p2
+    status: backlog
+    repos: sidequest-api
+    workflow: tdd
+    depends_on: 8-1
+
+  - id: 8-8
+    title: Catch-up narration — generate arrival snapshot for mid-session joining players
+    points: 3
+    priority: p2
+    status: backlog
+    repos: sidequest-api
+    workflow: tdd
+    depends_on: 8-1
+
+  - id: 8-9
+    title: Turn reminders — notify idle players after configurable timeout
+    points: 2
+    priority: p2
+    status: backlog
+    repos: sidequest-api
+    workflow: tdd
+    depends_on: 8-2

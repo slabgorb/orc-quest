@@ -1,0 +1,82 @@
+id: '10'
+type: epic
+title: NPC Personality Engine — OCEAN Behavioral Model
+description: >-
+  Port of sq-2 Epic 64. OCEAN Big Five personality profiles on NPCs as
+  behavioral shorthand. Floats 0.0–10.0 for Openness, Conscientiousness,
+  Extraversion, Agreeableness, Neuroticism. Layers on disposition/attitude
+  system, shifts tracked as lore-indexable events.
+priority: p2
+status: ready
+repos: sidequest-api
+stories:
+  - id: 10-1
+    title: "OCEAN profile on NPC model — add five float fields (0.0–10.0) to NPC struct"
+    points: 2
+    priority: p0
+    status: backlog
+    repos: sidequest-api
+    workflow: tdd
+    depends_on: 2-5
+
+  - id: 10-2
+    title: "Genre archetype OCEAN baselines — default profiles per NPC archetype in genre pack, random generation for unnamed NPCs"
+    points: 3
+    priority: p0
+    status: backlog
+    repos: sidequest-api
+    workflow: tdd
+    depends_on: 10-1
+
+  - id: 10-3
+    title: "OCEAN behavioral summary — scores to narrator prompt text (e.g., 'reserved and meticulous' for low-E high-C)"
+    points: 3
+    priority: p1
+    status: backlog
+    repos: sidequest-api
+    workflow: tdd
+    depends_on: 10-1
+
+  - id: 10-4
+    title: "Narrator reads OCEAN — adjust NPC voice and behavior based on personality profile"
+    points: 5
+    priority: p1
+    status: backlog
+    repos: sidequest-api
+    workflow: tdd
+    depends_on: 10-3
+
+  - id: 10-5
+    title: "OCEAN shift log — track personality changes with cause attribution, append to structured log"
+    points: 3
+    priority: p1
+    status: backlog
+    repos: sidequest-api
+    workflow: tdd
+    depends_on: 10-1
+
+  - id: 10-6
+    title: "World state agent proposes OCEAN shifts — game events trigger personality evolution"
+    points: 5
+    priority: p2
+    status: backlog
+    repos: sidequest-api
+    workflow: tdd
+    depends_on: 10-5
+
+  - id: 10-7
+    title: "Connect Agreeableness to disposition — A-dimension feeds into existing disposition system (-15 to +15)"
+    points: 2
+    priority: p2
+    status: backlog
+    repos: sidequest-api
+    workflow: tdd
+    depends_on: 10-1
+
+  - id: 10-8
+    title: "Backfill OCEAN profiles on existing NPC archetypes across genre packs"
+    points: 3
+    priority: p2
+    status: backlog
+    repos: orc-quest
+    workflow: trivial
