@@ -187,3 +187,8 @@ completed_stories:
     title: Turn modes — FREE_PLAY (immediate), STRUCTURED (blind simultaneous), CINEMATIC (narrator-paced)
     points: 5
     completed: '2026-03-26'
+  - id: 9-1
+    epic: ''
+    title: AbilityDefinition model — genre-voiced ability descriptions with mechanical effects
+    points: 3
+    completed: '2026-03-26'
