@@ -182,3 +182,8 @@ completed_stories:
     title: Party action composition — compose multi-character PARTY ACTIONS block for orchestrator
     points: 3
     completed: '2026-03-26'
+  - id: 8-5
+    epic: ''
+    title: Turn modes — FREE_PLAY (immediate), STRUCTURED (blind simultaneous), CINEMATIC (narrator-paced)
+    points: 5
+    completed: '2026-03-26'
