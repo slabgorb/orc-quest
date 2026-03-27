@@ -1,89 +1,193 @@
+# Audio configuration for road warrior genre pack
+# Mood tracks, SFX library, creature voice presets, mixer settings
+
 mood_tracks:
-  - mood: driving
-    description: >-
-      Open road, steady cruising. Engine drone underneath. Desert rock,
-      stoner metal, or dusty country. Interstate '76 funk energy.
-    tags: [road, travel, cruising, calm]
-
-  - mood: chase
-    description: >-
-      High-energy pursuit. Driving percussion, distorted guitars, rising
-      tempo. The speedometer is climbing and so is the music.
-    tags: [chase, pursuit, combat, tension]
-
-  - mood: garage
-    description: >-
-      Downtime. Repairs. Planning. Low-key blues or acoustic. The radio
-      plays in the background. Wrenches clink. This is home.
-    tags: [rest, repair, camp, safe]
-
-  - mood: arena
-    description: >-
-      Blood sport energy. Crowd roar, arena rock, theatrical bombast.
-      The Announcer's voice cuts through. Engines rev in the starting
-      grid.
-    tags: [arena, race, spectacle, competition]
-
-  - mood: desolation
-    description: >-
-      Empty road. Wind and silence. Sparse ambient. The loneliness of
-      driving alone through nothing. A single drone note and dust.
-    tags: [alone, wasteland, loss, aftermath]
-
-  - mood: convoy
-    description: >-
-      Community on wheels. Warm but wary. Folk-tinged, rhythmic,
-      communal. The sound of many engines in formation.
-    tags: [crew, convoy, camp, loyalty]
-
-  - mood: confrontation
-    description: >-
-      Pre-violence tension. Low rumble, rising threat. Two rigs facing
-      each other on a narrow road. Someone's about to move.
-    tags: [standoff, threat, negotiation, danger]
+  combat:
+    - path: audio/music/combat.ogg
+      title: "Rig Versus Rig"
+      bpm: 145
+    - path: audio/music/combat_3.ogg
+      title: "Chrome and Blood"
+      bpm: 155
+  chase:
+    - path: audio/music/chase.ogg
+      title: "Redline Pursuit"
+      bpm: 160
+    - path: audio/music/chase_3.ogg
+      title: "Dust Wake"
+      bpm: 170
+  exploration:
+    - path: audio/music/exploration.ogg
+      title: "Open Highway"
+      bpm: 90
+    - path: audio/music/exploration_3.ogg
+      title: "Miles of Nothing"
+      bpm: 85
+  tension:
+    - path: audio/music/tension.ogg
+      title: "Engine Idle Standoff"
+      bpm: 70
+    - path: audio/music/tension_3.ogg
+      title: "Dust on the Horizon"
+      bpm: 65
+  rest:
+    - path: audio/music/rest.ogg
+      title: "Garage Radio"
+      bpm: 75
+  convoy:
+    - path: audio/music/convoy.ogg
+      title: "Engines in Formation"
+      bpm: 100
+    - path: audio/music/convoy_3.ogg
+      title: "Rolling Together"
+      bpm: 105
+  faction:
+    - path: audio/music/faction_bosozoku.ogg
+      title: "Bosozoku Thunder"
+      bpm: 150
+    - path: audio/music/faction_cafe_racers.ogg
+      title: "Cafe Racers"
+      bpm: 140
+    - path: audio/music/faction_dekotora.ogg
+      title: "Dekotora Lights"
+      bpm: 110
+    - path: audio/music/faction_lowriders.ogg
+      title: "Lowrider Cruise"
+      bpm: 85
+    - path: audio/music/faction_matatu.ogg
+      title: "Matatu Beat"
+      bpm: 120
+    - path: audio/music/faction_mods.ogg
+      title: "Mod Revival"
+      bpm: 130
+    - path: audio/music/faction_one_percenters.ogg
+      title: "One Percenters"
+      bpm: 140
+    - path: audio/music/faction_raggare.ogg
+      title: "Raggare Rockabilly"
+      bpm: 135
+    - path: audio/music/faction_rockers.ogg
+      title: "Rockers"
+      bpm: 145
+    - path: audio/music/faction_tuk_tuk.ogg
+      title: "Tuk Tuk Hustle"
+      bpm: 115
 
 sfx_library:
-  - id: engine_start
-    description: "Rig engine turning over and catching — the most hopeful sound in the world"
-    tags: [rig, start, hope]
+  engine_start:
+    - audio/sfx/engine_start.ogg
+  engine_die:
+    - audio/sfx/engine_die.ogg
+  metal_impact:
+    - audio/sfx/metal_impact.ogg
+  tire_blow:
+    - audio/sfx/tire_blow.ogg
+  crash:
+    - audio/sfx/crash.ogg
+  radio_crackle:
+    - audio/sfx/radio_crackle.ogg
+  crowd_roar:
+    - audio/sfx/crowd_roar.ogg
+  fuel_pour:
+    - audio/sfx/fuel_pour.ogg
+  wind:
+    - audio/sfx/wind.ogg
+  horn_blast:
+    - audio/sfx/horn_blast.ogg
 
-  - id: engine_die
-    description: "Engine sputtering out. Silence. The worst sound in the world."
-    tags: [rig, death, failure]
+creature_voice_presets:
+  warlord:
+    creature_type: warlord
+    description: "Booming voice over engine noise, megaphone distortion"
+    pitch: 0.7
+    rate: 0.9
+    effects:
+      - type: distortion
+        params:
+          amount: 0.3
+      - type: reverb
+        params:
+          room_size: 0.4
+  raider:
+    creature_type: raider
+    description: "Manic, high-energy screaming over wind noise"
+    pitch: 1.2
+    rate: 1.4
+    effects:
+      - type: highpass_filter
+        params:
+          cutoff_frequency_hz: 400
+  announcer:
+    creature_type: announcer
+    description: "Arena PA system, booming and theatrical"
+    pitch: 0.8
+    rate: 1.0
+    effects:
+      - type: reverb
+        params:
+          room_size: 0.7
+      - type: lowpass_filter
+        params:
+          cutoff_frequency_hz: 3000
 
-  - id: metal_impact
-    description: "Rig-on-rig contact. Crunch of metal, scrape of chrome."
-    tags: [combat, chase, damage]
+mixer:
+  music_volume: 0.08
+  sfx_volume: 0.15
+  voice_volume: 1.0
+  duck_music_for_voice: true
+  duck_amount_db: -12.0
+  crossfade_default_ms: 3000
 
-  - id: tire_blow
-    description: "Explosive tire blowout. Bang, then rubber flapping on road."
-    tags: [damage, chase, crisis]
+ai_generation:
+  enabled: true
+  model: musicgen_small
+  max_generation_time_s: 15
+  cache_generated: true
 
-  - id: crash
-    description: "Full rig crash. Rolling metal, shattering glass, grinding halt."
-    tags: [combat, death, spectacle]
-
-  - id: radio_crackle
-    description: "Radio static, then a voice cutting through."
-    tags: [communication, news, warning]
-
-  - id: crowd_roar
-    description: "Arena crowd reacting. Cheers, boos, stomping."
-    tags: [arena, spectacle]
-
-  - id: fuel_pour
-    description: "Liquid pouring into a tank. The sound of wealth."
-    tags: [fuel, trade, relief]
-
-  - id: wind
-    description: "Desert wind through a broken windshield."
-    tags: [ambient, driving, desolation]
-
-  - id: horn_blast
-    description: "War rig horn. Convoy signal or threat display."
-    tags: [convoy, warning, arrival]
-
-mixer_defaults:
-  music_volume: 0.6
-  sfx_volume: 0.8
-  ambience_volume: 0.4
+themes:
+  - name: combat
+    mood: combat
+    base_prompt: ""
+    variations:
+      - type: full
+        path: audio/music/combat.ogg
+      - type: full
+        path: audio/music/combat_3.ogg
+  - name: chase
+    mood: chase
+    base_prompt: ""
+    variations:
+      - type: full
+        path: audio/music/chase.ogg
+      - type: full
+        path: audio/music/chase_3.ogg
+  - name: exploration
+    mood: exploration
+    base_prompt: ""
+    variations:
+      - type: full
+        path: audio/music/exploration.ogg
+      - type: full
+        path: audio/music/exploration_3.ogg
+  - name: tension
+    mood: tension
+    base_prompt: ""
+    variations:
+      - type: full
+        path: audio/music/tension.ogg
+      - type: full
+        path: audio/music/tension_3.ogg
+  - name: rest
+    mood: rest
+    base_prompt: ""
+    variations:
+      - type: full
+        path: audio/music/rest.ogg
+  - name: convoy
+    mood: convoy
+    base_prompt: ""
+    variations:
+      - type: full
+        path: audio/music/convoy.ogg
+      - type: full
+        path: audio/music/convoy_3.ogg
