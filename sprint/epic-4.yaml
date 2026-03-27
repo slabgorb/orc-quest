@@ -78,10 +78,11 @@ stories:
     title: TTS streaming — stream synthesized audio chunks to client via WebSocket
     points: 5
     priority: p1
-    status: in_progress
+    status: done
     repos: sidequest-api
     workflow: tdd
     depends_on: 4-7
+    completed: '2026-03-27'
     branch: feat/4-8-tts-streaming
   - id: 4-9
     title: Music Director integration — mood extraction from narration, AUDIO_CUE message generation
