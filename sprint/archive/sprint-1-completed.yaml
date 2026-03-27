@@ -192,3 +192,33 @@ completed_stories:
     title: AbilityDefinition model — genre-voiced ability descriptions with mechanical effects
     points: 3
     completed: '2026-03-26'
+  - id: 8-6
+    epic: ''
+    title: Perception rewriter — per-character narration variants based on status effects (blinded, charmed, etc.)
+    points: 8
+    completed: '2026-03-26'
+  - id: 8-7
+    epic: ''
+    title: Guest NPC players — human-controlled NPC characters with limited agency
+    points: 5
+    completed: '2026-03-27'
+  - id: 8-8
+    epic: ''
+    title: Catch-up narration — generate arrival snapshot for mid-session joining players
+    points: 3
+    completed: '2026-03-27'
+  - id: 5-1
+    epic: ''
+    title: TensionTracker struct — dual-track model with action tension (gambler's ramp) and stakes tension (HP-based)
+    points: 5
+    completed: '2026-03-26'
+  - id: 5-2
+    epic: ''
+    title: Combat event classification — categorize combat outcomes as boring/dramatic, track boring_streak
+    points: 3
+    completed: '2026-03-27'
+  - id: 4-8
+    epic: ''
+    title: TTS streaming — stream synthesized audio chunks to client via WebSocket
+    points: 5
+    completed: '2026-03-27'
