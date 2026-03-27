@@ -299,3 +299,8 @@ completed_stories:
     title: Wire faction agendas into scene directive — faction-driven events appear in narrator prompt
     points: 2
     completed: '2026-03-27'
+  - id: 5-3
+    epic: ''
+    title: Drama weight computation — max(action_tension, stakes_tension), event spike injection with decay
+    points: 3
+    completed: '2026-03-27'
