@@ -89,7 +89,11 @@ stories:
     title: Wire scene directive into orchestrator turn loop — directive generation and prompt injection per turn
     points: 3
     priority: p1
-    status: backlog
+    status: done
+    assigned_to: keithavery
+    started: '2026-03-27'
     repos: sidequest-api
     workflow: tdd
     depends_on: 6-2
+    completed: '2026-03-27'
+    review_verdict: approved
