@@ -289,3 +289,8 @@ completed_stories:
     title: Turn reminders — notify idle players after configurable timeout
     points: 2
     completed: '2026-03-27'
+  - id: 6-4
+    epic: ''
+    title: FactionAgenda model — schema for faction goals, urgency, and scene injection rules
+    points: 3
+    completed: '2026-03-27'
