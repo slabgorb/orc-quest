@@ -202,3 +202,8 @@ completed_stories:
     title: Guest NPC players — human-controlled NPC characters with limited agency
     points: 5
     completed: '2026-03-27'
+  - id: 8-8
+    epic: ''
+    title: Catch-up narration — generate arrival snapshot for mid-session joining players
+    points: 3
+    completed: '2026-03-27'
