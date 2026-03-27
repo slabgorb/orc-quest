@@ -273,3 +273,8 @@ completed_stories:
     title: Engagement multiplier — scale trope progression rate by player engagement signal (turns since last meaningful action)
     points: 3
     completed: '2026-03-27'
+  - id: 5-9
+    epic: ''
+    title: Two-tier intent classification — Haiku classifier with narrator ambiguity resolution (ADR-032)
+    points: 5
+    completed: '2026-03-27'

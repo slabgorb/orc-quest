@@ -85,17 +85,23 @@ stories:
     title: Two-tier intent classification — Haiku classifier with narrator ambiguity resolution (ADR-032)
     points: 5
     priority: p1
-    status: backlog
+    status: done
+    started: '2026-03-27'
     repos: orc-quest
     workflow: tdd
+    completed: '2026-03-27'
     type: refactor
+    branch: feat/5-9-two-tier-intent-classification
+    review_findings: classify_two_tier not wired into orchestrator; no HaikuClassifier impl; dead code
+    review_verdict: approved
   - id: 5-10
     title: Wire prompt framework into orchestrator turn loop — replace format! concatenation with ContextBuilder composition
     points: 5
     priority: p1
-    status: in_progress
+    status: done
     assigned_to: keith.avery@1898andco.io
     started: '2026-03-27'
     repos: orc-quest
     workflow: tdd
+    completed: '2026-03-27'
     type: refactor
