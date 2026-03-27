@@ -2,45 +2,45 @@
 parent: context-epic-6.md
 ---
 
-# Story 6-8: Faction Agendas for low_fantasy Genre Pack Worlds
+# Story 6-8: Faction Agendas for elemental_harmony/shattered_accord Genre Pack Worlds
 
 ## Business Context
 
-Same as story 6-7 but for the low_fantasy genre pack. Each low_fantasy world gets faction
-agendas with goals, urgency, and injection rules authored in YAML. Low fantasy factions
-tend toward political intrigue, resource control, and religious conflict rather than the
-territorial warfare of mutant_wasteland.
+Same as story 6-7 but for the elemental_harmony genre pack, specifically the shattered_accord
+world. This world gets faction agendas with goals, urgency, and injection rules authored in
+YAML. Elemental harmony factions revolve around elemental balance, philosophical conflict
+between harmony and chaos, and competing visions for how elemental forces should be wielded.
 
-**Spoiler policy:** low_fantasy content may contain unspoiled material — follow spoiler
+**Spoiler policy:** elemental_harmony content may contain unspoiled material — follow spoiler
 protection rules for non-flickering_reach content.
 
 ## Technical Approach
 
-Same YAML schema as story 6-7, themed for low fantasy:
+Same YAML schema as story 6-7, themed for elemental harmony:
 
 ```yaml
-# genre_packs/low_fantasy/worlds/example_world.yaml
+# genre_packs/elemental_harmony/worlds/shattered_accord.yaml
 factions:
-  - id: merchant_league
-    name: "The Merchant League"
+  - id: accord_keepers
+    name: "The Accord Keepers"
     agendas:
-      - goal: "Monopolize river trade routes"
+      - goal: "Restore the elemental balance pact"
         urgency: 0.6
         scene_injection_rules:
           - condition: { type: TurnInterval, every_n_turns: 5 }
-            event_template: "Merchant League raises tariffs at the river crossing"
+            event_template: "Accord Keepers perform a binding ritual at the nexus"
           - condition: { type: MaturityMinimum, minimum: Mid }
-            event_template: "Merchant League hires mercenaries to enforce trade exclusivity"
+            event_template: "Accord Keepers confront a rogue elementalist threatening the balance"
 ```
 
-Low fantasy factions should feel grounded — no world-ending threats, just competing human
-interests with escalating stakes.
+Elemental harmony factions should feel otherworldly but grounded in philosophical conflict —
+competing visions of elemental stewardship with escalating consequences.
 
 ## Scope Boundaries
 
 **In scope:**
-- Faction agenda YAML for all low_fantasy worlds
-- 2-4 factions per world with thematically appropriate agendas
+- Faction agenda YAML for elemental_harmony/shattered_accord world
+- 2-4 factions with thematically appropriate agendas
 - Validation that YAML deserializes with story 6-4 types
 
 **Out of scope:**
@@ -53,8 +53,8 @@ interests with escalating stakes.
 | AC | Detail |
 |----|--------|
 | YAML valid | All faction agenda YAML deserializes without error |
-| Coverage | Every low_fantasy world has at least 2 factions with agendas |
-| Grounded tone | Faction goals reflect political/economic conflict, not cosmic threats |
+| Coverage | shattered_accord world has at least 2 factions with agendas |
+| Thematic tone | Faction goals reflect elemental/philosophical conflict |
 | Maturity gating | Some agendas gated to Early/Mid/Veteran maturity |
 | Varied conditions | Mix of `TurnInterval`, `MaturityMinimum`, and `StakeActive` conditions |
 | Spoiler safe | Event templates avoid revealing unspoiled plot details |
