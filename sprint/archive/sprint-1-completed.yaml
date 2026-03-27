@@ -12,6 +12,7 @@ completed_epics:
   - '1'
   - '2'
   - '4'
+  - '8'
 completed_stories:
   - id: 1-2
     epic: ''
@@ -282,4 +283,9 @@ completed_stories:
     epic: ''
     title: Wire scene directive into orchestrator turn loop — directive generation and prompt injection per turn
     points: 3
+    completed: '2026-03-27'
+  - id: 8-9
+    epic: ''
+    title: Turn reminders — notify idle players after configurable timeout
+    points: 2
     completed: '2026-03-27'
