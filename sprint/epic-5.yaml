@@ -65,10 +65,14 @@ stories:
     title: Wire pacing into orchestrator — drama_weight flows from TensionTracker through turn pipeline to narrator prompt
     points: 5
     priority: p1
-    status: backlog
+    status: done
+    started: '2026-03-27'
     repos: sidequest-api
     workflow: tdd
     depends_on: 5-4
+    completed: '2026-03-27'
+    branch: feat/5-7-wire-pacing-orchestrator
+    review_verdict: approved
   - id: 5-8
     title: Genre-tunable thresholds — drama_weight breakpoints configurable per genre pack
     points: 2
@@ -77,3 +81,19 @@ stories:
     repos: sidequest-api
     workflow: tdd
     depends_on: 5-5
+  - id: 5-9
+    title: Two-tier intent classification — Haiku classifier with narrator ambiguity resolution (ADR-032)
+    points: 5
+    priority: p1
+    status: backlog
+    repos: orc-quest
+    workflow: tdd
+    type: refactor
+  - id: 5-10
+    title: Wire prompt framework into orchestrator turn loop — replace format! concatenation with ContextBuilder composition
+    points: 5
+    priority: p1
+    status: backlog
+    repos: orc-quest
+    workflow: tdd
+    type: refactor

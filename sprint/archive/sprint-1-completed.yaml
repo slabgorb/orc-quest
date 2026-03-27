@@ -222,3 +222,8 @@ completed_stories:
     title: TTS streaming — stream synthesized audio chunks to client via WebSocket
     points: 5
     completed: '2026-03-27'
+  - id: 5-7
+    epic: ''
+    title: Wire pacing into orchestrator — drama_weight flows from TensionTracker through turn pipeline to narrator prompt
+    points: 5
+    completed: '2026-03-27'
