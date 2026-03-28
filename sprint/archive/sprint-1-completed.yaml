@@ -319,3 +319,8 @@ completed_stories:
     title: "Lore injection into agent prompts — relevant lore fragments included in narrator/world state context"
     points: 3
     completed: '2026-03-27'
+  - id: 11-5
+    epic: ''
+    title: "Lore accumulation — world state agent writes new lore fragments from game events"
+    points: 3
+    completed: '2026-03-27'

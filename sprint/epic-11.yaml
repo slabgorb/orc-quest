@@ -49,10 +49,12 @@ stories:
     title: "Lore accumulation — world state agent writes new lore fragments from game events"
     points: 3
     priority: p1
-    status: backlog
+    status: in-progress
     repos: sidequest-api
     workflow: tdd
     depends_on: 11-2
+    branch: feat/11-5-lore-accumulation
+    session_file: sidequest-api/.session/11-5-session.md
   - id: 11-6
     title: "Semantic retrieval — optional embedding-based RAG for lore query"
     points: 5
