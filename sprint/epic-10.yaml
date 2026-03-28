@@ -100,3 +100,4 @@ stories:
     status: backlog
     repos: orc-quest
     workflow: trivial
+    review_verdict: approved
