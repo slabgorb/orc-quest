@@ -324,3 +324,8 @@ completed_stories:
     title: "Lore accumulation — world state agent writes new lore fragments from game events"
     points: 3
     completed: '2026-03-27'
+  - id: 11-6
+    epic: ''
+    title: "Semantic retrieval — optional embedding-based RAG for lore query"
+    points: 5
+    completed: '2026-03-27'
