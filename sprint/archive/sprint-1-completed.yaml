@@ -369,3 +369,8 @@ completed_stories:
     title: Ability perception in narrator prompt — involuntary abilities trigger in narrator context (e.g., root-bonding detects corruption)
     points: 3
     completed: '2026-03-28'
+  - id: 9-3
+    epic: ''
+    title: KnownFact model — play-derived knowledge accumulation, persistence to game state
+    points: 3
+    completed: '2026-03-28'

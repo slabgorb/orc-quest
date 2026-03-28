@@ -22,21 +22,24 @@ stories:
     title: Ability perception in narrator prompt — involuntary abilities trigger in narrator context (e.g., root-bonding detects corruption)
     points: 3
     priority: p0
-    status: backlog
+    status: done
     repos: sidequest-api
     workflow: tdd
     depends_on: 9-1
+    completed: '2026-03-28'
     review_verdict: approved
   - id: 9-3
     title: KnownFact model — play-derived knowledge accumulation, persistence to game state
     points: 3
     priority: p0
-    status: backlog
+    status: done
     repos: sidequest-api
     workflow: tdd
+    completed: '2026-03-28'
+    review_verdict: approved
   - id: 9-4
-    title: Known facts in narrator prompt — character perception includes accumulated knowledge
-    points: 2
+    title: Known facts in narrator prompt — tiered injection by relevance, don't-repeat constraints, register_knowledge_context()
+    points: 3
     priority: p1
     status: backlog
     repos: sidequest-api
@@ -89,6 +92,30 @@ stories:
     repos: sidequest-api,sidequest-ui
     workflow: tdd
     depends_on: 9-5
+  - id: 9-11
+    title: Structured footnote output — narrator emits NarrationPayload with footnotes[], orchestrator parses markers into KnownFacts
+    points: 3
+    priority: p1
+    status: backlog
+    repos: sidequest-api
+    workflow: tdd
+    depends_on: 9-3
+  - id: 9-12
+    title: Footnote rendering in narration view — superscript markers, bottom-of-block entries, discovery vs callback styling
+    points: 3
+    priority: p1
+    status: backlog
+    repos: sidequest-api,sidequest-ui
+    workflow: tdd
+    depends_on: 9-11
+  - id: 9-13
+    title: Journal browse view — accumulated KnownFacts by category with genre voice and turn provenance
+    points: 3
+    priority: p2
+    status: backlog
+    repos: sidequest-ui
+    workflow: tdd
+    depends_on: 9-12
 key_references:
   - sq-2/sprint/epic-62.yaml
   - sq-2/sidequest/slash_commands/*.py
