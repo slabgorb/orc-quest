@@ -422,3 +422,8 @@ completed_stories:
     title: Core slash commands — /status, /inventory, /map, /save, /help handlers
     points: 5
     completed: '2026-03-28'
+  - id: 9-11
+    epic: ''
+    title: Structured footnote output — narrator emits NarrationPayload with footnotes[], orchestrator parses markers into KnownFacts
+    points: 3
+    completed: '2026-03-28'
