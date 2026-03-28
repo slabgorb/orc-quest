@@ -299,3 +299,8 @@ completed_stories:
     title: Wire faction agendas into scene directive — faction-driven events appear in narrator prompt
     points: 2
     completed: '2026-03-27'
+  - id: 11-1
+    epic: ''
+    title: "LoreFragment model — indexed narrative fact with category, token estimate, metadata"
+    points: 3
+    completed: '2026-03-27'

@@ -14,9 +14,10 @@ stories:
     title: "LoreFragment model — indexed narrative fact with category, token estimate, metadata"
     points: 3
     priority: p0
-    status: backlog
+    status: done
     repos: sidequest-api
     workflow: tdd
+    completed: '2026-03-27'
   - id: 11-2
     title: "LoreStore — in-memory indexed collection with add, query by category, query by keyword"
     points: 3
