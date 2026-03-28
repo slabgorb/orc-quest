@@ -53,10 +53,14 @@ stories:
     title: Narrative character sheet — genre-voiced to_narrative_sheet() for player-facing display
     points: 3
     priority: p1
-    status: backlog
+    status: done
+    started: '2026-03-28'
     repos: sidequest-api
     workflow: tdd
     depends_on: 9-1
+    completed: '2026-03-28'
+    branch: feat/9-5-narrative-character-sheet
+    review_verdict: approved
   - id: 9-6
     title: Slash command router — intercept /command input before intent classification, dispatch to handlers
     points: 3
