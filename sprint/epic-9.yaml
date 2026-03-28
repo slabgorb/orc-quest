@@ -2,10 +2,7 @@ id: '9'
 type: epic
 title: Character Depth — Self-Knowledge, Slash Commands, Narrative Sheet
 description: >-
-  Combines sq-2 Epic 62 (Character Self-Knowledge) with server-side slash
-  commands. Players should know who their character is — abilities described
-  in genre voice, accumulated knowledge from play, and quick-access commands
-  for game state.
+  Combines sq-2 Epic 62 (Character Self-Knowledge) with server-side slash commands. Players should know who their character is — abilities described in genre voice, accumulated knowledge from play, and quick-access commands for game state.
 priority: p1
 status: ready
 repos: sidequest-api
@@ -41,7 +38,7 @@ stories:
     title: Known facts in narrator prompt — tiered injection by relevance, don't-repeat constraints, register_knowledge_context()
     points: 3
     priority: p1
-    status: backlog
+    status: done
     repos: sidequest-api
     workflow: tdd
     depends_on: 9-3
@@ -103,7 +100,7 @@ stories:
     title: Structured footnote output — narrator emits NarrationPayload with footnotes[], orchestrator parses markers into KnownFacts
     points: 3
     priority: p1
-    status: backlog
+    status: done
     repos: sidequest-api
     workflow: tdd
     depends_on: 9-3
