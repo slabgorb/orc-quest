@@ -364,3 +364,8 @@ completed_stories:
     title: Faction agendas for elemental_harmony/shattered_accord genre pack worlds
     points: 2
     completed: '2026-03-27'
+  - id: 9-2
+    epic: ''
+    title: Ability perception in narrator prompt — involuntary abilities trigger in narrator context (e.g., root-bonding detects corruption)
+    points: 3
+    completed: '2026-03-28'
