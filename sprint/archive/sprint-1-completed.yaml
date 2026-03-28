@@ -334,3 +334,8 @@ completed_stories:
     title: "Morpheme glossary schema — conlang morphemes with meaning and pronunciation rules in genre pack"
     points: 2
     completed: '2026-03-27'
+  - id: 11-8
+    epic: ''
+    title: "Name bank generation — produce glossed names with morpheme decomposition from genre pack language rules"
+    points: 3
+    completed: '2026-03-27'
