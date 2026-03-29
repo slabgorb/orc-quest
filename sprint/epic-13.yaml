@@ -10,9 +10,11 @@ stories:
     title: OTEL deep instrumentation — intent, routing, patches, combat, tropes, quests, NPC, music
     points: 5
     priority: p1
-    status: backlog
+    status: done
     repos: pennyfarthing
     workflow: tdd
+    completed: '2026-03-29'
+    branch: feat/13-1-otel-deep-instrumentation
   - id: 13-2
     title: Dashboard layout — dedicated route with panel grid replacing popout overlay
     points: 3

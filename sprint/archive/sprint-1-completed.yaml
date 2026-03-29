@@ -16,6 +16,7 @@ completed_epics:
   - '5'
   - '6'
   - '11'
+  - '10'
 completed_stories:
   - id: 1-2
     epic: ''
@@ -451,4 +452,44 @@ completed_stories:
     epic: ''
     title: Wire narrative sheet to React client — CHARACTER_SHEET message with genre-voiced content
     points: 3
+    completed: '2026-03-28'
+  - id: 13-1
+    epic: ''
+    title: OTEL deep instrumentation — intent, routing, patches, combat, tropes, quests, NPC, music
+    points: 5
+    completed: '2026-03-29'
+  - id: 10-1
+    epic: '10'
+    title: "OCEAN profile on NPC model — add five float fields (0.0–10.0) to NPC struct"
+    points: 2
+    completed: '2026-03-28'
+  - id: 10-2
+    epic: '10'
+    title: "Genre archetype OCEAN baselines — default profiles per NPC archetype in genre pack, random generation for unnamed NPCs"
+    points: 3
+    completed: '2026-03-28'
+  - id: 10-3
+    epic: '10'
+    title: "OCEAN behavioral summary — scores to narrator prompt text (e.g., 'reserved and meticulous' for low-E high-C)"
+    points: 3
+    completed: '2026-03-28'
+  - id: 10-4
+    epic: '10'
+    title: "Narrator reads OCEAN — adjust NPC voice and behavior based on personality profile"
+    points: 5
+    completed: '2026-03-28'
+  - id: 10-5
+    epic: '10'
+    title: "OCEAN shift log — track personality changes with cause attribution, append to structured log"
+    points: 3
+    completed: '2026-03-28'
+  - id: 10-6
+    epic: '10'
+    title: "World state agent proposes OCEAN shifts — game events trigger personality evolution"
+    points: 5
+    completed: '2026-03-28'
+  - id: 10-7
+    epic: '10'
+    title: "Connect Agreeableness to disposition — A-dimension feeds into existing disposition system (-15 to +15)"
+    points: 2
     completed: '2026-03-28'

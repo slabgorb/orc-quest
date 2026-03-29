@@ -7,7 +7,7 @@ description: >-
   Extraversion, Agreeableness, Neuroticism. Layers on disposition/attitude
   system, shifts tracked as lore-indexable events.
 priority: p2
-status: ready
+status: done
 repos: sidequest-api
 stories:
   - id: 10-1
@@ -102,3 +102,4 @@ stories:
     workflow: trivial
     completed: '2026-03-28'
     review_verdict: approved
+completed: '2026-03-29'
