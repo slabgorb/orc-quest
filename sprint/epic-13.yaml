@@ -1,0 +1,57 @@
+id: '13'
+type: epic
+title: GM Dashboard — Full Observability & OTEL Overhaul
+description: Replace the popout GM panel with a full observability dashboard. Deep OTEL instrumentation across all subsystems (intent classification, agent routing, state patches, combat, tropes, quests, NPC registry, music). Graphs for HP over time, trope progression, music mood history. Live GameSnapshot inspector. NPC tracking panel. Session replay on connect. Dedicated route, not a floating overlay.
+priority: p1
+status: backlog
+repos: pennyfarthing
+stories:
+  - id: 13-1
+    title: OTEL deep instrumentation — intent, routing, patches, combat, tropes, quests, NPC, music
+    points: 5
+    priority: p1
+    status: backlog
+    repos: pennyfarthing
+    workflow: tdd
+  - id: 13-2
+    title: Dashboard layout — dedicated route with panel grid replacing popout overlay
+    points: 3
+    priority: p1
+    status: backlog
+    repos: pennyfarthing
+    workflow: tdd
+  - id: 13-3
+    title: Live GameSnapshot inspector — full state tree, not just location
+    points: 3
+    priority: p1
+    status: backlog
+    repos: pennyfarthing
+    workflow: tdd
+  - id: 13-4
+    title: Graphs — HP timeline, trope progression curves, music mood history
+    points: 5
+    priority: p2
+    status: backlog
+    repos: pennyfarthing
+    workflow: tdd
+  - id: 13-5
+    title: NPC tracking panel — registry view with disposition, role, last seen, appearance
+    points: 3
+    priority: p2
+    status: backlog
+    repos: pennyfarthing
+    workflow: tdd
+  - id: 13-6
+    title: Session replay — watcher loads historical state on connect, not just live stream
+    points: 3
+    priority: p2
+    status: backlog
+    repos: pennyfarthing
+    workflow: tdd
+  - id: 13-7
+    title: Turn timeline — per-turn event breakdown with timing, agent used, tokens consumed
+    points: 3
+    priority: p2
+    status: backlog
+    repos: pennyfarthing
+    workflow: tdd

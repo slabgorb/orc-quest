@@ -138,6 +138,13 @@ stories:
     repos: sidequest-ui
     workflow: tdd
     depends_on: 9-12
+  - id: 9-14
+    title: Character stat generation — populate stats from chargen choices, wire to /character display
+    points: 3
+    priority: p1
+    status: backlog
+    repos: pennyfarthing
+    workflow: tdd
 key_references:
   - sq-2/sprint/epic-62.yaml
   - sq-2/sidequest/slash_commands/*.py

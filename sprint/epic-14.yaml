@@ -1,0 +1,46 @@
+id: '14'
+type: epic
+title: Faction-Aware Media — Visual Style + Music Per Region/Faction
+description: Wire per-region visual style overrides, per-faction portrait descriptions, and per-faction music tracks into the runtime render and audio pipelines. Road Warrior authored rich faction content that currently cannot reach the renderer or audio system due to schema mismatches and missing wiring.
+priority: p1
+status: backlog
+repos: sidequest-api,sidequest-daemon,sidequest-content
+stories:
+  - id: 14-1
+    title: VisualStyle schema — structured overrides + faction portraits
+    points: 5
+    priority: p1
+    status: backlog
+    repos: sidequest-api,sidequest-daemon
+    workflow: tdd
+  - id: 14-2
+    title: World-level visual style merge into runtime
+    points: 3
+    priority: p1
+    status: backlog
+    repos: sidequest-api
+    workflow: tdd
+    depends_on: 14-1
+  - id: 14-3
+    title: Faction-aware music selection
+    points: 5
+    priority: p1
+    status: backlog
+    repos: sidequest-api
+    workflow: tdd
+  - id: 14-4
+    title: Faction portraits in runtime rendering
+    points: 3
+    priority: p2
+    status: backlog
+    repos: sidequest-api,sidequest-daemon
+    workflow: tdd
+    depends_on: 14-2
+  - id: 14-5
+    title: Batch portrait script — full visual style pipeline
+    points: 3
+    priority: p2
+    status: backlog
+    repos: orc-quest
+    workflow: trivial
+    depends_on: 14-1
