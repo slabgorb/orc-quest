@@ -11,6 +11,56 @@ priority: p0
 status: ready
 repos: sidequest-api, sidequest-ui
 stories:
+  - id: 13-8
+    title: "fix(barrier): single narrator call per barrier turn — elect one handler, broadcast to others"
+    points: 5
+    priority: p0
+    status: ready
+    repos: sidequest-api
+    workflow: tdd
+    description: >-
+      CRITICAL BUG: All N player handlers resume from wait_for_turn() simultaneously
+      and each independently calls the narrator with the combined action. This produces
+      N divergent narrations per barrier turn and a last-write-wins race on world state
+      (npc_registry, trope_states, narration_history). Fix: elect one handler (first to
+      acquire a resolution lock) to run the narrator; other handlers receive the narration
+      via session broadcast and skip their own narrator call. Also fix C1: read
+      result.narration from TurnBarrierResult instead of ss.multiplayer.named_actions()
+      which is a separate empty session. The combined action string must come from the
+      barrier's internal session, not the SharedGameSession's multiplayer field.
+
+  - id: 13-9
+    title: "fix(barrier): handle timeout — notify players, fill missing actions, branch on timed_out"
+    points: 3
+    priority: p0
+    status: ready
+    repos: sidequest-api, sidequest-ui
+    workflow: tdd
+    depends_on: 13-8
+    description: >-
+      CRITICAL BUG: result.timed_out from wait_for_turn() is logged but never acted on.
+      The timeout path falls through identically to full-submission. Fix: when timed_out
+      is true, call force_resolve_turn() for missing players with contextual defaults
+      ("hesitates, waiting"), broadcast notification of who was auto-resolved, and include
+      auto-resolved info in the combined action context so the narrator knows which
+      characters didn't act intentionally.
+
+  - id: 13-10
+    title: "fix(barrier): error handling — propagate add_player errors, fix disconnect removal race"
+    points: 3
+    priority: p0
+    status: ready
+    repos: sidequest-api
+    workflow: tdd
+    description: >-
+      HIGH BUGS: (1) let _ = barrier.add_player() swallows errors — if add fails, player
+      is silently excluded from barrier, their submissions are no-ops, turn hangs to
+      timeout. Fix: propagate error, send ERROR message to player. (2) try_lock() failure
+      in disconnect path skips barrier removal — ghost player stays in roster, every turn
+      times out waiting for them. Fix: use async lock (await) instead of try_lock, or
+      retry with backoff. (3) unwrap_or_default() on character JSON serialization silently
+      produces Value::Null — log the error and skip the sync rather than propagating Null.
+
   - id: 13-1
     title: "Turn collection UI — show pending/submitted status per player, disable input after submit"
     points: 5
