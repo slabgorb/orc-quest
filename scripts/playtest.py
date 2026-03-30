@@ -173,6 +173,105 @@ def render_message(msg: dict) -> None:
         console.print(f"[dim][{msg_type}] {json.dumps(payload, indent=None)}[/dim]")
 
 
+# ── Watcher telemetry (OTEL dashboard) ──────────────────────────────────────
+
+SEVERITY_STYLES = {
+    "info": "white",
+    "pass": "green",
+    "warn": "yellow",
+    "error": "red",
+}
+
+SEVERITY_PREFIXES = {
+    "pass": "\u2713",
+    "warn": "\u26a0",
+    "error": "\u2717",
+    "info": "\u00b7",
+}
+
+BAR_WIDTH = 11
+
+
+def render_watcher_event(event: dict) -> None:
+    """Render a watcher telemetry event inline with game output."""
+    # Raw WatcherEvent from Rust (component/event_type/severity/fields)
+    if "component" in event and "event_type" in event:
+        component = event.get("component", "")
+        event_type = event.get("event_type", "")
+        severity = event.get("severity", "info")
+        fields = event.get("fields", {})
+        style = SEVERITY_STYLES.get(severity, "white")
+        prefix = SEVERITY_PREFIXES.get(severity, " ")
+
+        # Compact field summary
+        detail_parts = []
+        for k, v in fields.items():
+            if k in ("timestamp",):
+                continue
+            val = v if isinstance(v, str) else json.dumps(v)
+            if len(val) > 60:
+                val = val[:57] + "..."
+            detail_parts.append(f"{k}={val}")
+        detail = ", ".join(detail_parts)
+
+        console.print(
+            f"  [{style}]{prefix} [{component}] {event_type}: {detail}[/{style}]"
+        )
+        return
+
+    # Structured turn_complete from watcher
+    event_type = event.get("type", "")
+    if event_type == "turn_complete":
+        turn_id = event.get("turn_id", "?")
+        intent = event.get("classified_intent", "unknown")
+        agent = event.get("agent_name", "unknown")
+        duration_ms = event.get("agent_duration_ms", 0)
+        duration = duration_ms / 1000
+
+        console.print(
+            f"\n[bold cyan]\u2550\u2550\u2550 Turn {turn_id} | {intent} \u2192 {agent} | {duration:.1f}s "
+            + "\u2550" * 20
+            + "[/bold cyan]"
+        )
+
+        for line in event.get("events", []):
+            sev = line.get("severity", "info")
+            style = SEVERITY_STYLES.get(sev, "white")
+            prefix = SEVERITY_PREFIXES.get(sev, " ")
+            text = line.get("text", "")
+            console.print(f"  [{style}]{prefix} {text}[/{style}]")
+
+        # Subsystem histogram
+        histogram = event.get("histogram")
+        if histogram:
+            console.print("[dim]\u2500\u2500\u2500 Subsystem Activity \u2500" * 2 + "[/dim]")
+            max_count = max(histogram.values()) if histogram else 1
+            for name, count in sorted(histogram.items(), key=lambda x: -x[1]):
+                filled = round(count / max_count * BAR_WIDTH) if max_count > 0 else 0
+                empty = BAR_WIDTH - filled
+                bar = "\u2588" * filled + "\u2591" * empty
+                console.print(f"  {name:<14}{bar} {count:>3}")
+            console.print()
+    else:
+        console.print(f"  [dim][OTEL] {json.dumps(event, default=str)}[/dim]")
+
+
+async def watcher_receiver(host: str, port: int) -> None:
+    """Background task that connects to /ws/watcher and renders telemetry."""
+    uri = f"ws://{host}:{port}/ws/watcher"
+    try:
+        async with websockets.connect(uri) as ws:
+            console.print(f"[dim]Watcher connected to {uri}[/dim]")
+            async for raw in ws:
+                try:
+                    event = json.loads(raw)
+                    render_watcher_event(event)
+                except json.JSONDecodeError:
+                    pass
+    except (websockets.ConnectionClosed, OSError) as e:
+        console.print(f"[dim]Watcher disconnected: {e}[/dim]")
+
+
 # ── Session connect message ─────────────────────────────────────────────────
 
 
@@ -258,7 +357,8 @@ async def receiver(ws, state: dict) -> None:
 
 
 async def run_interactive(
-    host: str, port: int, genre: str, world: str, player_name: str
+    host: str, port: int, genre: str, world: str, player_name: str,
+    watch: bool = True,
 ) -> None:
     """Interactive playtest — human types actions, sees narration."""
     uri = f"ws://{host}:{port}/ws"
@@ -280,6 +380,11 @@ async def run_interactive(
 
         # Start receiver
         recv_task = asyncio.create_task(receiver(ws, state))
+
+        # Start watcher telemetry (OTEL dashboard)
+        watcher_task = None
+        if watch:
+            watcher_task = asyncio.create_task(watcher_receiver(host, port))
 
         # Connect to session
         console.print(f"[bold]Joining {genre}/{world} as {player_name}...[/bold]")
@@ -385,6 +490,8 @@ async def run_interactive(
                 console.print("[red]Timed out waiting for narration[/red]")
 
         recv_task.cancel()
+        if watcher_task:
+            watcher_task.cancel()
         console.print("[bold]Session ended.[/bold]")
 
 
@@ -392,7 +499,7 @@ async def run_interactive(
 
 
 async def run_scripted(
-    host: str, port: int, scenario_path: str
+    host: str, port: int, scenario_path: str, watch: bool = True,
 ) -> None:
     """Run a YAML scenario file against the server."""
     path = Path(scenario_path)
@@ -428,6 +535,10 @@ async def run_scripted(
         }
 
         recv_task = asyncio.create_task(receiver(ws, state))
+
+        watcher_task = None
+        if watch:
+            watcher_task = asyncio.create_task(watcher_receiver(host, port))
 
         # Connect
         await ws.send(json.dumps(make_connect_msg(genre, world, player_name)))
@@ -494,6 +605,8 @@ async def run_scripted(
                 failed += 1
 
         recv_task.cancel()
+        if watcher_task:
+            watcher_task.cancel()
 
         console.print(f"\n[bold]{'=' * 40}[/bold]")
         console.print(f"[bold]Scenario: {name}[/bold]")
@@ -587,7 +700,8 @@ async def run_player(
 
 
 async def run_multiplayer(
-    host: str, port: int, genre: str, world: str, num_players: int
+    host: str, port: int, genre: str, world: str, num_players: int,
+    watch: bool = True,
 ) -> None:
     """Spawn N players concurrently."""
     console.print(
@@ -600,6 +714,11 @@ async def run_multiplayer(
         "talk to anyone nearby",
     ]
 
+    # One watcher connection for all players (server-wide telemetry)
+    watcher_task = None
+    if watch:
+        watcher_task = asyncio.create_task(watcher_receiver(host, port))
+
     tasks = []
     for i in range(num_players):
         name = f"Player {i + 1}"
@@ -608,6 +727,9 @@ async def run_multiplayer(
         )
 
     results = await asyncio.gather(*tasks, return_exceptions=True)
+
+    if watcher_task:
+        watcher_task.cancel()
 
     console.print(f"\n[bold]{'=' * 40}[/bold]")
     console.print(f"[bold]Multiplayer Results ({num_players} players)[/bold]")
@@ -670,6 +792,12 @@ def main() -> None:
         default=0,
         help="Number of simultaneous players (multiplayer mode)",
     )
+    parser.add_argument(
+        "--watch",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="Connect to /ws/watcher for inline OTEL telemetry (default: on)",
+    )
 
     args = parser.parse_args()
 
@@ -677,17 +805,19 @@ def main() -> None:
     signal.signal(signal.SIGINT, lambda *_: sys.exit(0))
 
     if args.scenario:
-        asyncio.run(run_scripted(args.host, args.port, args.scenario))
+        asyncio.run(run_scripted(args.host, args.port, args.scenario, watch=args.watch))
     elif args.players > 1:
         asyncio.run(
             run_multiplayer(
-                args.host, args.port, args.genre, args.world, args.players
+                args.host, args.port, args.genre, args.world, args.players,
+                watch=args.watch,
             )
         )
     else:
         asyncio.run(
             run_interactive(
-                args.host, args.port, args.genre, args.world, args.name
+                args.host, args.port, args.genre, args.world, args.name,
+                watch=args.watch,
             )
         )
 
