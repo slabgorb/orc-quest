@@ -57,15 +57,16 @@ stories:
     description: >-
       perception.rs has RewriteStrategy trait and two implementations
       (ClaudeRewriteStrategy, FullContextRewriteStrategy) in the Resonator agent.
-      SharedGameSession references it, has_perception_effects() works, but
-      rewrite() is never called from the server pipeline — narration is not
-      actually rewritten per-player. Wire the rewrite call into
-      dispatch_player_action() before broadcasting narration.
+      Wire the rewrite call into multiplayer narration broadcast.
     points: 5
     priority: p2
-    status: ready
+    status: done
     repos: sidequest-api
     workflow: tdd
+    completed: '2026-03-30'
+    branch: feat/15-4-wire-perception-rewriter
+    assignee: keith
+    review_verdict: approved
   - id: 15-5
     title: "Daemon client typed API — wire or remove stub types"
     description: >-
