@@ -66,9 +66,10 @@ stories:
       Character" button on the preview screen triggers submission.
     points: 3
     priority: p1
-    status: ready
+    status: done
     repos: sidequest-ui
     workflow: tdd
+    completed: '2026-03-30'
   - id: 14-6
     title: "Image pacing throttle — configurable minimum interval between scene images"
     description: >-

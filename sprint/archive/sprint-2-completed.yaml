@@ -35,3 +35,8 @@ completed_stories:
     title: "Wire OCEAN shift proposals into game flow — events trigger personality evolution"
     points: 3
     completed: '2026-03-30'
+  - id: 14-5
+    epic: ''
+    title: "Character generation back button — allow editing choices before final submit"
+    points: 3
+    completed: '2026-03-30'
