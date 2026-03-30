@@ -173,103 +173,252 @@ def render_message(msg: dict) -> None:
         console.print(f"[dim][{msg_type}] {json.dumps(payload, indent=None)}[/dim]")
 
 
-# ── Watcher telemetry (OTEL dashboard) ──────────────────────────────────────
+# ── Watcher dashboard (OTEL telemetry WebSocket server) ─────────────────────
 
-SEVERITY_STYLES = {
-    "info": "white",
-    "pass": "green",
-    "warn": "yellow",
-    "error": "red",
-}
+# Connected browser clients
+_dashboard_clients: set = set()
 
-SEVERITY_PREFIXES = {
-    "pass": "\u2713",
-    "warn": "\u26a0",
-    "error": "\u2717",
-    "info": "\u00b7",
-}
-
-BAR_WIDTH = 11
+# Event history for late-joining browsers (ring buffer)
+_event_history: list[str] = []
+_MAX_HISTORY = 200
 
 
-def render_watcher_event(event: dict) -> None:
-    """Render a watcher telemetry event inline with game output."""
-    # Raw WatcherEvent from Rust (component/event_type/severity/fields)
-    if "component" in event and "event_type" in event:
-        component = event.get("component", "")
-        event_type = event.get("event_type", "")
-        severity = event.get("severity", "info")
-        fields = event.get("fields", {})
-        style = SEVERITY_STYLES.get(severity, "white")
-        prefix = SEVERITY_PREFIXES.get(severity, " ")
-
-        # Compact field summary
-        detail_parts = []
-        for k, v in fields.items():
-            if k in ("timestamp",):
-                continue
-            val = v if isinstance(v, str) else json.dumps(v)
-            if len(val) > 60:
-                val = val[:57] + "..."
-            detail_parts.append(f"{k}={val}")
-        detail = ", ".join(detail_parts)
-
-        console.print(
-            f"  [{style}]{prefix} [{component}] {event_type}: {detail}[/{style}]"
-        )
-        return
-
-    # Structured turn_complete from watcher
-    event_type = event.get("type", "")
-    if event_type == "turn_complete":
-        turn_id = event.get("turn_id", "?")
-        intent = event.get("classified_intent", "unknown")
-        agent = event.get("agent_name", "unknown")
-        duration_ms = event.get("agent_duration_ms", 0)
-        duration = duration_ms / 1000
-
-        console.print(
-            f"\n[bold cyan]\u2550\u2550\u2550 Turn {turn_id} | {intent} \u2192 {agent} | {duration:.1f}s "
-            + "\u2550" * 20
-            + "[/bold cyan]"
-        )
-
-        for line in event.get("events", []):
-            sev = line.get("severity", "info")
-            style = SEVERITY_STYLES.get(sev, "white")
-            prefix = SEVERITY_PREFIXES.get(sev, " ")
-            text = line.get("text", "")
-            console.print(f"  [{style}]{prefix} {text}[/{style}]")
-
-        # Subsystem histogram
-        histogram = event.get("histogram")
-        if histogram:
-            console.print("[dim]\u2500\u2500\u2500 Subsystem Activity \u2500" * 2 + "[/dim]")
-            max_count = max(histogram.values()) if histogram else 1
-            for name, count in sorted(histogram.items(), key=lambda x: -x[1]):
-                filled = round(count / max_count * BAR_WIDTH) if max_count > 0 else 0
-                empty = BAR_WIDTH - filled
-                bar = "\u2588" * filled + "\u2591" * empty
-                console.print(f"  {name:<14}{bar} {count:>3}")
-            console.print()
-    else:
-        console.print(f"  [dim][OTEL] {json.dumps(event, default=str)}[/dim]")
-
-
-async def watcher_receiver(host: str, port: int) -> None:
-    """Background task that connects to /ws/watcher and renders telemetry."""
-    uri = f"ws://{host}:{port}/ws/watcher"
+async def _dashboard_handler(websocket) -> None:
+    """Handle a browser connecting to the dashboard WebSocket."""
+    _dashboard_clients.add(websocket)
+    console.print(f"[dim]Dashboard client connected ({len(_dashboard_clients)} total)[/dim]")
     try:
-        async with websockets.connect(uri) as ws:
-            console.print(f"[dim]Watcher connected to {uri}[/dim]")
-            async for raw in ws:
-                try:
-                    event = json.loads(raw)
-                    render_watcher_event(event)
-                except json.JSONDecodeError:
-                    pass
-    except (websockets.ConnectionClosed, OSError) as e:
-        console.print(f"[dim]Watcher disconnected: {e}[/dim]")
+        # Send event history so late joiners see context
+        for raw in _event_history:
+            await websocket.send(raw)
+        # Keep alive until client disconnects
+        async for _ in websocket:
+            pass  # Browser doesn't send us anything
+    except websockets.ConnectionClosed:
+        pass
+    finally:
+        _dashboard_clients.discard(websocket)
+        console.print(f"[dim]Dashboard client disconnected ({len(_dashboard_clients)} remaining)[/dim]")
+
+
+async def _broadcast_to_dashboards(raw: str) -> None:
+    """Fan out a raw JSON event to all connected browser clients."""
+    _event_history.append(raw)
+    if len(_event_history) > _MAX_HISTORY:
+        del _event_history[: len(_event_history) - _MAX_HISTORY]
+    if _dashboard_clients:
+        await asyncio.gather(
+            *(client.send(raw) for client in _dashboard_clients),
+            return_exceptions=True,
+        )
+
+
+DASHBOARD_HTML = """<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>SideQuest OTEL Dashboard</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #1a1a2e; color: #e0e0e0; font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 13px; padding: 16px; }
+  h1 { color: #00d4ff; font-size: 16px; margin-bottom: 12px; }
+  .status { color: #666; margin-bottom: 12px; font-size: 12px; }
+  .status.connected { color: #4caf50; }
+
+  #events { max-height: calc(100vh - 120px); overflow-y: auto; }
+  .turn { border-left: 3px solid #00d4ff; padding: 8px 12px; margin-bottom: 8px; background: #16213e; border-radius: 0 4px 4px 0; }
+  .turn-header { color: #00d4ff; font-weight: bold; margin-bottom: 4px; }
+  .event-line { padding: 1px 0; }
+  .sev-info { color: #888; }
+  .sev-pass { color: #4caf50; }
+  .sev-warn { color: #ff9800; }
+  .sev-error { color: #f44336; font-weight: bold; }
+
+  .raw-event { padding: 4px 12px; margin-bottom: 2px; background: #16213e; border-radius: 4px; border-left: 3px solid #333; }
+  .component { color: #bb86fc; }
+  .event-type { color: #03dac6; }
+
+  .histogram { display: flex; flex-wrap: wrap; gap: 4px 16px; margin-top: 6px; padding: 6px 0; border-top: 1px solid #333; }
+  .hist-bar { display: flex; align-items: center; gap: 6px; }
+  .hist-label { width: 100px; text-align: right; color: #888; }
+  .hist-fill { height: 12px; background: #00d4ff; border-radius: 2px; min-width: 2px; transition: width 0.3s; }
+  .hist-count { color: #666; font-size: 11px; width: 30px; }
+
+  .stats { display: flex; gap: 24px; margin-bottom: 12px; padding: 8px 12px; background: #16213e; border-radius: 4px; }
+  .stat { text-align: center; }
+  .stat-value { font-size: 24px; color: #00d4ff; font-weight: bold; }
+  .stat-label { font-size: 11px; color: #666; }
+</style>
+</head>
+<body>
+<h1>SideQuest OTEL Dashboard</h1>
+<div class="status" id="status">Connecting...</div>
+<div class="stats">
+  <div class="stat"><div class="stat-value" id="turns">0</div><div class="stat-label">Turns</div></div>
+  <div class="stat"><div class="stat-value" id="events-count">0</div><div class="stat-label">Events</div></div>
+  <div class="stat"><div class="stat-value" id="errors">0</div><div class="stat-label">Errors</div></div>
+  <div class="stat"><div class="stat-value" id="components">0</div><div class="stat-label">Components</div></div>
+</div>
+<div id="events"></div>
+
+<script>
+const eventsEl = document.getElementById('events');
+const statusEl = document.getElementById('status');
+const turnsEl = document.getElementById('turns');
+const eventsCountEl = document.getElementById('events-count');
+const errorsEl = document.getElementById('errors');
+const componentsEl = document.getElementById('components');
+
+let turnCount = 0;
+let eventCount = 0;
+let errorCount = 0;
+const componentSet = new Set();
+const histogram = {};
+
+function escapeHtml(s) {
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+function sevClass(severity) {
+  return 'sev-' + (severity || 'info');
+}
+
+function sevPrefix(severity) {
+  return { pass: '\\u2713', warn: '\\u26a0', error: '\\u2717', info: '\\u00b7' }[severity] || '\\u00b7';
+}
+
+function renderHistogram() {
+  const entries = Object.entries(histogram).sort((a, b) => b[1] - a[1]);
+  if (!entries.length) return '';
+  const max = Math.max(...entries.map(e => e[1]));
+  return '<div class="histogram">' + entries.map(([name, count]) => {
+    const pct = max > 0 ? (count / max * 100) : 0;
+    return `<div class="hist-bar"><span class="hist-label">${escapeHtml(name)}</span><div class="hist-fill" style="width:${pct}px"></div><span class="hist-count">${count}</span></div>`;
+  }).join('') + '</div>';
+}
+
+function updateStats() {
+  turnsEl.textContent = turnCount;
+  eventsCountEl.textContent = eventCount;
+  errorsEl.textContent = errorCount;
+  componentsEl.textContent = componentSet.size;
+}
+
+function addEvent(event) {
+  eventCount++;
+
+  // Raw WatcherEvent (component/event_type/severity/fields)
+  if (event.component && event.event_type) {
+    const comp = event.component;
+    const etype = event.event_type;
+    const severity = event.severity || 'info';
+    const fields = event.fields || {};
+    componentSet.add(comp);
+    histogram[comp] = (histogram[comp] || 0) + 1;
+    if (severity === 'error') errorCount++;
+
+    const detail = Object.entries(fields)
+      .filter(([k]) => k !== 'timestamp')
+      .map(([k, v]) => `${k}=${typeof v === 'string' ? v : JSON.stringify(v)}`)
+      .join(', ');
+
+    const div = document.createElement('div');
+    div.className = 'raw-event';
+    div.innerHTML = `<span class="${sevClass(severity)}">${sevPrefix(severity)}</span> <span class="component">[${escapeHtml(comp)}]</span> <span class="event-type">${escapeHtml(etype)}</span>: ${escapeHtml(detail)}`;
+    eventsEl.appendChild(div);
+  }
+  // Structured turn_complete
+  else if (event.type === 'turn_complete') {
+    turnCount++;
+    const dur = ((event.agent_duration_ms || 0) / 1000).toFixed(1);
+    const div = document.createElement('div');
+    div.className = 'turn';
+    let html = `<div class="turn-header">Turn ${event.turn_id || '?'} | ${escapeHtml(event.classified_intent || '?')} \\u2192 ${escapeHtml(event.agent_name || '?')} | ${dur}s</div>`;
+    for (const line of (event.events || [])) {
+      const sev = line.severity || 'info';
+      if (sev === 'error') errorCount++;
+      html += `<div class="event-line ${sevClass(sev)}">${sevPrefix(sev)} ${escapeHtml(line.text || '')}</div>`;
+    }
+    if (event.histogram) {
+      for (const [k, v] of Object.entries(event.histogram)) {
+        componentSet.add(k);
+        histogram[k] = (histogram[k] || 0) + v;
+      }
+      html += renderHistogram();
+    }
+    div.innerHTML = html;
+    eventsEl.appendChild(div);
+  }
+  else {
+    const div = document.createElement('div');
+    div.className = 'raw-event';
+    div.innerHTML = `<span class="sev-info">\\u00b7</span> ${escapeHtml(JSON.stringify(event))}`;
+    eventsEl.appendChild(div);
+  }
+
+  updateStats();
+  eventsEl.scrollTop = eventsEl.scrollHeight;
+}
+
+function connect() {
+  const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
+  const ws = new WebSocket(`${proto}//${location.host}/ws`);
+  ws.onopen = () => {
+    statusEl.textContent = 'Connected';
+    statusEl.className = 'status connected';
+  };
+  ws.onmessage = (e) => {
+    try { addEvent(JSON.parse(e.data)); } catch {}
+  };
+  ws.onclose = () => {
+    statusEl.textContent = 'Disconnected — reconnecting...';
+    statusEl.className = 'status';
+    setTimeout(connect, 2000);
+  };
+}
+connect();
+</script>
+</body>
+</html>"""
+
+
+async def _serve_dashboard_http(path, request_headers):
+    """Serve the dashboard HTML page on GET /."""
+    if path == "/" or path == "/index.html":
+        return (200, [("Content-Type", "text/html; charset=utf-8")], DASHBOARD_HTML.encode())
+    return None  # Let websockets handle /ws
+
+
+async def run_dashboard_server(
+    api_host: str, api_port: int, dashboard_port: int,
+) -> None:
+    """
+    Proxy: connects to API /ws/watcher as client, re-serves events on dashboard_port.
+    Serves HTML dashboard at http://localhost:{dashboard_port}/.
+    """
+    # Start the WebSocket server for browser clients
+    async with websockets.serve(
+        _dashboard_handler,
+        "0.0.0.0",
+        dashboard_port,
+        process_request=_serve_dashboard_http,
+    ):
+        console.print(
+            f"[bold green]OTEL Dashboard: http://localhost:{dashboard_port}/[/bold green]"
+        )
+        # Connect to API watcher and proxy events
+        api_uri = f"ws://{api_host}:{api_port}/ws/watcher"
+        while True:
+            try:
+                async with websockets.connect(api_uri) as ws:
+                    console.print(f"[dim]Watcher proxy connected to {api_uri}[/dim]")
+                    async for raw in ws:
+                        await _broadcast_to_dashboards(raw)
+            except (websockets.ConnectionClosed, OSError) as e:
+                console.print(f"[dim]Watcher proxy disconnected: {e} — reconnecting in 2s[/dim]")
+                await asyncio.sleep(2)
 
 
 # ── Session connect message ─────────────────────────────────────────────────
@@ -358,7 +507,7 @@ async def receiver(ws, state: dict) -> None:
 
 async def run_interactive(
     host: str, port: int, genre: str, world: str, player_name: str,
-    watch: bool = True,
+    watch: bool = True, dashboard_port: int = 9765,
 ) -> None:
     """Interactive playtest — human types actions, sees narration."""
     uri = f"ws://{host}:{port}/ws"
@@ -384,7 +533,7 @@ async def run_interactive(
         # Start watcher telemetry (OTEL dashboard)
         watcher_task = None
         if watch:
-            watcher_task = asyncio.create_task(watcher_receiver(host, port))
+            watcher_task = asyncio.create_task(run_dashboard_server(host, port, dashboard_port))
 
         # Connect to session
         console.print(f"[bold]Joining {genre}/{world} as {player_name}...[/bold]")
@@ -500,6 +649,7 @@ async def run_interactive(
 
 async def run_scripted(
     host: str, port: int, scenario_path: str, watch: bool = True,
+    dashboard_port: int = 9765,
 ) -> None:
     """Run a YAML scenario file against the server."""
     path = Path(scenario_path)
@@ -538,7 +688,7 @@ async def run_scripted(
 
         watcher_task = None
         if watch:
-            watcher_task = asyncio.create_task(watcher_receiver(host, port))
+            watcher_task = asyncio.create_task(run_dashboard_server(host, port, dashboard_port))
 
         # Connect
         await ws.send(json.dumps(make_connect_msg(genre, world, player_name)))
@@ -701,7 +851,7 @@ async def run_player(
 
 async def run_multiplayer(
     host: str, port: int, genre: str, world: str, num_players: int,
-    watch: bool = True,
+    watch: bool = True, dashboard_port: int = 9765,
 ) -> None:
     """Spawn N players concurrently."""
     console.print(
@@ -717,7 +867,7 @@ async def run_multiplayer(
     # One watcher connection for all players (server-wide telemetry)
     watcher_task = None
     if watch:
-        watcher_task = asyncio.create_task(watcher_receiver(host, port))
+        watcher_task = asyncio.create_task(run_dashboard_server(host, port, dashboard_port))
 
     tasks = []
     for i in range(num_players):
@@ -796,7 +946,13 @@ def main() -> None:
         "--watch",
         action=argparse.BooleanOptionalAction,
         default=True,
-        help="Connect to /ws/watcher for inline OTEL telemetry (default: on)",
+        help="Run OTEL dashboard server (default: on)",
+    )
+    parser.add_argument(
+        "--dashboard-port",
+        type=int,
+        default=9765,
+        help="Port for the OTEL dashboard web server (default: 9765)",
     )
 
     args = parser.parse_args()
@@ -804,20 +960,22 @@ def main() -> None:
     # Handle ctrl-c gracefully
     signal.signal(signal.SIGINT, lambda *_: sys.exit(0))
 
+    dp = args.dashboard_port
+
     if args.scenario:
-        asyncio.run(run_scripted(args.host, args.port, args.scenario, watch=args.watch))
+        asyncio.run(run_scripted(args.host, args.port, args.scenario, watch=args.watch, dashboard_port=dp))
     elif args.players > 1:
         asyncio.run(
             run_multiplayer(
                 args.host, args.port, args.genre, args.world, args.players,
-                watch=args.watch,
+                watch=args.watch, dashboard_port=dp,
             )
         )
     else:
         asyncio.run(
             run_interactive(
                 args.host, args.port, args.genre, args.world, args.name,
-                watch=args.watch,
+                watch=args.watch, dashboard_port=dp,
             )
         )
 
