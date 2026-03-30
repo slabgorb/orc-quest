@@ -763,7 +763,7 @@ async def run_dashboard_server(
         api_uri = f"ws://{api_host}:{api_port}/ws/watcher"
         while True:
             try:
-                async with websockets.connect(api_uri) as ws:
+                async with websockets.connect(api_uri, ping_timeout=None) as ws:
                     console.print(f"[dim]Watcher proxy connected to {api_uri}[/dim]")
                     async for raw in ws:
                         await _broadcast_to_dashboards(raw)
@@ -866,7 +866,7 @@ async def run_interactive(
     uri = f"ws://{host}:{port}/ws"
     console.print(f"[bold]Connecting to {uri}...[/bold]")
 
-    async with websockets.connect(uri) as ws:
+    async with websockets.connect(uri, ping_timeout=None) as ws:
         state = {
             "connected": False,
             "has_character": False,
@@ -1020,7 +1020,7 @@ async def run_scripted(
     console.print(f"  genre: {genre}, world: {world}, actions: {len(actions)}")
 
     uri = f"ws://{host}:{port}/ws"
-    async with websockets.connect(uri) as ws:
+    async with websockets.connect(uri, ping_timeout=None) as ws:
         state = {
             "connected": False,
             "has_character": False,
@@ -1127,7 +1127,7 @@ async def run_player(
     uri = f"ws://{host}:{port}/ws"
     results = {"player": player_name, "passed": 0, "failed": 0}
 
-    async with websockets.connect(uri) as ws:
+    async with websockets.connect(uri, ping_timeout=None) as ws:
         state = {
             "connected": False,
             "has_character": False,
