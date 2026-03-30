@@ -84,3 +84,8 @@ completed_stories:
     title: "Turn collection UI — show pending/submitted status per player, disable input after submit"
     points: 5
     completed: '2026-03-30'
+  - id: 15-6
+    epic: ''
+    title: "Combat engine wiring — intent router fires COMBAT_EVENT but combat system never engages"
+    points: 5
+    completed: '2026-03-30'

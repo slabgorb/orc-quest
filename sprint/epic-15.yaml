@@ -71,8 +71,10 @@ stories:
       The intent router correctly classifies combat actions and COMBAT_EVENT messages fire over WebSocket. But the actual combat system never engages — enemies array is always empty, turn_order is empty, current_turn is empty. The combat is purely narrated, not structured. This is a half-wired feature: the classification works but the combat engine (creature spawning, encounter triggers, HP tracking, turn-based resolution) never activates.
     points: 5
     priority: p0
-    status: in-progress
+    status: done
     repos: sidequest-api
     workflow: tdd
+    completed: '2026-03-30'
     branch: feat/15-6-fix-combat-engine-wiring
     assignee: dev
+    review_verdict: approved
