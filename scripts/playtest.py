@@ -974,6 +974,8 @@ def main() -> None:
               %(prog)s --genre mutant_wasteland --world flickering_reach
               %(prog)s --scenario scenarios/smoke_test.yaml   scripted mode
               %(prog)s --players 2                            multiplayer test
+              %(prog)s --dashboard-only                       OTEL dashboard only
+              %(prog)s --dashboard-only --port 8080           dashboard for custom port
         """),
     )
     parser.add_argument("--host", default="127.0.0.1", help="Server host")
@@ -1008,6 +1010,11 @@ def main() -> None:
         default=9765,
         help="Port for the OTEL dashboard web server (default: 9765)",
     )
+    parser.add_argument(
+        "--dashboard-only",
+        action="store_true",
+        help="Run only the OTEL dashboard (no playtest). Connects to a running server.",
+    )
 
     args = parser.parse_args()
 
@@ -1016,7 +1023,12 @@ def main() -> None:
 
     dp = args.dashboard_port
 
-    if args.scenario:
+    if args.dashboard_only:
+        console.print(
+            f"[bold]OTEL Dashboard — connecting to ws://{args.host}:{args.port}/ws/watcher[/bold]"
+        )
+        asyncio.run(run_dashboard_server(args.host, args.port, dp))
+    elif args.scenario:
         asyncio.run(run_scripted(args.host, args.port, args.scenario, watch=args.watch, dashboard_port=dp))
     elif args.players > 1:
         asyncio.run(
