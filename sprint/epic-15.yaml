@@ -32,10 +32,12 @@ stories:
       approved shifts to NPC OCEAN profiles, log as OceanShift events.
     points: 3
     priority: p2
-    status: ready
+    status: done
     repos: sidequest-api
     workflow: tdd
-    review_findings: 'Half-wired: functions exist but not called from server pipeline. OceanShiftLog discarded.'
+    completed: '2026-03-30'
+    branch: feat/15-2-wire-ocean-shift-proposals
+    assignee: keith
     review_verdict: approved
   - id: 15-3
     title: "Voice/mic architecture — solve TTS feedback loop before re-enabling"
@@ -60,9 +62,12 @@ stories:
       architecture before adding more effects.
     points: 5
     priority: p2
-    status: ready
+    status: done
     repos: sidequest-api
     workflow: tdd
+    completed: '2026-03-29'
+    branch: feat/resonator-agent
+    assignee: keith
   - id: 15-5
     title: "Daemon client typed API — wire or remove stub types"
     description: >-
