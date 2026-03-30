@@ -45,3 +45,8 @@ completed_stories:
     title: "Daemon client typed API — wire or remove stub types"
     points: 2
     completed: '2026-03-30'
+  - id: 13-4
+    epic: ''
+    title: "Timeout fallback with player notification — fill missing actions and notify who was auto-resolved"
+    points: 3
+    completed: '2026-03-30'
