@@ -59,9 +59,10 @@ stories:
       produces Value::Null — log the error and skip the sync rather than propagating Null.
     points: 3
     priority: p0
-    status: ready
+    status: done
     repos: sidequest-api
     workflow: tdd
+    completed: '2026-03-30'
   - id: 13-1
     title: "Turn collection UI — show pending/submitted status per player, disable input after submit"
     description: >-
@@ -84,10 +85,11 @@ stories:
       where each action independently triggers orchestrator processing.
     points: 5
     priority: p0
-    status: ready
+    status: done
     repos: sidequest-api
     workflow: tdd
     depends_on: 13-1
+    completed: '2026-03-29'
   - id: 13-3
     title: "Action reveal broadcast — show each player's submitted action to the full party alongside narration"
     description: >-
@@ -110,10 +112,11 @@ stories:
       UI shows a subtle indicator on those players' action cards.
     points: 3
     priority: p1
-    status: ready
+    status: done
     repos: sidequest-api, sidequest-ui
     workflow: tdd
     depends_on: 13-2
+    completed: '2026-03-30'
   - id: 13-5
     title: "Turn mode indicator in UI — show current mode (Free Play / Structured / Cinematic) with explanation"
     description: >-
