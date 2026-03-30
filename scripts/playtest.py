@@ -754,7 +754,7 @@ async def run_dashboard_server(
     )
 
     # Start WebSocket server for browser clients
-    async with websockets.serve(_dashboard_handler, "0.0.0.0", ws_port):
+    async with websockets.serve(_dashboard_handler, "0.0.0.0", ws_port, ping_timeout=None):
         console.print(
             f"[bold green]OTEL Dashboard: http://localhost:{dashboard_port}/[/bold green]"
             f"[dim] (ws: :{ws_port})[/dim]"
