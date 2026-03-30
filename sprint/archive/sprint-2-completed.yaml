@@ -25,3 +25,8 @@ completed_stories:
     title: "fix(barrier): error handling — propagate add_player errors, fix disconnect removal race"
     points: 3
     completed: '2026-03-30'
+  - id: 14-7
+    epic: ''
+    title: "Image scene relevance filter — validate art prompt matches current narrative context"
+    points: 5
+    completed: '2026-03-30'
