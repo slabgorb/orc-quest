@@ -1,14 +1,17 @@
 # SideQuest Feature Inventory
 
-**Last updated:** 2026-03-27
-**Sprint 1:** Bootstrap Rust workspace scaffolding (460/619 points)
+**Last updated:** 2026-03-30
+**Sprint 1:** Bootstrap Rust workspace (completed — 85 stories, 672/726 points)
+**Sprint 2:** Multiplayer Works For Real (active — 11/87 points)
 
 ## Legend
 
-- **Done & Wired** — Implemented and connected end-to-end (API ↔ UI ↔ Daemon)
+- **Done & Wired** — Implemented and connected end-to-end (API + UI + Daemon)
 - **Done (API only)** — Implemented in Rust but not yet exercised in a live session
 - **In Progress** — Current sprint work
 - **Planned** — Backlog, not yet started
+
+**Wiring diagrams:** See [`docs/wiring-diagrams.md`](wiring-diagrams.md) for end-to-end signal traces (Mermaid) showing every feature's path from UI to storage.
 
 ---
 
@@ -78,75 +81,149 @@ These features work from player input through to rendered output.
 | Audio controls | AudioStatus | Per-channel volume, mute, now playing |
 | Auto-reconnect | ConnectScreen | localStorage session persistence |
 
-### Multiplayer (Epic 8, mostly complete)
+### Multiplayer (Epic 8, complete)
 
-| Feature | Story | Status | Notes |
-|---------|-------|--------|-------|
-| Multi-client sessions | 8-1 | Done | player_id mapping |
-| Turn barrier | 8-2 | Done | Wait for all players |
-| Adaptive action batching | 8-3 | Done | 3s for 2-3, 5s for 4+ |
-| Party action composition | 8-4 | Done | Multi-character PARTY ACTIONS block |
-| Turn modes | 8-5 | Done | FREE_PLAY, STRUCTURED, CINEMATIC |
-| Perception rewriter | 8-6 | Done | Per-character narration variants |
-| Guest NPC players | 8-7 | Done | Human-controlled NPCs |
-| Catch-up narration | 8-8 | Done | Mid-session join snapshot |
-| Turn reminders | 8-9 | Backlog | Idle player timeout |
+| Feature | Story | Notes |
+|---------|-------|-------|
+| Multi-client sessions | 8-1 | player_id mapping |
+| Turn barrier | 8-2 | Wait for all players |
+| Adaptive action batching | 8-3 | 3s for 2-3, 5s for 4+ |
+| Party action composition | 8-4 | Multi-character PARTY ACTIONS block |
+| Turn modes | 8-5 | FREE_PLAY, STRUCTURED, CINEMATIC |
+| Perception rewriter | 8-6 | Per-character narration variants |
+| Guest NPC players | 8-7 | Human-controlled NPCs |
+| Catch-up narration | 8-8 | Mid-session join snapshot |
+| Turn reminders | 8-9 | Idle player timeout |
 
----
+### Pacing & Drama (Epic 5, complete)
 
-## Done (API Only — Not Yet Wired or Exercised)
+| Feature | Story | Notes |
+|---------|-------|-------|
+| TensionTracker (dual-track) | 5-1 | Gambler's ramp + HP stakes |
+| Combat event classification | 5-2 | Boring/dramatic categorization |
+| Drama weight computation | 5-3 | max(action, stakes) + spike decay |
+| Pacing hint generation | 5-4 | drama_weight → sentence count |
+| Drama-aware delivery | 5-5 | INSTANT/SENTENCE/STREAMING modes |
+| Quiet turn detection | 5-6 | Escalation beat injection |
+| Pacing wired to orchestrator | 5-7 | drama_weight flows through turn pipeline |
+| Genre-tunable thresholds | 5-8 | Per-pack drama breakpoints |
+| Two-tier intent classification | 5-9 | Haiku + Narrator ambiguity resolution |
+| Prompt framework wiring | 5-10 | ContextBuilder replaces format! concat |
 
-These features are implemented in Rust with passing tests but haven't been validated in a live playtest session.
+### Active World (Epic 6, complete)
 
-### Pacing & Drama (Epic 5, in progress)
+| Feature | Story | Notes |
+|---------|-------|-------|
+| Scene directive formatter | 6-1 | Fired beats + hints + stakes |
+| MUST-weave instruction | 6-2 | Narrator prompt positioning |
+| Engagement multiplier | 6-3 | Trope progression scaling |
+| FactionAgenda model | 6-4 | Faction goals + urgency |
+| Wire faction agendas | 6-5 | Scene injection |
+| World materialization | 6-6 | Campaign maturity levels |
+| Faction agendas (mutant_wasteland) | 6-7 | Genre pack content |
+| Faction agendas (elemental_harmony) | 6-8 | Genre pack content |
+| Wire scene directives to orchestrator | 6-9 | Per-turn injection |
 
-| Feature | Story | Status | Notes |
-|---------|-------|--------|-------|
-| TensionTracker (dual-track) | 5-1 | Done | Gambler's ramp + HP stakes |
-| Pacing wired to orchestrator | 5-7 | Done | drama_weight flows through turn pipeline |
-| Two-tier intent classification | 5-9 | Done | Haiku + Narrator ambiguity resolution |
-| Prompt framework wiring | 5-10 | Done | ContextBuilder replaces format! concat |
-| Combat event classification | 5-2 | In Progress | boring/dramatic categorization |
-| Drama weight computation | 5-3 | Backlog | max(action, stakes) + spike decay |
-| Pacing hint generation | 5-4 | Backlog | drama_weight → sentence count |
-| Drama-aware delivery | 5-5 | Backlog | INSTANT/SENTENCE/STREAMING modes |
-| Quiet turn detection | 5-6 | Backlog | Escalation beat injection |
-| Genre-tunable thresholds | 5-8 | Backlog | Per-pack drama breakpoints |
-
-### Active World (Epic 6, in progress)
-
-| Feature | Story | Status | Notes |
-|---------|-------|--------|-------|
-| Scene directive formatter | 6-1 | Done | fired beats + hints + stakes |
-| MUST-weave instruction | 6-2 | Done | Narrator prompt positioning |
-| Engagement multiplier | 6-3 | Done | Trope progression scaling |
-| FactionAgenda model | 6-4 | Backlog | Faction goals + urgency |
-| Wire faction agendas | 6-5 | Backlog | Scene injection |
-| World materialization | 6-6 | Backlog | Campaign maturity levels |
-| Faction agendas (mutant_wasteland) | 6-7 | Backlog | Genre pack content |
-| Faction agendas (elemental_harmony) | 6-8 | Backlog | Genre pack content |
-| Wire scene directives to orchestrator | 6-9 | Backlog | Per-turn injection |
-
-### Character Depth (Epic 9, started)
+### Character Depth (Epic 9, 12/13 complete)
 
 | Feature | Story | Status | Notes |
 |---------|-------|--------|-------|
 | AbilityDefinition model | 9-1 | Done | Genre-voiced descriptions |
-| Ability perception | 9-2 | Backlog | Involuntary triggers in narrator |
-| KnownFact model | 9-3 | Backlog | Play-derived knowledge |
-| Known facts in prompt | 9-4 | Backlog | Character perception |
-| Narrative character sheet | 9-5 | Backlog | Genre-voiced display |
-| Slash command router (server) | 9-6 | Backlog | Server-side /command |
-| Core slash commands (server) | 9-7 | Backlog | /status, /inventory, /map, /save |
-| GM commands | 9-8 | Backlog | /gm set, teleport, spawn, dmg |
-| Tone command | 9-9 | Backlog | Adjust genre axes |
-| Wire to React client | 9-10 | Backlog | CHARACTER_SHEET message |
+| Ability perception | 9-2 | Done | Involuntary triggers in narrator |
+| KnownFact model | 9-3 | Done | Play-derived knowledge |
+| Known facts in prompt | 9-4 | Done | Tiered injection by relevance |
+| Narrative character sheet | 9-5 | Done | Genre-voiced display |
+| Slash command router (server) | 9-6 | Done | Server-side /command intercept |
+| Core slash commands (server) | 9-7 | Done | /status, /inventory, /map, /save |
+| GM commands | 9-8 | Done | /gm set, teleport, spawn, dmg |
+| Tone command | 9-9 | Done | Adjust genre axes |
+| Wire to React client | 9-10 | Done | CHARACTER_SHEET message |
+| Structured footnote output | 9-11 | Done | NarrationPayload with footnotes[] |
+| Footnote rendering | 9-12 | Done | Superscript markers, discovery/callback styling |
+| Journal browse view | 9-13 | In Progress | KnownFacts by category with genre voice |
+
+### NPC Personality (Epic 10, complete)
+
+| Feature | Story | Notes |
+|---------|-------|-------|
+| OCEAN profile fields | 10-1 | Five floats on NPC (0.0-10.0) |
+| Genre archetype baselines | 10-2 | Default profiles per archetype |
+| Behavioral summary | 10-3 | Scores → prompt text |
+| Narrator reads OCEAN | 10-4 | Voice/behavior adjustment |
+| OCEAN shift log | 10-5 | Personality change tracking |
+| Agent proposes shifts | 10-6 | Event-driven evolution |
+| Agreeableness → Disposition | 10-7 | Feeds existing disposition system |
+| Backfill genre packs | 10-8 | OCEAN profiles on all archetypes |
+
+### Lore & Language (Epic 11, complete)
+
+| Feature | Story | Notes |
+|---------|-------|-------|
+| LoreFragment model | 11-1 | Indexed narrative facts |
+| LoreStore | 11-2 | In-memory indexed collection |
+| Lore seed | 11-3 | Bootstrap from genre pack |
+| Lore in agent prompts | 11-4 | Relevant fragment injection |
+| Lore accumulation | 11-5 | World state writes new fragments |
+| Semantic retrieval | 11-6 | Embedding-based RAG |
+| Morpheme glossary | 11-7 | Conlang morphemes |
+| Name bank generation | 11-8 | Glossed names from language rules |
+| Narrator name injection | 11-9 | Consistent naming |
+| Language as KnownFact | 11-10 | Transliteration growth |
+
+---
+
+## In Progress (Sprint 2)
+
+### Sealed Letter Turn System (Epic 13, 2/10 complete)
+
+Simultaneous input collection with player visibility. Replaces free-for-all turns with a sealed letter pattern.
+
+| Feature | Story | Status | Points | Notes |
+|---------|-------|--------|--------|-------|
+| Single narrator call per barrier turn | 13-8 | Done | 5 | Resolution lock, broadcast to others |
+| Barrier timeout handling | 13-9 | Done | 3 | Force-resolve missing, broadcast notification |
+| Barrier error handling | 13-10 | Ready | 3 | Propagate add_player errors, fix disconnect race |
+| Turn collection UI | 13-1 | Ready | 5 | Pending/submitted status per player |
+| Server-side sealed collection | 13-2 | Ready | 5 | Hold actions until barrier met, batch-submit |
+| Action reveal broadcast | 13-3 | Ready | 3 | Show submitted actions to full party |
+| Timeout fallback with notification | 13-4 | Ready | 3 | Auto-fill missing, notify who was auto-resolved |
+| Turn mode indicator in UI | 13-5 | Ready | 2 | Free Play / Structured / Cinematic display |
+| DM override for turn resolution | 13-6 | Ready | 3 | Force-resolve or extend timeout |
+| Sealed letter integration test | 13-7 | Ready | 3 | 4-player e2e: submit, timeout, reveal |
+
+### Multiplayer Session UX (Epic 14, 0/9 complete)
+
+Post-playtest UX fixes: spawn, visibility, text tuning, chargen polish.
+
+| Feature | Story | Status | Points | Notes |
+|---------|-------|--------|--------|-------|
+| Party co-location at session start | 14-1 | Ready | 5 | Configurable spawn point |
+| Player location on character sheet | 14-2 | Ready | 2 | current_location in PARTY_STATUS |
+| Text length slider | 14-3 | Ready | 3 | Concise / standard / verbose |
+| Vocabulary level slider | 14-4 | Ready | 3 | Accessible / literary / epic |
+| Character generation back button | 14-5 | Ready | 3 | Edit choices before final submit |
+| Image pacing throttle | 14-6 | Ready | 3 | Configurable cooldown between images |
+| Image scene relevance filter | 14-7 | Ready | 5 | Validate art prompt matches scene |
+| Sound slider labels | 14-8 | Ready | 1 | Visible labels on all audio sliders |
+| Footnote inline references | 14-9 | Ready | 2 | Superscript links to numbered footnotes |
+
+### Playtest Debt (Epic 15, 0/5 complete)
+
+Technical debt from 2026-03-29 post-playtest audit.
+
+| Feature | Story | Status | Points | Notes |
+|---------|-------|--------|--------|-------|
+| Remove dead code | 15-1 | Ready | 2 | if-false blocks, stale comments, duplicates |
+| Wire OCEAN shift proposals | 15-2 | Ready | 3 | Events trigger personality evolution |
+| Voice/mic architecture | 15-3 | Ready | 5 | Solve TTS feedback loop |
+| Perception rewriter | 15-4 | Ready | 5 | Implement Blinded strategy as proof-of-concept |
+| Daemon client typed API | 15-5 | Ready | 2 | Wire or remove stub types |
 
 ---
 
 ## Planned (Not Started)
 
-### Epic 7: Scenario System — Bottle Episodes, Whodunit
+### Epic 7: Scenario System — Bottle Episodes, Whodunit (P2, deferred)
 
 | Feature | Story | Points | Notes |
 |---------|-------|--------|-------|
@@ -160,57 +237,47 @@ These features are implemented in Rust with passing tests but haven't been valid
 | Scenario scoring | 7-8 | — | Evidence metrics |
 | ScenarioEngine wiring | 7-9 | — | Orchestrator integration |
 
-### Epic 10: NPC Personality — OCEAN Model (P2)
+### Epic 12: Cinematic Audio — Score Cue Variations (P2)
 
 | Feature | Story | Points | Notes |
 |---------|-------|--------|-------|
-| OCEAN profile fields | 10-1 | 2 | Five floats on NPC |
-| Genre archetype baselines | 10-2 | 3 | Default profiles per archetype |
-| Behavioral summary | 10-3 | 3 | Scores → prompt text |
-| Narrator reads OCEAN | 10-4 | — | Voice/behavior adjustment |
-| OCEAN shift log | 10-5 | — | Personality change tracking |
-| Agent proposes shifts | 10-6 | — | Event-driven evolution |
-| Agreeableness → Disposition | 10-7 | — | Feed into existing system |
-| Backfill genre packs | 10-8 | — | Content work |
-
-### Epic 11: Lore & Language — RAG, Conlang Names (P2)
-
-| Feature | Story | Points | Notes |
-|---------|-------|--------|-------|
-| LoreFragment model | 11-1 | 3 | Indexed narrative facts |
-| LoreStore | 11-2 | 3 | In-memory indexed collection |
-| Lore seed | 11-3 | 3 | Bootstrap from genre pack |
-| Lore in agent prompts | 11-4 | — | Relevant fragment injection |
-| Lore accumulation | 11-5 | — | World state writes new fragments |
-| Semantic retrieval | 11-6 | — | Embedding-based RAG |
-| Morpheme glossary | 11-7 | — | Conlang morphemes |
-| Name bank generation | 11-8 | — | Glossed names from language rules |
-| Narrator name injection | 11-9 | — | Consistent naming |
-| Language as KnownFact | 11-10 | — | Transliteration growth |
+| Cinematic track variation selection | 12-1 | 5 | MusicDirector uses themed score cues |
+| Per-variation crossfade durations | 12-2 | 2 | Overture fades slow, tension_build hits hard |
+| Variation telemetry in watcher | 12-3 | 1 | Score cue selection visible in GM panel |
 
 ---
 
 ## Summary
 
-| Category | Stories Done | Stories Total | Completion |
-|----------|-------------|---------------|------------|
+| Category | Done | Total | Completion |
+|----------|------|-------|------------|
 | Epic 1: Workspace Scaffolding | 13/13 | 13 | 100% |
 | Epic 2: Core Game Loop | 9/9 | 9 | 100% |
 | Epic 3: Game Watcher | 9/9 | 9 | 100% |
 | Epic 4: Media Integration | 12/12 | 12 | 100% |
-| Epic 5: Pacing & Drama | 4/10 | 10 | 40% |
-| Epic 6: Active World | 3/9 | 9 | 33% |
+| Epic 5: Pacing & Drama | 10/10 | 10 | 100% |
+| Epic 6: Active World | 9/9 | 9 | 100% |
 | Epic 7: Scenario System | 0/9 | 9 | 0% |
-| Epic 8: Multiplayer | 8/9 | 9 | 89% |
-| Epic 9: Character Depth | 1/10 | 10 | 10% |
-| Epic 10: OCEAN Personality | 0/8 | 8 | 0% |
-| Epic 11: Lore & Language | 0/10 | 10 | 0% |
-| **Total** | **59/108** | **108** | **55%** |
+| Epic 8: Multiplayer | 9/9 | 9 | 100% |
+| Epic 9: Character Depth | 12/13 | 13 | 92% |
+| Epic 10: OCEAN Personality | 8/8 | 8 | 100% |
+| Epic 11: Lore & Language | 10/10 | 10 | 100% |
+| Epic 12: Cinematic Audio | 0/3 | 3 | 0% |
+| Epic 13: Sealed Letter Turns | 2/10 | 10 | 20% |
+| Epic 14: Session UX | 0/9 | 9 | 0% |
+| Epic 15: Playtest Debt | 0/5 | 5 | 0% |
+| **Total** | **103/138** | **138** | **75%** |
 
 ### What's Playtest-Ready Today
 
-The core loop is complete: connect → create character → play → narrate → render images → synthesize voice → play music. Multiplayer works. The GM watcher dashboard is live. All seven genre packs load. The pacing engine is partially wired (tension tracking active, drama-aware delivery not yet).
+The full game loop is wired: connect → create character → play → narrate → render images → synthesize voice → play music. Multiplayer works with turn barriers, adaptive batching, and party action composition across all three turn modes. The GM watcher dashboard is live. All seven genre packs load with OCEAN personality profiles on every NPC archetype.
 
-**Best playtest experience:** Single-player or multiplayer session in any genre pack. Full media pipeline (images, voice, music). Trope engine drives narrative arcs. Combat works with turn management.
+Pacing is fully wired — tension tracking, drama-aware delivery speed, quiet turn escalation, and genre-tunable thresholds all flow through the orchestrator. Active World features are complete: faction agendas inject into scenes, world materialization tracks campaign maturity, and trope engagement scales with progression.
 
-**Not yet exercised:** Faction agendas, scenario/mystery mechanics, OCEAN personality, lore retrieval, server-side slash commands, drama-aware text delivery speed.
+Character depth is nearly complete: server-side slash commands (/status, /inventory, /map, /save, /gm), narrative character sheets, footnoted narration with KnownFact accumulation, and tone adjustment. Lore & Language is fully operational with semantic retrieval, conlang name generation, and narrator name injection.
+
+**Best playtest experience:** Multiplayer session in any genre pack. Full media pipeline. Faction-driven world. OCEAN personality on NPCs. Footnoted narration with journal. Pacing engine shapes delivery speed and narrator length.
+
+**Sprint 2 focus:** Sealed letter turn system (simultaneous action submission), multiplayer UX polish (spawn points, text/vocabulary sliders, chargen back button), and playtest debt cleanup.
+
+**Not yet exercised:** Scenario/mystery mechanics (Epic 7), cinematic score cue variations (Epic 12), perception rewriter strategies, OCEAN shift proposal wiring into game flow.

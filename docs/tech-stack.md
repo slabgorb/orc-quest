@@ -1,105 +1,139 @@
 # SideQuest API — Tech Stack
 
-> Aligned with [axiathon](https://github.com/1898andCo/axiathon) for shared learning.
-> Axiathon is an enterprise security product — overlap is in the foundational Rust
-> crates and patterns, not domain-specific libraries (Arrow, DataFusion, protobuf, etc.).
+> Crate and dependency choices for the Rust game engine.
+> 6-crate workspace, edition 2021, stable toolchain.
+>
+> **Last updated:** 2026-03-30
 
-## Shared Foundation (from Axiathon)
+## Workspace Dependencies
+
+Centralized in `Cargo.toml` `[workspace.dependencies]`:
 
 | Concern | Crate | Version | Notes |
 |---------|-------|---------|-------|
-| Async runtime | `tokio` | 1 (full) | Same async model, same executor |
-| HTTP framework | `axum` | 0.8 (macros) | Same router, extractors, middleware patterns |
-| Serialization | `serde` | 1 (derive) | Same derive macros, same mental model |
-| JSON | `serde_json` | 1 | |
-| Error handling | `thiserror` | 2 | Same `#[error]` derive pattern |
-| Tracing | `tracing` | 0.1 | Structured logging, same subscriber setup |
-| Tracing subscriber | `tracing-subscriber` | 0.3 (env-filter, json) | Same filtering, same JSON output |
-| CLI args | `clap` | 4 (derive) | Same derive-based CLI parsing |
-| UUIDs | `uuid` | 1 (v4, serde) | Player/session IDs |
-| Time | `chrono` | 0.4 (serde) | Timestamps on game events |
-| Edition | **2024** | rust-version 1.85 | Same edition, same language features |
-
-## SideQuest-Specific Additions
-
-| Concern | Crate | Version | Why |
-|---------|-------|---------|-----|
-| WebSocket | `axum` (built-in) | 0.8 | `axum::extract::ws` — no extra crate needed |
-| YAML loading | `serde_yaml` | 0.9 | Genre pack files are YAML |
-| SQLite | `rusqlite` | 0.32 (bundled) | Game save/load — lightweight, no server needed |
+| Async runtime | `tokio` | 1.38 (full) | Task spawning, process management, channels, timers |
+| HTTP framework | `axum` | 0.7 (macros, ws) | Router, extractors, middleware, WebSocket upgrade |
+| Middleware | `tower` | 0.4 (util) | Service composition |
+| HTTP middleware | `tower-http` | 0.5 (cors, fs, trace) | CORS, static files, request tracing |
+| Serialization | `serde` | 1.0 (derive) | Derive macros on all protocol and game types |
+| JSON | `serde_json` | 1.0 | WebSocket message encoding, state deltas |
+| YAML | `serde_yaml` | 0.9 | Genre pack loading |
+| Error handling | `thiserror` | 1.0 | `#[error]` derive on domain error types |
+| Tracing | `tracing` | 0.1 | `#[instrument]` spans, structured logging |
+| Tracing subscriber | `tracing-subscriber` | 0.3 (env-filter, json) | JSON output for GM watcher telemetry |
+| CLI args | `clap` | 4.5 (derive) | Server startup flags (port, genre-packs-path) |
+| UUIDs | `uuid` | 1.0 (v4, serde) | Player IDs, session IDs, render IDs |
+| Time | `chrono` | 0.4 (serde) | Timestamps on game events, turn records |
+| Random | `rand` | 0.9 | OCEAN profile generation, combat dice, NPC behavior |
+| SQLite | `rusqlite` | 0.31 (bundled, chrono, uuid) | Game save/load, session persistence |
 | Futures | `futures` | 0.3 | Stream combinators for WebSocket message routing |
-| Tower HTTP | `tower-http` | 0.6 (cors, fs) | Static file serving, CORS for dev |
+| Regex | `regex` | 1.10 | Input sanitization, prompt injection defense |
+| Ordered floats | `ordered-float` | 4 (serde) | Hashable floats for OCEAN profiles, drama weights |
 
-## Not Needed (Axiathon-only)
+### Crate-Specific Dependencies
 
-These are axiathon domain crates with no SideQuest equivalent:
+| Crate | Additional Deps | Purpose |
+|-------|----------------|---------|
+| sidequest-game | `base64` 0.22 | TTS audio chunk encoding |
+| sidequest-server | `dirs` 5 | User directory resolution for config |
+| sidequest-server | `tokio-tungstenite` 0.24 (dev) | WebSocket integration tests |
+| sidequest-game | `tempfile` 3 (dev) | SQLite test fixtures |
 
-- `arrow` / `parquet` / `datafusion` — columnar analytics
-- `chumsky` / `miette` — query language parser
-- `prost` / `prost-build` — protobuf (OCSF schemas)
-- `sqlx` / PostgreSQL — enterprise DB (we use SQLite)
-- `proptest` / `insta` — adopt later if useful, not day-one
-
-## Project Structure
-
-Axiathon uses a workspace with 8 crates. SideQuest uses a similar workspace
-pattern with 5 domain crates:
+## Workspace Structure
 
 ```
 sidequest-api/
-├── Cargo.toml                    # [workspace] root
+├── Cargo.toml                        # [workspace] root, centralized deps
 ├── crates/
-│   ├── sidequest-protocol/       # GameMessage enum, typed payloads (serde)
-│   │   └── src/lib.rs
-│   ├── sidequest-genre/          # YAML genre pack loader
-│   │   └── src/lib.rs
-│   ├── sidequest-game/           # Game state, characters, combat, chase, tropes
-│   │   └── src/
-│   │       ├── lib.rs
-│   │       ├── state.rs          # GameState + state deltas
-│   │       ├── character.rs      # Character model + builder
-│   │       ├── combat.rs         # Combat state
-│   │       ├── chase.rs          # Chase engine
-│   │       ├── tropes.rs         # Trope engine
-│   │       ├── npc.rs            # NPC registry + disposition
-│   │       ├── progression.rs    # Milestones, affinities, item evolution
-│   │       ├── cartography.rs    # World topology + discovery
-│   │       └── persistence.rs    # rusqlite save/load
-│   ├── sidequest-agents/         # Claude CLI subprocess orchestration
-│   │   └── src/
-│   │       ├── lib.rs
-│   │       ├── claude.rs         # Subprocess wrapper + session mgmt
-│   │       ├── router.rs         # Intent-based agent routing
-│   │       └── json_extract.rs   # Lazy JSON extraction fallback
-│   └── sidequest-server/         # axum HTTP/WebSocket server
-│       └── src/
-│           ├── main.rs           # tokio::main, CLI args, server startup
-│           ├── router.rs         # axum Router assembly
-│           ├── ws.rs             # WebSocket upgrade + message dispatch
-│           ├── session.rs        # Per-connection state machine
-│           └── genres.rs         # GET /api/genres
-└── tests/                        # Integration tests
+│   ├── sidequest-protocol/           # GameMessage enum, 23 message types, sanitization
+│   ├── sidequest-genre/              # YAML genre pack loader, typed structs
+│   ├── sidequest-game/               # 52 game modules — state, combat, NPCs, lore, audio
+│   ├── sidequest-agents/             # Claude CLI subprocess, 7 agent types, JSON extraction
+│   ├── sidequest-server/             # axum server, session management, orchestrator
+│   └── sidequest-daemon-client/      # Unix socket client for Python media daemon
+└── tests/                            # Integration tests
 ```
 
-## Tooling Alignment
+**Dependency graph:**
+```
+sidequest-server
+  ├── sidequest-agents
+  │     └── sidequest-protocol
+  ├── sidequest-game
+  │     ├── sidequest-protocol
+  │     └── sidequest-genre
+  ├── sidequest-daemon-client
+  └── sidequest-protocol
+```
 
-| Tool | Config | Matches Axiathon |
-|------|--------|------------------|
-| `rustfmt` | edition 2024, `group_imports = "StdExternalCrate"`, `trailing_comma = "Vertical"` | Yes |
-| `clippy` | `-D warnings`, `unsafe_code = forbid` | Yes |
-| `rust-toolchain.toml` | stable channel | Yes |
+## Tooling
+
+| Tool | Config | Notes |
+|------|--------|-------|
+| `rustfmt` | edition 2021, `max_width = 100` | `.rustfmt.toml` in workspace root |
+| `clippy` | `-D warnings` | All warnings are errors |
+| `rust-toolchain.toml` | stable channel | No nightly features required |
+| Edition | **2021** | rust-version 1.80 minimum |
 
 ## Claude CLI Integration
 
-LLM calls use `claude -p` as a subprocess (not an SDK). This is the same
-pattern as sq-2's Python implementation but via `tokio::process::Command`:
+All LLM calls use `claude -p` as a subprocess via `tokio::process::Command`. No Anthropic SDK. Claude Max subscription handles billing.
+
+7 agent types, each wrapping the same subprocess pattern with agent-specific system prompts, timeout, and JSON extraction:
+
+- **Narrator** — prose generation with state deltas and footnotes
+- **WorldBuilder** — world state patches, NPC creation, faction updates
+- **CreatureSmith** — NPC/monster generation from genre archetypes
+- **Ensemble** — multi-NPC dialogue composition
+- **Dialectician** — genre-voiced text transformation
+- **IntentRouter** — two-tier action classification (Haiku + Narrator)
+- **Troper** — trope beat injection and narrative pacing
 
 ```rust
 let output = Command::new("claude")
     .arg("-p")
     .arg(&prompt)
+    .arg("--system")
+    .arg(&system_prompt)
     .output()
     .await?;
 ```
 
-The media daemon (image gen, TTS, audio) stays in Python (sq-2) as a sidecar.
+JSON extraction uses a three-tier fallback: direct parse → regex extraction → structured retry (ADR-013).
+
+## Python Sidecar (sidequest-daemon)
+
+The ML inference stack stays in Python. The Rust server communicates via `sidequest-daemon-client` over Unix socket.
+
+| Subsystem | Python Stack | Notes |
+|-----------|-------------|-------|
+| Image generation | Flux.1 (schnell + dev), diffusers | 6 render tiers, GPU-accelerated |
+| TTS synthesis | Kokoro (54 voices) | Streaming, per-character voice routing |
+| Music generation | ACE-Step | Build-time generation, runtime library playback |
+| Audio mixing | pygame mixer | 3-channel (music/SFX/ambience), speech ducking |
+| Scene interpretation | Pattern matching | Narrative text → stage cues |
+| Subject extraction | Claude CLI | Prose → visual descriptions |
+
+## React Client (sidequest-ui)
+
+| Concern | Choice | Notes |
+|---------|--------|-------|
+| Framework | React 19 | Concurrent features for streaming narration |
+| Bundler | Vite | HMR for dev, optimized build |
+| Language | TypeScript | Strict mode |
+| Styling | Tailwind CSS + shadcn/ui | Genre theming via CSS variables |
+| Testing | Vitest | Unit + component tests |
+| Audio | Web Audio API | 3-channel playback, voice ducking |
+| Voice chat | WebRTC (PeerMesh) | Peer-to-peer, echo cancellation |
+| State management | useStateMirror (custom) | Delta replay from server |
+
+## Deliberate Omissions
+
+Not used and not planned:
+
+- **Anthropic SDK** — `claude -p` subprocess is the integration pattern (ADR-001)
+- **PostgreSQL / sqlx** — SQLite is sufficient for single-server game saves
+- **protobuf** — JSON over WebSocket is the protocol; no binary serialization needed
+- **ORM** — rusqlite with manual queries; game state is document-shaped, not relational
+- **proptest / insta** — standard `#[test]` with assertions; snapshot testing adds complexity without value for game logic
+- **nightly features** — stable channel only

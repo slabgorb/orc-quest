@@ -1,6 +1,9 @@
 # SideQuest API Contract
 
-> Extracted from `sidequest-ui` — defines the interface the Rust backend must implement.
+> WebSocket + REST protocol between sidequest-api (Rust) and sidequest-ui (React).
+> Source of truth: `sidequest-protocol/src/message.rs` — 23 message types, 35 payload structs.
+>
+> **Last updated:** 2026-03-30
 
 ## Transport
 
@@ -30,30 +33,38 @@ That's the only REST endpoint. Everything else flows through WebSocket.
 
 ---
 
-## Message Types (enum)
+## Message Types (23 total)
 
 ```
-PLAYER_ACTION       client → server
-SESSION_EVENT       bidirectional
-CHARACTER_CREATION  bidirectional
-VOICE_SIGNAL        bidirectional (WebRTC signaling)
+Client → Server:
+  PLAYER_ACTION       Player game input
+  SESSION_EVENT       Session lifecycle (connect)
+  CHARACTER_CREATION  Creation scene response
+  VOICE_SIGNAL        WebRTC signaling (outbound)
 
-NARRATION           server → client
-NARRATION_CHUNK     server → client (streaming)
-NARRATION_END       server → client (stream complete)
-THINKING            server → client
-TURN_STATUS         server → client
-PARTY_STATUS        server → client
-CHARACTER_SHEET     server → client
-INVENTORY           server → client
-MAP_UPDATE          server → client
-COMBAT_EVENT        server → client
-IMAGE               server → client
-AUDIO_CUE           server → client
-VOICE_TEXT          server → client
-ACTION_QUEUE        server → client
-CHAPTER_MARKER      server → client
-ERROR               server → client
+Server → Client:
+  NARRATION           Complete narration with state delta + footnotes
+  NARRATION_CHUNK     Streaming partial text
+  NARRATION_END       Stream complete, optional final state delta
+  THINKING            Processing indicator (spinner)
+  SESSION_EVENT       Session lifecycle (connected, ready, theme_css)
+  CHARACTER_CREATION  Creation scene prompt / confirmation / complete
+  TURN_STATUS         Turn/round tracking with player status
+  PARTY_STATUS        Full party snapshot
+  CHARACTER_SHEET     Full character details for sheet overlay
+  INVENTORY           Full inventory snapshot
+  MAP_UPDATE          World map state for map overlay
+  COMBAT_EVENT        Combat state for combat overlay
+  IMAGE               Image delivery (scene, portrait, handout)
+  AUDIO_CUE           Music, SFX, and ambience control
+  TTS_START           TTS stream initiation (segment count)
+  TTS_CHUNK           Base64-encoded audio chunk
+  TTS_END             TTS stream complete
+  VOICE_TEXT          TTS text companion (displayed alongside audio)
+  VOICE_SIGNAL        WebRTC signaling (inbound, from peer)
+  ACTION_QUEUE        Queued actions
+  CHAPTER_MARKER      Chapter/scene transition
+  ERROR               Error with optional reconnect_required flag
 ```
 
 ---
@@ -70,6 +81,7 @@ Player types something in the game.
 }
 ```
 - `aside: true` = out-of-character message (not narrated)
+- Slash commands (`/status`, `/inventory`, etc.) are intercepted server-side before intent classification
 
 ### SESSION_EVENT (connect)
 Sent immediately after WebSocket opens.
@@ -86,7 +98,7 @@ Player responds to a creation scene.
 ```json
 {
   "type": "CHARACTER_CREATION",
-  "payload": { "phase": "string", "choice": "string", ... },
+  "payload": { "phase": "string", "choice": "string" },
   "player_id": ""
 }
 ```
@@ -121,21 +133,13 @@ Controls session phase transitions.
 ```json
 {
   "type": "SESSION_EVENT",
-  "payload": { "event": "ready" }
-}
-```
-→ Client enters game phase.
-
-**Initial state (on ready):**
-```json
-{
-  "type": "SESSION_EVENT",
   "payload": {
     "event": "ready",
     "initial_state": {
-      "characters": [{ "name": "", "hp": 0, "max_hp": 0, "statuses": [], "inventory": [] }],
+      "characters": [{ "name": "", "hp": 0, "max_hp": 0, "level": 1, "class": "", "statuses": [], "inventory": [] }],
       "location": "string",
-      "quests": { "quest_name": "status_string" }
+      "quests": { "quest_name": "status_string" },
+      "turn_count": 0
     }
   }
 }
@@ -145,7 +149,7 @@ Controls session phase transitions.
 ```json
 {
   "type": "SESSION_EVENT",
-  "payload": { "event": "theme_css", ... }
+  "payload": { "event": "theme_css", "css": "..." }
 }
 ```
 
@@ -195,8 +199,10 @@ Controls session phase transitions.
 ```
 
 ### NARRATION / NARRATION_CHUNK / NARRATION_END
-Narrative text from the AI. Can include state deltas.
 
+Narrative text from the AI with optional state deltas and structured footnotes.
+
+**NARRATION (complete):**
 ```json
 {
   "type": "NARRATION",
@@ -204,14 +210,43 @@ Narrative text from the AI. Can include state deltas.
     "text": "The orc lunges...",
     "state_delta": {
       "location": "Dark Cave",
-      "characters": [{ "name": "Grok", "hp": 15, "max_hp": 20, "statuses": ["poisoned"], "inventory": ["sword"] }],
-      "quests": { "Find the Gem": "in_progress" }
-    }
+      "characters": [{ "name": "Grok", "hp": 15, "max_hp": 20, "level": 3, "class": "Warrior", "statuses": ["poisoned"], "inventory": ["sword"] }],
+      "quests": { "Find the Gem": "in_progress" },
+      "items_gained": [{ "name": "sealed matte-black case", "description": "A mysterious container", "category": "quest" }]
+    },
+    "footnotes": [
+      { "marker": 1, "summary": "The Flickering Reach was once a unified city-state", "category": "Lore", "is_new": true },
+      { "marker": 2, "fact_id": "fact-abc123", "summary": "Remnant of the old trade route", "category": "Place", "is_new": false }
+    ]
   }
 }
 ```
 
-`NARRATION_CHUNK` streams partial text. `NARRATION_END` signals end of stream. Both clear the "thinking" indicator.
+**NARRATION_CHUNK (streaming):**
+```json
+{ "type": "NARRATION_CHUNK", "payload": { "text": "partial text..." } }
+```
+
+**NARRATION_END (stream complete):**
+```json
+{ "type": "NARRATION_END", "payload": { "state_delta": { ... } } }
+```
+
+Both NARRATION_CHUNK and NARRATION_END clear the "thinking" indicator.
+
+#### Footnotes
+
+Footnotes are structured knowledge extracted from narrator output. New discoveries (`is_new: true`) become KnownFact entries. Callbacks (`is_new: false`) link to existing facts via `fact_id`.
+
+```typescript
+interface Footnote {
+  marker?: number;         // matches [N] superscript in prose
+  fact_id?: string;        // links to existing KnownFact (callbacks only)
+  summary: string;         // one-sentence description
+  category: FactCategory;  // "Lore" | "Place" | "Person" | "Quest" | "Ability"
+  is_new: boolean;         // true = discovery, false = callback
+}
+```
 
 ### THINKING
 Server is processing (shows spinner).
@@ -220,18 +255,21 @@ Server is processing (shows spinner).
 ```
 
 ### TURN_STATUS
-Turn/round tracking. Can include state deltas.
+Turn/round tracking with per-player status.
 ```json
 {
   "type": "TURN_STATUS",
   "payload": {
+    "player_name": "string",
+    "status": "active",
     "state_delta": { ... }
   }
 }
 ```
+- `status`: `"active"` (this player's turn) or `"resolved"` (turn complete)
 
 ### PARTY_STATUS
-Full party snapshot (richer than state_delta characters).
+Full party snapshot.
 ```json
 {
   "type": "PARTY_STATUS",
@@ -240,6 +278,7 @@ Full party snapshot (richer than state_delta characters).
       {
         "player_id": "string",
         "name": "string",
+        "character_name": "Grok the Mighty",
         "current_hp": 20,
         "max_hp": 20,
         "statuses": ["blessed"],
@@ -251,6 +290,8 @@ Full party snapshot (richer than state_delta characters).
   }
 }
 ```
+- `name`: player lobby name (what user typed at connect)
+- `character_name`: in-game character name (for party panel display)
 
 ### CHARACTER_SHEET
 Full character details for the sheet overlay.
@@ -260,10 +301,14 @@ Full character details for the sheet overlay.
   "payload": {
     "name": "string",
     "class": "string",
+    "race": "string",
     "level": 1,
     "stats": { "strength": 16, "dexterity": 12 },
     "abilities": ["Power Strike", "Shield Bash"],
     "backstory": "string",
+    "personality": "string",
+    "pronouns": "string",
+    "equipment": ["Iron Sword", "Leather Armor"],
     "portrait_url": "https://..."
   }
 }
@@ -324,23 +369,63 @@ Image delivery (portraits, handouts, scene art).
     "url": "https://...",
     "description": "A crumbling tower",
     "handout": true,
-    "render_id": "unique-id"
+    "render_id": "unique-id",
+    "tier": "scene",
+    "scene_type": "exploration",
+    "generation_ms": 3200
   }
 }
 ```
 - `handout: true` → added to journal
+- `tier`: "portrait", "scene", "landscape", "abstract", "text", "cartography", "tactical"
+- `scene_type`: "combat", "dialogue", "exploration", etc.
 
 ### AUDIO_CUE
-Background music and sound effects.
+Background music, sound effects, and ambience control.
 ```json
 {
   "type": "AUDIO_CUE",
   "payload": {
     "mood": "combat",
     "music_track": "battle_theme_01",
-    "sfx_triggers": ["sword_clash", "explosion"]
+    "sfx_triggers": ["sword_clash", "explosion"],
+    "channel": "music",
+    "action": "play",
+    "volume": 0.8
   }
 }
+```
+- `channel`: `"music"`, `"sfx"`, `"ambience"`
+- `action`: `"play"`, `"fade_in"`, `"fade_out"`, `"duck"`, `"restore"`, `"stop"`
+- `volume`: 0.0-1.0
+
+### TTS_START / TTS_CHUNK / TTS_END
+Text-to-speech streaming via JSON frames (replaces binary PCM frames for base64 transport).
+
+**TTS_START:**
+```json
+{ "type": "TTS_START", "payload": { "total_segments": 3 } }
+```
+
+**TTS_CHUNK:**
+```json
+{
+  "type": "TTS_CHUNK",
+  "payload": {
+    "audio_base64": "UklGRi...",
+    "segment_index": 0,
+    "is_last_chunk": false,
+    "speaker": "narrator",
+    "format": "wav"
+  }
+}
+```
+- `speaker`: character name or `"narrator"`
+- `format`: `"wav"` or `"opus"`
+
+**TTS_END:**
+```json
+{ "type": "TTS_END", "payload": {} }
 ```
 
 ### VOICE_SIGNAL (inbound)
@@ -355,21 +440,22 @@ WebRTC signaling relay from another peer.
 ### VOICE_TEXT
 TTS text companion (displayed alongside audio).
 ```json
-{ "type": "VOICE_TEXT", "payload": { ... } }
+{ "type": "VOICE_TEXT", "payload": { "text": "string" } }
 ```
 
 ### ACTION_QUEUE / CHAPTER_MARKER / ERROR
 ```json
-{ "type": "ACTION_QUEUE", "payload": { ... } }
-{ "type": "CHAPTER_MARKER", "payload": { ... } }
-{ "type": "ERROR", "payload": { "message": "string" } }
+{ "type": "ACTION_QUEUE", "payload": { "actions": [ ... ] } }
+{ "type": "CHAPTER_MARKER", "payload": { "title": "Chapter 3", "location": "Dark Cave" } }
+{ "type": "ERROR", "payload": { "message": "string", "reconnect_required": true } }
 ```
+- `reconnect_required: true` → client must re-send SESSION_EVENT{connect} before retrying
 
 ---
 
 ## Binary Frames: Voice Audio
 
-Binary WebSocket frames carry TTS audio (server → client).
+Binary WebSocket frames carry raw TTS audio (server → client). Used alongside or instead of TTS_CHUNK for low-latency streaming.
 
 **Frame format:**
 ```
@@ -401,36 +487,73 @@ Audio data is raw PCM signed 16-bit little-endian, routed through the client's A
    a. { event: "connected", has_character: false } → creation flow
    b. { event: "ready", initial_state: {...} } → game flow
 4. If creation:
-   - Server sends CHARACTER_CREATION { phase: "scene", ... } (repeat)
+   - Server sends CHARACTER_CREATION { phase: "scene", ... } (repeat per scene)
    - Client responds with CHARACTER_CREATION { choice: ... }
+   - Server sends CHARACTER_CREATION { phase: "confirmation", ... }
    - Server sends CHARACTER_CREATION { phase: "complete", character: {...} }
    → Client transitions to game phase
 5. Game loop:
    - Client sends PLAYER_ACTION { action: "...", aside: bool }
-   - Server sends THINKING → NARRATION_CHUNK* → NARRATION_END
-   - Server may send state updates via PARTY_STATUS, MAP_UPDATE, COMBAT_EVENT, etc.
+   - Server sends THINKING
+   - Server sends NARRATION_CHUNK* → NARRATION_END (streaming)
+     or NARRATION (complete, non-streaming)
+   - Server may send: PARTY_STATUS, MAP_UPDATE, COMBAT_EVENT, IMAGE,
+     AUDIO_CUE, TTS_START → TTS_CHUNK* → TTS_END, CHAPTER_MARKER
+6. Multiplayer turn flow (STRUCTURED mode):
+   - All players submit PLAYER_ACTION independently
+   - Server holds actions until TurnBarrier resolves (all submitted or timeout)
+   - One handler calls narrator with combined action; others receive broadcast
+   - Server sends TURN_STATUS per player as they submit
 ```
 
 ---
 
 ## State Delta Model
 
-Carried in `NARRATION` and `TURN_STATUS` payloads under `state_delta`:
+Carried in `NARRATION`, `NARRATION_END`, and `TURN_STATUS` payloads under `state_delta`:
 
 ```typescript
 interface StateDelta {
   location?: string;
-  characters?: CharacterState[];   // merged by name
-  quests?: Record<string, string>; // merged by key
+  characters?: CharacterState[];     // merged by name (upsert)
+  quests?: Record<string, string>;   // merged by key
+  items_gained?: ItemGained[];       // new items acquired this turn
 }
 
 interface CharacterState {
-  name: string;
+  name: string;          // merge key
   hp: number;
   max_hp: number;
+  level: number;
+  class: string;
   statuses: string[];
   inventory: string[];
 }
+
+interface ItemGained {
+  name: string;          // short item name
+  description: string;   // one-sentence description
+  category: string;      // weapon, armor, tool, consumable, quest, misc
+}
 ```
 
-Client maintains a `ClientGameState` by replaying all deltas. Characters are merged by `name` (upsert). Quests are merged by key.
+Client maintains a `ClientGameState` by replaying all deltas. Characters are merged by `name` (upsert). Quests are merged by key. Items gained trigger inventory notifications.
+
+---
+
+## Server-Side Slash Commands
+
+Commands starting with `/` are intercepted before intent classification. Responses use existing message types (NARRATION, CHARACTER_SHEET, INVENTORY, MAP_UPDATE, ERROR).
+
+| Command | Response Type | Description |
+|---------|--------------|-------------|
+| `/status` | CHARACTER_SHEET | Full character sheet |
+| `/inventory` | INVENTORY | Full inventory snapshot |
+| `/map` | MAP_UPDATE | Current map state |
+| `/save` | NARRATION | Save confirmation |
+| `/help` | NARRATION | Available commands |
+| `/tone <axis> <value>` | NARRATION | Adjust genre alignment axes |
+| `/gm set <prop> <val>` | NARRATION | GM: modify game state |
+| `/gm teleport <loc>` | NARRATION + MAP_UPDATE | GM: move party |
+| `/gm spawn <npc>` | NARRATION | GM: create NPC |
+| `/gm dmg <target> <amt>` | NARRATION + COMBAT_EVENT | GM: deal damage |
