@@ -76,8 +76,10 @@ stories:
       to avoid confusion.
     points: 2
     priority: p3
-    status: in_progress
+    status: done
     repos: sidequest-api
     workflow: trivial
+    completed: '2026-03-30'
     branch: feat/15-5-daemon-client-typed-api
     assignee: keith
+    review_verdict: approved

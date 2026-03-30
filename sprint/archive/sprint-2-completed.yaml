@@ -40,3 +40,8 @@ completed_stories:
     title: "Character generation back button — allow editing choices before final submit"
     points: 3
     completed: '2026-03-30'
+  - id: 15-5
+    epic: ''
+    title: "Daemon client typed API — wire or remove stub types"
+    points: 2
+    completed: '2026-03-30'
