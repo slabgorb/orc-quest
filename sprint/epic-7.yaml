@@ -20,9 +20,12 @@ stories:
     title: BeliefState model — per-NPC knowledge bubbles with facts, suspicions, claims, and credibility scores
     points: 5
     priority: p2
-    status: backlog
+    status: done
     repos: sidequest-api
     workflow: tdd
+    completed: '2026-03-30'
+    branch: feat/7-1-belief-state-model
+    review_verdict: approved
   - id: 7-2
     title: Gossip propagation — NPCs spread claims between turns, contradictions decay credibility
     points: 5

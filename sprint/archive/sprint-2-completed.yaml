@@ -7,7 +7,6 @@ sprint:
   start_date: 2026-03-29
   end_date: 2026-04-12
   status: active
-
 completed_epics: []
 completed_stories:
   - id: 13-8
@@ -44,4 +43,24 @@ completed_stories:
     epic: ''
     title: "Daemon client typed API — wire or remove stub types"
     points: 2
+    completed: '2026-03-30'
+  - id: 13-2
+    epic: ""
+    title: Server-side sealed collection — hold all actions until every player submits
+    points: 5
+    completed: "2026-03-29"
+  - id: 14-1
+    epic: ""
+    title: Party co-location at session start — configure shared starting location
+    points: 5
+    completed: "2026-03-29"
+  - id: 15-1
+    epic: ""
+    title: Remove dead code — if-false regex extraction, stale comments, duplicate placeholder chars
+    points: 2
+    completed: "2026-03-30"
+  - id: 7-1
+    epic: ''
+    title: BeliefState model — per-NPC knowledge bubbles with facts, suspicions, claims, and credibility scores
+    points: 5
     completed: '2026-03-30'
