@@ -956,6 +956,19 @@ async def run_interactive(
                     else:
                         await ws.send(json.dumps(make_chargen_choice(choice)))
 
+                # Wait for either the next scene prompt or character complete
+                # chargen_prompt fires for scene/confirmation, chargen_done fires for complete
+                state["chargen_prompt"].clear()
+                done_task = asyncio.create_task(state["chargen_done"].wait())
+                prompt_task = asyncio.create_task(state["chargen_prompt"].wait())
+                await asyncio.wait(
+                    [done_task, prompt_task],
+                    return_when=asyncio.FIRST_COMPLETED,
+                )
+                # Cancel the loser
+                done_task.cancel()
+                prompt_task.cancel()
+
         # Wait for ready
         if not state["ready"]:
             await state["ready_event"].wait()
@@ -1071,6 +1084,16 @@ async def run_scripted(
                         auto_choice = "A wanderer with no past."
                     await ws.send(json.dumps(make_chargen_choice(auto_choice)))
 
+                state["chargen_prompt"].clear()
+                done_task = asyncio.create_task(state["chargen_done"].wait())
+                prompt_task = asyncio.create_task(state["chargen_prompt"].wait())
+                await asyncio.wait(
+                    [done_task, prompt_task],
+                    return_when=asyncio.FIRST_COMPLETED,
+                )
+                done_task.cancel()
+                prompt_task.cancel()
+
         # Wait for ready
         if not state["ready"]:
             await state["ready_event"].wait()
@@ -1169,6 +1192,15 @@ async def run_player(
                     else:
                         auto_choice = "A wanderer seeking purpose."
                     await ws.send(json.dumps(make_chargen_choice(auto_choice)))
+                state["chargen_prompt"].clear()
+                done_task = asyncio.create_task(state["chargen_done"].wait())
+                prompt_task = asyncio.create_task(state["chargen_prompt"].wait())
+                await asyncio.wait(
+                    [done_task, prompt_task],
+                    return_when=asyncio.FIRST_COMPLETED,
+                )
+                done_task.cancel()
+                prompt_task.cancel()
 
         if not state["ready"]:
             await state["ready_event"].wait()
@@ -1265,6 +1297,8 @@ def main() -> None:
               %(prog)s --genre mutant_wasteland --world flickering_reach
               %(prog)s --scenario scenarios/smoke_test.yaml   scripted mode
               %(prog)s --players 2                            multiplayer test
+              %(prog)s --dashboard-only                       OTEL dashboard only
+              %(prog)s --dashboard-only --port 8080           dashboard for custom port
         """),
     )
     parser.add_argument("--host", default="127.0.0.1", help="Server host")
@@ -1299,6 +1333,11 @@ def main() -> None:
         default=9765,
         help="Port for the OTEL dashboard web server (default: 9765)",
     )
+    parser.add_argument(
+        "--dashboard-only",
+        action="store_true",
+        help="Run only the OTEL dashboard (no playtest). Connects to a running server.",
+    )
 
     args = parser.parse_args()
 
@@ -1307,7 +1346,12 @@ def main() -> None:
 
     dp = args.dashboard_port
 
-    if args.scenario:
+    if args.dashboard_only:
+        console.print(
+            f"[bold]OTEL Dashboard — connecting to ws://{args.host}:{args.port}/ws/watcher[/bold]"
+        )
+        asyncio.run(run_dashboard_server(args.host, args.port, dp))
+    elif args.scenario:
         asyncio.run(run_scripted(args.host, args.port, args.scenario, watch=args.watch, dashboard_port=dp))
     elif args.players > 1:
         asyncio.run(
