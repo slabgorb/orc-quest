@@ -155,3 +155,8 @@ completed_stories:
     title: Fix State tab — wire GameStateSnapshot event to dashboard state_transition listener
     points: 2
     completed: '2026-03-31'
+  - id: 18-1
+    epic: ''
+    title: Add sub-spans to preprocess, agent_llm, and system_tick for flame chart granularity
+    points: 3
+    completed: '2026-03-31'

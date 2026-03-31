@@ -10,17 +10,19 @@ stories:
     title: Add sub-spans to preprocess, agent_llm, and system_tick for flame chart granularity
     points: 3
     priority: p1
-    status: backlog
+    status: done
     repos: api
     workflow: tdd
+    completed: '2026-03-31'
     type: refactor
   - id: 18-2
     title: Fix State tab — wire GameStateSnapshot event to dashboard state_transition listener
     points: 2
     priority: p1
-    status: backlog
+    status: done
     repos: api,ui
     workflow: tdd
+    completed: '2026-03-31'
     type: bug
     review_verdict: approved
   - id: 18-3
