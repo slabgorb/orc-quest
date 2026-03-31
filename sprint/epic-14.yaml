@@ -23,9 +23,10 @@ stories:
       Add current_location field to PARTY_STATUS and CHARACTER_SHEET payloads. UI displays location under each player's name in the party panel. When players are in different locations, visually group or flag the difference.
     points: 2
     priority: p0
-    status: ready
+    status: done
     repos: sidequest-api, sidequest-ui
     workflow: tdd
+    completed: '2026-03-31'
   - id: 14-3
     title: "Text length slider — per-session narrator verbosity control (concise / standard / verbose)"
     description: >-
