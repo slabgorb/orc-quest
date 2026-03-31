@@ -99,3 +99,8 @@ completed_stories:
     title: "Text length slider — per-session narrator verbosity control (concise / standard / verbose)"
     points: 3
     completed: '2026-03-31'
+  - id: 14-4
+    epic: ''
+    title: "Vocabulary level slider — narrator prose complexity control (accessible / literary / epic)"
+    points: 3
+    completed: '2026-03-31'

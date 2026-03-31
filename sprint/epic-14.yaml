@@ -42,9 +42,12 @@ stories:
       Add a narrator_vocabulary setting controlling prose complexity. Mapped to approximate reading level guidance in the narrator prompt (e.g., "accessible" = 8th grade, "literary" = college, "epic" = unrestricted). UI slider in session settings alongside verbosity. Persisted per-session.
     points: 3
     priority: p1
-    status: ready
+    status: done
+    started: '2026-03-31'
     repos: sidequest-api, sidequest-ui
     workflow: tdd
+    completed: '2026-03-31'
+    branch: feat/14-4-vocabulary-level-slider
   - id: 14-5
     title: "Character generation back button — allow editing choices before final submit"
     description: >-
