@@ -395,10 +395,13 @@ const S = {
 };
 
 const SPAN_COLORS = {
-  preprocessor:'#03dac6', intent_route:'#4fc3f7', agent_llm:'#bb86fc',
-  extraction:'#81c784', state_patch:'#ffb74d', broadcast:'#90a4ae',
-  music_director:'#f06292', render_pipeline:'#e57373', tts_pipeline:'#ce93d8',
-  prerender_scheduler:'#80cbc4'
+  prompt_build:'#4fc3f7', barrier:'#ffcc02', preprocess:'#03dac6',
+  agent_llm:'#bb86fc', state_update:'#81c784', system_tick:'#f06292',
+  media:'#e57373', persist:'#80cbc4',
+  // Legacy / subsystem fallbacks
+  preprocessor:'#03dac6', intent_route:'#4fc3f7', state_patch:'#ffb74d',
+  extraction:'#81c784', broadcast:'#90a4ae', music_director:'#f06292',
+  render_pipeline:'#e57373', tts_pipeline:'#ce93d8', prerender_scheduler:'#80cbc4'
 };
 const COMP_COLORS = {
   game:'#4fc3f7', agent:'#bb86fc', state:'#81c784', trope:'#ffb74d',
