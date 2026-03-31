@@ -145,3 +145,8 @@ completed_stories:
     title: "Confrontation trait + ConfrontationState — universal structured encounter engine"
     points: 8
     completed: '2026-03-31'
+  - id: 16-4
+    epic: ''
+    title: "Migrate combat as confrontation — CombatState becomes a confrontation type preset"
+    points: 5
+    completed: '2026-03-31'
