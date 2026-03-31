@@ -88,9 +88,10 @@ stories:
       Add visible labels to all audio sliders (Master, Music, SFX, Voice, Ambient or whatever the current set is). Labels should be visible without hovering.
     points: 1
     priority: p2
-    status: ready
+    status: done
     repos: sidequest-ui
     workflow: trivial
+    completed: '2026-03-31'
   - id: 14-9
     title: "Footnote inline references — connect footnote markers in text to numbered footnotes below"
     description: >-
