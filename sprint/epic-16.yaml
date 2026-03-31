@@ -1,0 +1,262 @@
+id: '16'
+type: epic
+title: "Genre Mechanics Engine — Confrontations & Resource Pools"
+description: >-
+  Build the two missing generic subsystems that let genre packs declare mechanical
+  rules the engine enforces. Pillar 1: Confrontation — a universal structured
+  encounter engine that subsumes combat, chase, standoff, negotiation, net combat,
+  ship combat, and any future encounter type. Genre packs declare confrontation
+  types in YAML with metrics, beats, secondary stats, and resolution conditions.
+  Pillar 2: ResourcePool — persistent named resources (Luck, Humanity, Heat) with
+  spend/gain/threshold/decay, validated by the engine, surfaced in UI, and fed into
+  LoreStore as KnownFacts so the narrator can never forget them. Together these
+  close every gap in the content-vs-engine gap map (docs/genre-pack-status.md).
+  Key references: chase.rs, chase_depth.rs (the prototype), combat.rs, music_director.rs,
+  docs/genre-pack-status.md (gap map), ADR-017 (chase types).
+priority: p1
+status: future
+repos: sidequest-api, sidequest-ui, sidequest-content
+stories:
+
+  # ── Pillar 0: Quick Win ────────────────────────────────────────
+
+  - id: 16-1
+    title: "Narrator resource injection — serialize all genre resource state into prompt context every turn"
+    description: >-
+      Before building the formal ResourcePool, get immediate value by parsing
+      rules.yaml resource declarations and serializing current values into the
+      narrator's prompt context. The LLM literally cannot forget resources it's
+      told about every turn. Uses existing prompt_framework injection points.
+      This is the 80% fix that ships in one story.
+    points: 3
+    priority: p0
+    status: backlog
+    repos: sidequest-api
+    workflow: tdd
+
+  # ── Pillar 1: Confrontation Engine ─────────────────────────────
+
+  - id: 16-2
+    title: "Confrontation trait + ConfrontationState — universal structured encounter engine"
+    description: >-
+      Replace the separate CombatState and ChaseState with a unified
+      ConfrontationState. A confrontation has: type (string-keyed from genre YAML),
+      metric (the thing that changes — HP, separation, tension, leverage), beats
+      (discrete action moments), actors, secondary stats (optional RigStats-like
+      block), terrain/context modifiers, and resolution conditions (threshold or
+      explicit). CombatState and ChaseState become confrontation type presets.
+      All existing combat and chase tests must continue to pass.
+    points: 8
+    priority: p1
+    status: backlog
+    repos: sidequest-api
+    workflow: tdd
+
+  - id: 16-3
+    title: "Confrontation YAML schema — genres declare encounter types in rules.yaml"
+    description: >-
+      Define the YAML schema for confrontation declarations in rules.yaml.
+      Each confrontation type specifies: type id, label, category (combat/social/
+      pre_combat/movement), metric (name, direction, starting, threshold), beats
+      (id, label, metric_delta, stat_check, risk, reveals), secondary_stats,
+      escalates_to, and mood. Genre loader parses these into ConfrontationType
+      structs at pack load time. Validate schema on load.
+    points: 5
+    priority: p1
+    status: backlog
+    repos: sidequest-api, sidequest-content
+    workflow: tdd
+
+  - id: 16-4
+    title: "Migrate combat as confrontation — CombatState becomes a confrontation type preset"
+    description: >-
+      Existing combat mechanics (rounds, damage log, turn order, status effects)
+      expressed as a confrontation type. The metric is HP, beats are attack/defend/
+      ability actions, resolution is someone hitting 0. All existing combat tests
+      pass. CombatState can remain as a convenience alias over ConfrontationState
+      with type="combat". No behavioral changes — this is a refactor.
+    points: 5
+    priority: p1
+    status: backlog
+    repos: sidequest-api
+    workflow: tdd
+
+  - id: 16-5
+    title: "Migrate chase as confrontation — ChaseState becomes a confrontation type preset"
+    description: >-
+      Existing chase mechanics (separation, escape threshold, chase beats, RigStats,
+      fuel, terrain modifiers, multi-actor roles) expressed as a confrontation type.
+      The metric is separation, beats are the existing chase beat system, secondary
+      stats are RigStats. All existing chase and chase_depth tests pass. ChaseState
+      can remain as convenience alias. No behavioral changes.
+    points: 5
+    priority: p1
+    status: backlog
+    repos: sidequest-api
+    workflow: tdd
+
+  - id: 16-6
+    title: "Standoff confrontation type — spaghetti_western pre-combat encounter"
+    description: >-
+      Declare the standoff confrontation in spaghetti_western/rules.yaml. Metric is
+      tension (ascending to threshold). Beats: size_up (CUNNING check, reveals
+      opponent detail), bluff (NERVE check, high risk), flinch (lose initiative),
+      draw (DRAW check + tension bonus, resolves encounter). Secondary stat: focus
+      (sourced from NERVE, spendable). Escalates to combat if not resolved cleanly.
+      Mood: standoff. Write integration test with full beat sequence.
+    points: 3
+    priority: p1
+    status: backlog
+    repos: sidequest-api, sidequest-content
+    workflow: tdd
+
+  - id: 16-7
+    title: "Social confrontation types — negotiation, interrogation, trial"
+    description: >-
+      Declare social confrontation types usable across genres. Negotiation: leverage
+      metric (bidirectional), beats include persuade/threaten/concede. Interrogation:
+      resistance metric (descending), beats include pressure/rapport/evidence.
+      These are genre-agnostic templates that packs can extend or override. Pulp noir
+      gets interrogation. Victoria gets trial. All genres get negotiation.
+    points: 5
+    priority: p2
+    status: backlog
+    repos: sidequest-api, sidequest-content
+    workflow: tdd
+
+  - id: 16-8
+    title: "Genre-specific confrontation types — net combat, ship combat, auction"
+    description: >-
+      Declare confrontation types for: neon_dystopia net combat (trace metric,
+      ICE encounters as beats, deck as secondary stats), space_opera ship combat
+      (engagement range metric, broadside/evasion beats, ship block as secondary
+      stats — reuses RigStats pattern), victoria auction (bid metric, raise/bluff/
+      withdraw beats, purse as secondary stat). Each declared in respective genre
+      rules.yaml.
+    points: 5
+    priority: p2
+    status: backlog
+    repos: sidequest-content
+    workflow: tdd
+
+  - id: 16-9
+    title: "Confrontation UI — generic encounter display with genre theming"
+    description: >-
+      Single ConfrontationOverlay component that renders any confrontation type.
+      Shows: metric bar (themed per genre), available beats as action buttons,
+      actor portraits, secondary stats if present, terrain context. The standoff
+      gets letterbox framing and extreme close-up portraits. Chase gets the
+      existing chase visualization. Combat keeps current CombatOverlay layout.
+      Component reads confrontation type and genre theme to determine visual
+      treatment.
+    points: 5
+    priority: p1
+    status: backlog
+    repos: sidequest-ui
+    workflow: tdd
+
+  # ── Pillar 2: Resource Pools ───────────────────────────────────
+
+  - id: 16-10
+    title: "ResourcePool struct + YAML schema — generic named resource with thresholds"
+    description: >-
+      ResourcePool on GameSnapshot: HashMap<String, ResourcePool>. Each pool has
+      name, current, min, max, voluntary (player-spendable), decay_per_turn, and
+      thresholds (at, event_id, narrator_hint). Genre packs declare resources in
+      rules.yaml. Engine loads at pack init. ResourcePatch added to patch pipeline
+      for LLM-driven resource changes. Engine validates bounds and rejects
+      impossible spends.
+    points: 5
+    priority: p1
+    status: backlog
+    repos: sidequest-api
+    workflow: tdd
+
+  - id: 16-11
+    title: "Resource threshold → KnownFact pipeline — permanent narrator memory"
+    description: >-
+      When a ResourcePool crosses a threshold, mint a KnownFact in LoreStore with
+      the threshold's event_id and narrator_hint. High relevance score ensures it
+      surfaces in every future narrator prompt via existing budget-aware selection.
+      The LLM cannot forget that Humanity hit 25 because the knowledge system tells
+      it every turn. Test: cross threshold, verify KnownFact exists, verify it
+      appears in narrator context.
+    points: 3
+    priority: p1
+    status: backlog
+    repos: sidequest-api
+    workflow: tdd
+
+  - id: 16-12
+    title: "Wire genre resources — Luck, Humanity, Heat, Fuel-at-rest as ResourcePool instances"
+    description: >-
+      Add resource declarations to rules.yaml for: spaghetti_western (Luck 0-6,
+      voluntary, thresholds at 1 and 0), neon_dystopia (Humanity 0-100, involuntary,
+      thresholds at 50/25/0), pulp_noir (Heat 0-5, involuntary, decay 0.1/turn),
+      road_warrior (Fuel when not in chase — tracked as resource, transferred to
+      RigStats when confrontation starts). Verify each loads and tracks correctly.
+    points: 3
+    priority: p1
+    status: backlog
+    repos: sidequest-content, sidequest-api
+    workflow: tdd
+
+  - id: 16-13
+    title: "UI resource display — generic ResourceBar component with genre theming"
+    description: >-
+      GenericResourceBar component: takes name, value, max, color, thresholds.
+      Renders in character sheet footer. Genre theme controls visual treatment
+      (western: revolver cylinder, cyberpunk: circuit fill, noir: thermometer —
+      or simple bar with genre colors for v1). Threshold crossings trigger pulse
+      animation and toast. Audio sting on threshold via existing AudioCue system.
+    points: 3
+    priority: p1
+    status: backlog
+    repos: sidequest-ui
+    workflow: tdd
+
+  # ── Pillar 3: Mood Extension ───────────────────────────────────
+
+  - id: 16-14
+    title: "String-keyed moods + fallback aliases — genre packs declare custom moods"
+    description: >-
+      Replace the hardcoded 7-variant Mood enum with string-keyed moods. Genre packs
+      declare mood_aliases in audio.yaml mapping custom moods to core fallbacks
+      (standoff→tension, saloon→calm, riding→exploration, convoy→exploration,
+      cyberspace→mystery). MusicDirector resolves mood string through alias chain.
+      Confrontation types declare their mood, which auto-routes to the right music.
+      All existing mood tests pass with backward-compatible enum-to-string mapping.
+    points: 3
+    priority: p1
+    status: backlog
+    repos: sidequest-api
+    workflow: tdd
+
+  - id: 16-15
+    title: "Faction music routing — trigger faction themes by context"
+    description: >-
+      MusicDirector checks current location's faction, active confrontation actors'
+      factions, and player reputation to select faction-specific tracks when available.
+      Road warrior's 10 faction themes (Bosozoku through Dekotora) become the test
+      case. Faction music declared in audio.yaml under faction_themes with trigger
+      conditions (location, npc_present, reputation_threshold).
+    points: 3
+    priority: p2
+    status: backlog
+    repos: sidequest-api, sidequest-content
+    workflow: tdd
+
+  # ── Pillar 4: Content Audit ────────────────────────────────────
+
+  - id: 16-16
+    title: "Content audit — all genre packs declare confrontations and resources"
+    description: >-
+      Update all 9 genre packs to use the new schemas. Each pack gets confrontation
+      types appropriate to its genre and resource declarations for any tracked pools.
+      Update docs/genre-pack-status.md with new completeness criteria. Validate all
+      YAML parses correctly with genre loader.
+    points: 3
+    priority: p2
+    status: backlog
+    repos: sidequest-content
+    workflow: trivial
