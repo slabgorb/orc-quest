@@ -28,9 +28,9 @@ stories:
     points: 3
     priority: p0
     status: done
-    completed: '2026-03-31'
     repos: sidequest-api
     workflow: tdd
+    completed: '2026-03-31'
     review_verdict: approved
   - id: 16-2
     title: "Confrontation trait + ConfrontationState — universal structured encounter engine"
@@ -45,9 +45,9 @@ stories:
     points: 8
     priority: p1
     status: done
-    completed: '2026-03-31'
     repos: sidequest-api
     workflow: tdd
+    completed: '2026-03-31'
   - id: 16-3
     title: "Confrontation YAML schema — genres declare encounter types in rules.yaml"
     description: >-
@@ -60,9 +60,9 @@ stories:
     points: 5
     priority: p1
     status: done
-    completed: '2026-03-31'
     repos: sidequest-api, sidequest-content
     workflow: tdd
+    completed: '2026-03-31'
   - id: 16-4
     title: "Migrate combat as confrontation — CombatState becomes a confrontation type preset"
     description: >-
