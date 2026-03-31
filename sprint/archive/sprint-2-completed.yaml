@@ -145,3 +145,8 @@ completed_stories:
     title: "Confrontation trait + ConfrontationState — universal structured encounter engine"
     points: 8
     completed: '2026-03-31'
+  - id: 18-2
+    epic: ''
+    title: Fix State tab — wire GameStateSnapshot event to dashboard state_transition listener
+    points: 2
+    completed: '2026-03-31'
