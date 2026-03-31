@@ -98,9 +98,10 @@ stories:
       Parse footnote markers from narrator text and render as superscript numbered links that scroll to the corresponding footnote entry below the narration block. Currently footnotes display but aren't linked.
     points: 2
     priority: p2
-    status: ready
+    status: done
     repos: sidequest-ui
     workflow: tdd
+    completed: '2026-03-31'
 key_references:
   - sidequest-api/crates/sidequest-server/src/lib.rs
   - sidequest-api/crates/sidequest-server/src/shared_session.rs
