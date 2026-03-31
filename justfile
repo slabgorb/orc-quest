@@ -130,6 +130,72 @@ playtest *flags:
 playtest-scenario file:
     python3 scripts/playtest.py --scenario scenarios/{{file}}.yaml
 
+# Dev environment — all services + OTEL dashboard in one tmux window
+# Usage: just dev              (solo — one browser tab)
+#        just dev-multi        (multiplayer — player1 + player2 tabs)
+#        just dev 9000         (custom dashboard port)
+dev dashboard_port="9765":
+    #!/usr/bin/env bash
+    set -euo pipefail
+    just _dev-launch "{{dashboard_port}}" 1
+
+# Multiplayer dev — opens browser tabs for player1.local and player2.local
+dev-multi dashboard_port="9765":
+    #!/usr/bin/env bash
+    set -euo pipefail
+    just _dev-launch "{{dashboard_port}}" 2
+
+_dev-launch dashboard_port players:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    SESSION="sidequest-dev"
+    ROOT="{{justfile_directory()}}"
+    CONTENT="$ROOT/sidequest-content/genre_packs"
+    PLAYERS="{{players}}"
+    DP="{{dashboard_port}}"
+
+    # Kill existing session if present
+    tmux kill-session -t "$SESSION" 2>/dev/null || true
+
+    # Create session with daemon pane
+    tmux new-session -d -s "$SESSION" -n dev \
+      -x 200 -y 50 \
+      "cd $ROOT/sidequest-daemon && SIDEQUEST_GENRE_PACKS=$CONTENT sidequest-renderer --warmup; read"
+
+    # Split for server (right of daemon)
+    tmux split-window -t "$SESSION:dev" -h \
+      "cd $ROOT/sidequest-api && cargo run -p sidequest-server -- --genre-packs-path $CONTENT --trace; read"
+
+    # Split for client (below server)
+    tmux split-window -t "$SESSION:dev.1" -v \
+      "cd $ROOT/sidequest-ui && npm run dev; read"
+
+    # Split for OTEL dashboard (below daemon)
+    tmux split-window -t "$SESSION:dev.0" -v \
+      "sleep 3 && cd $ROOT && python3 scripts/playtest.py --dashboard-only --dashboard-port $DP; read"
+
+    # Label panes
+    tmux select-pane -t "$SESSION:dev.0" -T "daemon"
+    tmux select-pane -t "$SESSION:dev.1" -T "server"
+    tmux select-pane -t "$SESSION:dev.2" -T "client"
+    tmux select-pane -t "$SESSION:dev.3" -T "otel-dashboard"
+
+    # Tiled layout
+    tmux select-layout -t "$SESSION:dev" tiled
+
+    # Open in Ghostty
+    open -na "Ghostty.app" --args -e "tmux attach-session -t $SESSION"
+
+    # Wait for services to start, then open browser
+    echo "Waiting for services..."
+    sleep 8
+    open "http://player1.local:$DP/"
+    open "http://player1.local:5173/"
+    if [ "$PLAYERS" -ge 2 ]; then
+      open "http://player2.local:5173/"
+    fi
+    echo "Dev environment launched ($PLAYERS player(s)): tmux attach-session -t $SESSION"
+
 status:
     @echo "=== API ===" && cd sidequest-api && git status --short
     @echo "=== UI ===" && cd sidequest-ui && git status --short
