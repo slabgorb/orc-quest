@@ -324,6 +324,7 @@ DASHBOARD_HTML = """<!DOCTYPE html>
   <div class="tab" onclick="switchTab(3)">④ Timing</div>
   <div class="tab" onclick="switchTab(4)">⑤ Console <span class="badge" id="tab4-badge">0</span></div>
   <div class="tab" onclick="switchTab(5)">⑥ Prompt <span class="badge" id="tab5-badge">0</span></div>
+  <div class="tab" onclick="switchTab(6)">⑦ Lore <span class="badge" id="tab6-badge">0</span></div>
 </div>
 
 <!-- Tab 0: Timeline / Flame Chart -->
@@ -404,11 +405,31 @@ DASHBOARD_HTML = """<!DOCTYPE html>
   </div>
 </div>
 
+<!-- Tab 6: Lore -->
+<div class="tab-content" id="tc6">
+  <div id="lore-select-row" style="display:flex;gap:8px;margin-bottom:8px;align-items:center">
+    <span style="color:var(--muted);font-size:11px">Turn:</span>
+    <select id="lore-turn-select" onchange="renderLore()" style="background:var(--surface);color:var(--text);border:1px solid var(--border);padding:2px 6px;font-size:11px;font-family:inherit">
+      <option value="">Select a turn</option>
+    </select>
+    <span style="color:var(--muted);font-size:11px;margin-left:8px">Filter:</span>
+    <input id="lore-filter" type="text" placeholder="Search fragments..." oninput="renderLore()" style="background:var(--surface);color:var(--text);border:1px solid var(--border);padding:2px 6px;font-size:11px;font-family:inherit;width:200px">
+  </div>
+  <div id="lore-budget" class="card" style="display:none">
+    <div class="card-title">Budget</div>
+    <div id="lore-budget-body"></div>
+  </div>
+  <div id="lore-fragments" class="card" style="display:none">
+    <div class="card-title">Fragments</div>
+    <div id="lore-fragments-body" style="max-height:calc(100vh - 280px);overflow-y:auto"></div>
+  </div>
+</div>
+
 <script>
 // ── State ──
 const S = {
   turns: [], allEvents: [], componentMap: {}, latestSnapshot: null,
-  selectedTurn: null, paused: false, activeTab: 0, promptEvents: []
+  selectedTurn: null, paused: false, activeTab: 0, promptEvents: [], loreEvents: []
 };
 
 const SPAN_COLORS = {
@@ -437,6 +458,7 @@ function switchTab(i) {
   if (i===2) renderHealth();
   if (i===3) renderTiming();
   if (i===5) renderPrompt();
+  if (i===6) renderLore();
   if (i===4) renderConsole();
 }
 function togglePause() { S.paused = !S.paused; }
@@ -482,6 +504,17 @@ function dispatch(ev) {
     opt.textContent = `T${f.turn_number||'?'} · ${f.agent||'?'} · ${f.total_tokens||0} tokens`;
     sel.appendChild(opt);
     if (S.activeTab === 5) renderPrompt();
+  }
+  if (ev.event_type === 'lore_retrieval') {
+    S.loreEvents.push(ev);
+    document.getElementById('tab6-badge').textContent = S.loreEvents.length;
+    const sel = document.getElementById('lore-turn-select');
+    const f = ev.fields || {};
+    const opt = document.createElement('option');
+    opt.value = S.loreEvents.length - 1;
+    opt.textContent = `T${S.turns.length} · ${f.selected_count||0}/${f.total_fragments||0} frags · ${f.tokens_used||0}/${f.budget||0} tok`;
+    sel.appendChild(opt);
+    if (S.activeTab === 6) renderLore();
   }
   updateHeader();
   if (S.activeTab === 0 && ev.event_type === 'turn_complete') renderTurnList();
@@ -922,7 +955,52 @@ function renderPrompt() {
   }
 }
 
-function updateAll() { updateHeader(); renderTurnList(); if(S.activeTab===2)renderHealth(); if(S.activeTab===3)renderTiming(); if(S.activeTab===4)renderConsole(); if(S.activeTab===5)renderPrompt(); }
+// ── Tab 6: Lore ──
+const LORE_CAT_COLORS = { history:'var(--amber)', geography:'var(--teal)', faction:'var(--red)', character:'var(--purple)', item:'var(--green)', event:'var(--pink)', language:'var(--sky)' };
+function renderLore() {
+  const sel = document.getElementById('lore-turn-select');
+  const idx = sel.value;
+  if (idx === '' || !S.loreEvents[idx]) {
+    document.getElementById('lore-budget').style.display = 'none';
+    document.getElementById('lore-fragments').style.display = 'none';
+    return;
+  }
+  const ev = S.loreEvents[idx];
+  const f = ev.fields || {};
+  const budget = f.budget || 0;
+  const tokensUsed = f.tokens_used || 0;
+  const pctUsed = budget > 0 ? (tokensUsed / budget * 100) : 0;
+  const hint = f.context_hint || 'none';
+  const filter = (document.getElementById('lore-filter').value || '').toLowerCase();
+
+  // Budget bar
+  document.getElementById('lore-budget-body').innerHTML =
+    `<div style="margin-bottom:8px;font-size:12px">Budget: <b>${tokensUsed}</b> / <b>${budget}</b> tokens (${pctUsed.toFixed(0)}%) · Hint: <b style="color:var(--accent)">${esc(hint)}</b> · Total fragments: <b>${f.total_fragments||0}</b></div>` +
+    `<div style="background:var(--border);border-radius:2px;height:18px;position:relative">` +
+    `<div style="width:${pctUsed}%;background:var(--green);height:100%;border-radius:2px;opacity:0.7"></div></div>`;
+  document.getElementById('lore-budget').style.display = 'block';
+
+  // Fragment list — selected then rejected
+  const allFrags = [
+    ...(f.selected||[]).map(s => ({...s, status:'selected'})),
+    ...(f.rejected||[]).map(s => ({...s, status:'rejected'}))
+  ].filter(frag => !filter || frag.id.toLowerCase().includes(filter) || frag.category.toLowerCase().includes(filter));
+
+  document.getElementById('lore-fragments-body').innerHTML = allFrags.map(frag => {
+    const color = LORE_CAT_COLORS[frag.category] || 'var(--muted)';
+    const statusColor = frag.status === 'selected' ? 'var(--green)' : 'var(--red)';
+    const statusIcon = frag.status === 'selected' ? '✓' : '✗';
+    return `<div style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px solid var(--border);font-size:12px">
+      <span style="color:${statusColor};width:16px;text-align:center;font-weight:bold">${statusIcon}</span>
+      <span style="color:${color};width:80px">${esc(frag.category)}</span>
+      <span style="flex:1;color:var(--text)">${esc(frag.id)}</span>
+      <span style="color:var(--sky);width:60px;text-align:right">${frag.tokens} tok</span>
+    </div>`;
+  }).join('');
+  document.getElementById('lore-fragments').style.display = 'block';
+}
+
+function updateAll() { updateHeader(); renderTurnList(); if(S.activeTab===2)renderHealth(); if(S.activeTab===3)renderTiming(); if(S.activeTab===4)renderConsole(); if(S.activeTab===5)renderPrompt(); if(S.activeTab===6)renderLore(); }
 
 // ── WebSocket ──
 function connect() {
