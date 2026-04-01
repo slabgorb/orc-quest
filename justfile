@@ -69,7 +69,7 @@ otel port="9765":
 # Quick-start aliases
 warmup: daemon-run
 server *flags:
-    just api-run --trace {{flags}}
+    just api-run {{flags}}
 client: ui-dev
 
 # tmuxinator dev session (server, otel, client, daemon in 4 panes)

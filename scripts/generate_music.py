@@ -98,6 +98,14 @@ GENRE_MOODS: dict[str, dict[str, tuple[str, int]]] = {
         "scavenge": ("clanking metal, industrial ambient, rummaging, discovery, salvage, mechanical, rhythmic, wasteland workshop, building, creating", 60),
         "chase": ("fast industrial, pursuit, engines, wasteland vehicles, aggressive drums, road chase, dust, brutal, relentless, mad max", 60),
     },
+    "caverns_and_claudes": {
+        "exploration": ("dark ambient drone, single plucked string, cave reverb, dripping water echo, sparse, minimal, dungeon crawl, oppressive silence, lonely, underground", 60),
+        "tension": ("low rhythmic pulse, heartbeat tempo, grinding stone, building dread, dungeon horror, minimal percussion, ominous, subterranean, Keeper awareness, claustrophobic", 60),
+        "combat": ("aggressive percussion, metallic strikes, short brutal, war drums, echoing stone, dungeon combat, chaotic, desperate, iron on iron, abrupt ending", 60),
+        "extraction": ("urgent driving rhythm, running footsteps tempo, rattling coins, building panic, pursuit, dungeon escape, breathless, relentless, no resolution, cuts to silence", 60),
+        "keeper_monologue": ("single sustained bass drone, cavernous reverb, ominous, deep rumble, subterranean, organ-like, dark, slow, alien intelligence, geological timescale", 60),
+        "town": ("sparse acoustic guitar, tired folk, mud and rain, tavern at dawn, melancholy, functional, no celebration, weary, simple, provisioning", 60),
+    },
     "road_warrior": {
         "exploration": ("desert rock, slide guitar, dusty road, heat haze, V8 engines idle, desolate highway, atmospheric, gritty, sun-bleached", 60),
         "combat": ("thrash metal, aggressive drums, vehicle combat, road rage, explosive, chaotic, high octane, brutal, relentless, metal", 60),
