@@ -185,3 +185,8 @@ completed_stories:
     title: LoreStore browser tab with per-turn budget visualization — show selected vs rejected fragments and token counts
     points: 5
     completed: '2026-04-01'
+  - id: 18-5
+    epic: ''
+    title: Structured NPC registry and inventory panels in State tab — tables not raw JSON
+    points: 3
+    completed: '2026-04-01'
