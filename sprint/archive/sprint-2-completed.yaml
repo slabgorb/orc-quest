@@ -216,3 +216,8 @@ completed_stories:
     title: Wire WorldBuilder into session creation — materialize GameState at target maturity on new game
     points: 3
     completed: '2026-04-01'
+  - id: 15-8
+    epic: ''
+    title: "Canonical GameSnapshot in dispatch — eliminate load-before-save round-trip on every turn"
+    points: 5
+    completed: '2026-04-01'
