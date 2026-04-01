@@ -139,3 +139,7 @@ status:
     @echo "=== UI ===" && cd sidequest-ui && git status --short
     @echo "=== Daemon ===" && cd sidequest-daemon && git status --short 2>/dev/null || echo "(not cloned)"
     @echo "=== Orchestrator ===" && git status --short
+
+# Sync shared CLAUDE.md preamble to all subrepos
+sync-claude-md:
+    python3 scripts/sync-claude-preamble.py
