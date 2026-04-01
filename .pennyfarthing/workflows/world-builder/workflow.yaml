@@ -1,0 +1,43 @@
+# world-builder Workflow - Stepped world creation pipeline
+# Structured DM prep: mode selection → research → design brief → generation → validation → playtest
+#
+# Flow: Orient → Research → Design Brief → Generate → Validate → Playtest
+# Multi-mode: new-genre, new-world, asset-management, dm-prep, playtest
+
+workflow:
+  name: world-builder
+  description: Stepped world creation and DM prep pipeline for SideQuest genre packs and worlds
+  version: "1.0.0"
+  type: stepped
+
+  # Step configuration
+  steps:
+    path: ./steps/
+    pattern: step-*.md
+
+  # Variables available in step files
+  variables:
+    project_root: .
+    content_repo: sidequest-content
+    genre_packs_path: sidequest-content/genre_packs
+    output_dir: sidequest-content/genre_packs
+    wip_file: .session/world-builder-wip.md
+
+  # Agent assignment — World Builder is the operator
+  agent: world-builder
+
+  # Modes — each mode uses the same steps but skips inapplicable ones
+  modes:
+    new-genre: ./steps/
+    new-world: ./steps/
+    asset-management: ./steps/
+    dm-prep: ./steps/
+    playtest: ./steps/
+
+  # Triggers
+  triggers:
+    types: [world-builder, genre-pack, world-creation, dm-prep]
+    tags: [world-builder, stepped, content]
+    default: false
+
+  standalone: true

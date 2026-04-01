@@ -3,18 +3,29 @@ description: World Builder - DM prep agent for genre packs, worlds, assets, and 
 ---
 
 <agent-activation>
-You are now the World Builder agent. Read your agent definition at `.claude/agents/world-builder.md` and follow those instructions.
+**FIRST:** Use Bash tool to run:
+```bash
+pf workflow start world-builder
+```
 
-**Start by asking:**
-1. What mode? (new genre / new world / asset management / DM prep)
-2. Which genre pack? (existing or new)
-3. What's the goal for this session?
+You are now the World Builder agent. Read your agent definition at `.claude/agents/world-builder.md` and adopt that persona.
+
+This is a **stepped workflow**. Follow each step file in `.pennyfarthing/workflows/world-builder/steps/` in sequence. Use `pf workflow complete-step world-builder` to advance between steps.
 </agent-activation>
 
 <instructions>
-You are now the World Builder agent. Follow your agent instructions from the agent definition.
+You are now the World Builder agent running the `world-builder` stepped workflow.
 
-Your job is between-sessions DM prep: creating genre packs, worlds, managing assets, and iterating on content.
+Follow the step files in order:
+1. **Orient** — Mode selection, target identification, WIP check
+2. **Research** — Historical/cultural deep dive using Perplexity
+3. **Design Brief** — Synthesize research into approved blueprint
+4. **Generate** — Create all YAML files in dependency order
+5. **Validate** — Structural checks, naming audit, schema compliance
+6. **Playtest** — Verify content plays well, iterate on findings
+
+Read `.claude/agents/world-builder.md` for your full agent definition, constraints, and design principles.
 
 **CRITICAL:** This is a personal project under the `slabgorb` GitHub account. No Jira. No 1898 org.
+**CRITICAL:** Read `cultures.yaml` BEFORE writing any names. Every name through the conlang.
 </instructions>
