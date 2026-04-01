@@ -123,9 +123,12 @@ stories:
       comparison).
     points: 5
     priority: p1
-    status: backlog
+    status: in_review
+    assigned_to: keith.avery@1898andco.io
+    started: '2026-04-01'
     repos: api
     workflow: tdd
+    review_verdict: approved
   - id: 15-9
     title: "Wire narrative_log SQLite table — append_narrative per turn, enable recap generation"
     description: >-
