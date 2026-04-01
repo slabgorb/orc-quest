@@ -1299,8 +1299,23 @@ async def run_interactive(
                 "\n[bold yellow]Character creation — type choices or 'auto' for defaults[/bold yellow]"
             )
             while not state["has_character"]:
+                # Wait for either a chargen prompt (scene/confirmation) or
+                # chargen complete — must wait on BOTH events because
+                # "complete" only sets chargen_done, not chargen_prompt.
                 state["chargen_prompt"].clear()
-                await state["chargen_prompt"].wait()
+                state["chargen_done"].clear()
+                done_task = asyncio.create_task(state["chargen_done"].wait())
+                prompt_task = asyncio.create_task(state["chargen_prompt"].wait())
+                await asyncio.wait(
+                    [done_task, prompt_task],
+                    return_when=asyncio.FIRST_COMPLETED,
+                )
+                done_task.cancel()
+                prompt_task.cancel()
+
+                # "complete" may have fired — check before prompting
+                if state["has_character"]:
+                    break
 
                 pending = state["chargen_pending"]
                 if not pending:
@@ -1353,19 +1368,6 @@ async def run_interactive(
                             console.print("[red]Invalid choice number[/red]")
                     else:
                         await ws.send(json.dumps(make_chargen_choice(choice)))
-
-                # Wait for either the next scene prompt or character complete
-                # chargen_prompt fires for scene/confirmation, chargen_done fires for complete
-                state["chargen_prompt"].clear()
-                done_task = asyncio.create_task(state["chargen_done"].wait())
-                prompt_task = asyncio.create_task(state["chargen_prompt"].wait())
-                await asyncio.wait(
-                    [done_task, prompt_task],
-                    return_when=asyncio.FIRST_COMPLETED,
-                )
-                # Cancel the loser
-                done_task.cancel()
-                prompt_task.cancel()
 
         # Wait for ready
         if not state["ready"]:
@@ -1573,8 +1575,21 @@ async def run_player(
         # Auto character creation
         if not state["has_character"]:
             while not state["has_character"]:
+                # Wait for either prompt or complete — same pattern as run_scripted
                 state["chargen_prompt"].clear()
-                await state["chargen_prompt"].wait()
+                state["chargen_done"].clear()
+                done_task = asyncio.create_task(state["chargen_done"].wait())
+                prompt_task = asyncio.create_task(state["chargen_prompt"].wait())
+                await asyncio.wait(
+                    [done_task, prompt_task],
+                    return_when=asyncio.FIRST_COMPLETED,
+                )
+                done_task.cancel()
+                prompt_task.cancel()
+
+                if state["has_character"]:
+                    break
+
                 pending = state["chargen_pending"]
                 if not pending:
                     continue
@@ -1593,15 +1608,6 @@ async def run_player(
                     else:
                         auto_choice = "A wanderer seeking purpose."
                     await ws.send(json.dumps(make_chargen_choice(auto_choice)))
-                state["chargen_prompt"].clear()
-                done_task = asyncio.create_task(state["chargen_done"].wait())
-                prompt_task = asyncio.create_task(state["chargen_prompt"].wait())
-                await asyncio.wait(
-                    [done_task, prompt_task],
-                    return_when=asyncio.FIRST_COMPLETED,
-                )
-                done_task.cancel()
-                prompt_task.cancel()
 
         if not state["ready"]:
             await state["ready_event"].wait()
