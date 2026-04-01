@@ -29,7 +29,7 @@ repos:
     build_command: cargo build
     lint_command: cargo clippy -- -D warnings
     dev_command: cargo run
-    branch_strategy: gitflow
+    branch_strategy: trunk-based
     default_branch: develop
     notes: |
       Rust game engine ported from Python sq-2.
@@ -46,7 +46,7 @@ repos:
     build_command: tsc -b && vite build
     lint_command: eslint .
     dev_command: vite
-    branch_strategy: gitflow
+    branch_strategy: trunk-based
     default_branch: develop
     notes: |
       React 19 + Vite + TypeScript + Tailwind CSS + shadcn/ui.
@@ -57,7 +57,7 @@ repos:
     path: sidequest-content
     type: content
     description: Genre packs, world data, and shared game content (single source of truth)
-    branch_strategy: gitflow
+    branch_strategy: trunk-based
     default_branch: develop
     notes: |
       Genre packs and game content extracted from the orchestrator.
@@ -73,7 +73,7 @@ repos:
     build_command: "true"
     lint_command: ruff check .
     dev_command: python -m sidequest_daemon
-    branch_strategy: gitflow
+    branch_strategy: trunk-based
     default_branch: develop
     notes: |
       Python media services extracted from sq-2.
