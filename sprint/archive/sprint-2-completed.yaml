@@ -190,3 +190,8 @@ completed_stories:
     title: Structured NPC registry and inventory panels in State tab — tables not raw JSON
     points: 3
     completed: '2026-04-01'
+  - id: 15-7
+    epic: ''
+    title: "Wire RAG pipeline end-to-end — accumulate_lore from turns, generate embeddings via daemon, switch to semantic retrieval"
+    points: 8
+    completed: '2026-04-01'
