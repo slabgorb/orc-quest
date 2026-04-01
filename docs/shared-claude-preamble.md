@@ -89,6 +89,27 @@ tell whether it's engaged or whether Claude is just improvising.
 
 **Not needed for:** Cosmetic UI changes (labels, spacing, colors).
 
+## Architecture Decision Index (docs/adr/)
+
+Before designing or modifying a subsystem, check the relevant ADR:
+
+| Domain | ADRs |
+|--------|------|
+| Core architecture | 001 (Claude CLI only), 002 (SOUL principles), 005 (background-first), 006 (graceful degradation) |
+| Genre packs | 003 (pack architecture), 004 (lazy binding) |
+| Prompt engineering | 008 (three-tier taxonomy), 009 (attention-aware zones) |
+| Agent system | 010 (intent routing), 011 (JSON patches), 012 (session mgmt), 013 (lazy extraction) |
+| Characters | 007 (unified model), 014 (diamonds/coal), 015 (builder FSM), 016 (three-mode chargen) |
+| Combat / chase | 017 (cinematic chase), 033 (confrontation resource pools) |
+| World / NPCs | 018 (trope engine), 019 (cartography), 020 (NPC disposition), 022 (world maturity) |
+| Progression | 021 (four-track progression) |
+| Narrative pacing | 024 (dual-track tension), 025 (pacing detection) |
+| Session persistence | 023 (state + recap) |
+| Frontend / protocol | 026 (client state mirror), 027 (reactive state messaging) |
+| Multiplayer | 028 (perception rewriter), 029 (guest NPC players), 030 (scenario packs) |
+| Telemetry | 031 (game watcher semantic telemetry) |
+| Media | 032 (genre LoRA style training), 034 (portrait identity consistency) |
+
 ## Spoiler Protection
 
 - **Fully spoilable:** `mutant_wasteland/flickering_reach` only

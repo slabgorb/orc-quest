@@ -80,9 +80,11 @@ stories:
     title: Port WorldBuilder from Python — materialize GameState at any maturity level for playtesting
     points: 5
     priority: p1
-    status: backlog
+    status: in_progress
+    started: '2026-04-01'
     repos: api
     workflow: tdd
+    branch: feat/18-8-port-worldbuilder
   - id: 18-9
     title: Session restore syncs full character state — level, inventory, known facts from loaded snapshot
     points: 3
