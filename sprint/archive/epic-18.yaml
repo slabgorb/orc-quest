@@ -3,7 +3,7 @@ type: epic
 title: OTEL Dashboard — Granular Instrumentation & State Tab
 description: Add sub-spans for flame chart granularity and fix broken State tab wiring
 priority: p1
-status: backlog
+status: done
 repos: api,ui
 stories:
   - id: 18-1
@@ -80,10 +80,11 @@ stories:
     title: Port WorldBuilder from Python — materialize GameState at any maturity level for playtesting
     points: 5
     priority: p1
-    status: in_progress
+    status: done
     started: '2026-04-01'
     repos: api
     workflow: tdd
+    completed: '2026-04-01'
     branch: feat/18-8-port-worldbuilder
   - id: 18-9
     title: Session restore syncs full character state — level, inventory, known facts from loaded snapshot
@@ -96,3 +97,4 @@ stories:
     completed: '2026-03-31'
     type: bug
     branch: feat/18-9-session-restore-character-state
+completed: '2026-04-01'

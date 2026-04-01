@@ -9,6 +9,7 @@ sprint:
   status: active
 completed_epics:
   - '14'
+  - '18'
 completed_stories:
   - id: 13-8
     epic: ''
@@ -199,4 +200,14 @@ completed_stories:
     epic: ''
     title: "Wire AchievementTracker — check_transition never called, achievements never fire"
     points: 3
+    completed: '2026-04-01'
+  - id: 18-8
+    epic: ''
+    title: Port WorldBuilder from Python — materialize GameState at any maturity level for playtesting
+    points: 5
+    completed: '2026-04-01'
+  - id: 18-7
+    epic: '18'
+    title: Parallelize prompt context build and preprocess Haiku call via tokio::join!
+    points: 2
     completed: '2026-04-01'
