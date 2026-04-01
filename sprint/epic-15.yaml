@@ -149,10 +149,11 @@ stories:
       content_len), session.recap_generated (entry_count, recap_len).
     points: 3
     priority: p1
-    status: backlog
+    status: done
     repos: api
     workflow: tdd
     depends_on: 15-8
+    completed: "2026-04-01"
   - id: 15-10
     title: "Wire seed_lore_from_char_creation — character backstory/hooks never enter lore store"
     description: >-
@@ -182,9 +183,10 @@ stories:
       dimension, proposed_delta, event_type).
     points: 2
     priority: p1
-    status: backlog
+    status: done
     repos: api
     workflow: tdd
+    completed: "2026-04-01"
   - id: 15-12
     title: "Wire SceneRelevanceValidator — art renders scenes that don't match current location"
     description: >-
@@ -199,9 +201,10 @@ stories:
       render.scene_rejected (prompt_fragment, current_location, reason).
     points: 3
     priority: p1
-    status: backlog
+    status: done
     repos: api
     workflow: tdd
+    completed: "2026-03-30"
   - id: 15-13
     title: "Wire AchievementTracker — check_transition never called, achievements never fire"
     description: >-
@@ -215,9 +218,10 @@ stories:
       event: achievement.earned (achievement_id, trope_id, trigger_type).
     points: 3
     priority: p1
-    status: backlog
+    status: done
     repos: api
     workflow: tdd
+    completed: "2026-03-30"
   - id: 15-14
     title: "Wire enrich_registry_from_npcs — NPC registry has regex-only data, ignores structured fields"
     description: >-
@@ -379,6 +383,7 @@ stories:
     title: Wire WorldBuilder into session creation — materialize GameState at target maturity on new game
     points: 3
     priority: p1
-    status: backlog
+    status: done
     repos: api
     workflow: tdd
+    completed: "2026-03-30"
