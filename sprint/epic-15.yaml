@@ -159,9 +159,10 @@ stories:
       event: lore.char_creation_seeded (fragment_count, categories).
     points: 2
     priority: p0
-    status: backlog
+    status: done
     repos: api
     workflow: tdd
+    completed: '2026-04-01'
   - id: 15-11
     title: "Fix OCEAN shift pipeline — propose_ocean_shifts skipped between detect and apply"
     description: >-
