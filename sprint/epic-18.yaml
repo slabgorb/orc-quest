@@ -51,7 +51,7 @@ stories:
     title: Structured NPC registry and inventory panels in State tab — tables not raw JSON
     points: 3
     priority: p1
-    status: in_progress
+    status: in_review
     started: '2026-04-01'
     repos: ui
     workflow: tdd
