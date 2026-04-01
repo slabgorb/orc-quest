@@ -662,7 +662,7 @@ function renderState() {
         const expanded = S.expandedItems[c.name + '::' + (item.name||item)];
         const desc = item.description || '';
         const truncDesc = desc.length > 40 ? esc(desc.slice(0, 40)) + '…' : esc(desc);
-        html += `<tr style="cursor:pointer" onclick="toggleItemExpand('${esc(c.name)}','${esc(item.name||item)}')"><td style="padding:2px 8px">${esc(item.name||item)}</td><td style="padding:2px 8px">${w.toFixed(2)}</td><td style="padding:2px 8px">${stage}</td><td style="padding:2px 8px;color:var(--muted)">${truncDesc}</td></tr>`;
+        html += `<tr style="cursor:pointer" onclick="toggleItemExpand(${JSON.stringify(c.name)},${JSON.stringify(item.name||String(item))})"><td style="padding:2px 8px">${esc(item.name||item)}</td><td style="padding:2px 8px">${w.toFixed(2)}</td><td style="padding:2px 8px">${stage}</td><td style="padding:2px 8px;color:var(--muted)">${truncDesc}</td></tr>`;
         if (expanded) {
           html += `<tr><td colspan="4" style="padding:4px 8px"><pre style="white-space:pre-wrap;font-size:10px;color:var(--muted);margin:0">${esc(JSON.stringify(item, null, 2))}</pre></td></tr>`;
         }
@@ -731,7 +731,7 @@ function renderState() {
         hpHtml = `<span style="color:${hpColor}">${n.hp}/${n.max_hp}</span>`;
       }
       const expanded = S.expandedNpcs[n.name];
-      html += `<tr style="cursor:pointer;border-bottom:1px solid var(--border)" onclick="toggleNpcExpand('${esc(n.name)}')"><td style="padding:4px 8px;color:var(--text);font-weight:bold">${esc(n.name)}</td><td style="padding:4px 8px;color:var(--muted)">${esc(n.role)}</td><td style="padding:4px 8px;color:var(--teal)">${esc(n.location)}</td><td style="padding:4px 8px;color:${dispColor}">${dispText}</td><td style="padding:4px 8px">${hpHtml}</td><td style="padding:4px 8px;color:var(--muted)">T${n.last_seen_turn||'?'}</td><td style="padding:4px 8px;color:var(--muted)">${esc(n.pronouns)}</td></tr>`;
+      html += `<tr style="cursor:pointer;border-bottom:1px solid var(--border)" onclick="toggleNpcExpand(${JSON.stringify(n.name)})"><td style="padding:4px 8px;color:var(--text);font-weight:bold">${esc(n.name)}</td><td style="padding:4px 8px;color:var(--muted)">${esc(n.role)}</td><td style="padding:4px 8px;color:var(--teal)">${esc(n.location)}</td><td style="padding:4px 8px;color:${dispColor}">${dispText}</td><td style="padding:4px 8px">${hpHtml}</td><td style="padding:4px 8px;color:var(--muted)">T${n.last_seen_turn||'?'}</td><td style="padding:4px 8px;color:var(--muted)">${esc(n.pronouns)}</td></tr>`;
       if (expanded) {
         html += `<tr><td colspan="7" style="padding:8px"><pre style="white-space:pre-wrap;font-size:10px;color:var(--muted);margin:0">${esc(JSON.stringify(n._full, null, 2))}</pre></td></tr>`;
       }
