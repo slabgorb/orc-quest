@@ -14,7 +14,7 @@ description: >-
   Key references: chase.rs, chase_depth.rs (the prototype), combat.rs, music_director.rs,
   docs/genre-pack-status.md (gap map), ADR-017 (chase types).
 priority: p1
-status: future
+status: planning
 repos: sidequest-api, sidequest-ui, sidequest-content
 stories:
   - id: 16-1

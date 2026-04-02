@@ -1,0 +1,64 @@
+id: '20'
+type: epic
+title: Narrator Crunch Separation — Tool-Based Mechanical Extraction (ADR-057)
+description: "Replace the narrator's monolithic JSON output block with discrete tool calls. LLM narrates and interprets intent; scripts handle all mechanical extraction (items, quests, mood, visual scene, etc). Two-phase architecture: tools fire during narration, assemble_turn collects results after. Eliminates extractor.rs and the 3-tier JSON recovery pipeline. See ADR-057."
+priority: p1
+status: backlog
+repos: pennyfarthing
+stories:
+  - id: 20-1
+    title: assemble_turn infrastructure + action preprocessors
+    points: 5
+    priority: p1
+    status: backlog
+    repos: api
+    workflow: tdd
+  - id: 20-2
+    title: scene_mood and scene_intent tool calls
+    points: 3
+    priority: p1
+    status: backlog
+    repos: api
+    workflow: tdd
+  - id: 20-3
+    title: item_acquire and merchant_transact tools
+    points: 5
+    priority: p1
+    status: backlog
+    repos: api
+    workflow: tdd
+  - id: 20-4
+    title: lore_mark tool — footnote extraction via tool call
+    points: 3
+    priority: p1
+    status: backlog
+    repos: api
+    workflow: tdd
+  - id: 20-5
+    title: scene_render tool — visual scene via tool call
+    points: 3
+    priority: p1
+    status: backlog
+    repos: api
+    workflow: tdd
+  - id: 20-6
+    title: quest_update tool — quest state transitions
+    points: 3
+    priority: p2
+    status: backlog
+    repos: api
+    workflow: tdd
+  - id: 20-7
+    title: personality_event, resource_change, play_sfx tools
+    points: 3
+    priority: p2
+    status: backlog
+    repos: api
+    workflow: tdd
+  - id: 20-8
+    title: Eliminate narrator JSON block — delete extractor.rs
+    points: 5
+    priority: p2
+    status: backlog
+    repos: api
+    workflow: tdd
