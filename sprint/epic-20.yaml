@@ -76,10 +76,14 @@ stories:
     title: Wire assemble_turn into dispatch pipeline
     points: 3
     priority: p1
-    status: backlog
+    status: done
+    started: '2026-04-02'
     repos: api
     workflow: tdd
+    completed: '2026-04-02'
     type: refactor
+    branch: feat/20-9-wire-assemble-turn-dispatch
+    review_verdict: approved
   - id: 20-10
     title: Wire tool call parsing — connect Claude tool output to ToolCallResults
     points: 5

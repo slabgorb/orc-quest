@@ -266,3 +266,8 @@ completed_stories:
     title: "Validated room movement — location constrained to room_id with exit check"
     points: 5
     completed: '2026-04-02'
+  - id: 20-9
+    epic: ''
+    title: Wire assemble_turn into dispatch pipeline
+    points: 3
+    completed: '2026-04-02'
