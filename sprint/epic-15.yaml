@@ -72,11 +72,11 @@ stories:
     points: 5
     priority: p0
     status: in_progress
+    started: '2026-04-02T05:00:00Z'
     repos: sidequest-api
     workflow: tdd
     branch: feat/15-6-fix-combat-engine-wiring
     assignee: keith
-    started: '2026-04-02T05:00:00Z'
   - id: 15-7
     title: "Wire RAG pipeline end-to-end — accumulate_lore from turns, generate embeddings via daemon, switch to semantic retrieval"
     description: >-
@@ -234,9 +234,10 @@ stories:
       (npc_name, fields_added).
     points: 2
     priority: p1
-    status: in_progress
+    status: done
     repos: api
     workflow: tdd
+    completed: '2026-04-02'
     branch: feat/15-14-wire-enrich-registry-from-npcs
     assignee: keith
   - id: 15-15
@@ -254,9 +255,9 @@ stories:
     points: 2
     priority: p1
     status: done
-    completed: '2026-04-02'
     repos: api
     workflow: tdd
+    completed: '2026-04-02'
   - id: 15-16
     title: "Wire merchant system — execute_buy/sell/calculate_price/format_merchant_context all unwired"
     description: >-
@@ -275,9 +276,9 @@ stories:
     points: 5
     priority: p1
     status: done
-    completed: '2026-04-01'
     repos: api
     workflow: tdd
+    completed: '2026-04-01'
   - id: 15-17
     title: "Wire chase cinematography — chase_depth context never injected into narrator prompt"
     description: >-
@@ -295,8 +296,8 @@ stories:
     priority: p1
     status: done
     repos: api
-    completed: "2026-04-02"
     workflow: tdd
+    completed: "2026-04-02"
   - id: 15-18
     title: "Wire materialize_world — world builder ignores progressive materialization"
     description: >-
@@ -352,11 +353,11 @@ stories:
     points: 3
     priority: p2
     status: ready
+    started: '2026-04-02'
     repos: api
     workflow: tdd
     branch: feat/15-20-wire-state-delta
     assignee: keith
-    started: '2026-04-02'
   - id: 15-21
     title: "Wire level_to_defense — defense scaling ignored in combat resolution"
     description: >-
@@ -413,9 +414,9 @@ stories:
     points: 3
     priority: p1
     status: done
-    completed: '2026-04-02'
     repos: api
     workflow: tdd
+    completed: '2026-04-02'
   - id: 15-25
     title: "Wire propose_ocean_shifts — OCEAN personality shift pipeline not called from dispatch"
     description: >-

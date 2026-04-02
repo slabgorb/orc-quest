@@ -30,7 +30,6 @@ stories:
       - Validation rejects invalid exit targets, missing bidirectional routes (non-chute)
       - Existing genre packs unaffected (navigation_mode defaults to Region)
       - Unit tests for deserialization and validation
-
   - id: 19-2
     title: "Validated room movement — location constrained to room_id with exit check"
     description: >-
@@ -43,14 +42,14 @@ stories:
     status: backlog
     repos: sidequest-api
     workflow: tdd
-    depends_on: [19-1]
+    depends_on:
+      - 19-1
     acceptance_criteria:
       - Location validation in room_graph mode rejects rooms without exit from current
       - discovered_rooms populated on room entry
       - Starting location set to entrance room on session create
       - Region mode behavior unchanged
       - Integration test: move through 3-room sequence, reject invalid move
-
   - id: 19-3
     title: "Trope tick on room transition — fire trope engine per room move"
     description: >-
@@ -64,14 +63,14 @@ stories:
     status: backlog
     repos: sidequest-api
     workflow: tdd
-    depends_on: [19-2]
+    depends_on:
+      - 19-2
     acceptance_criteria:
       - Trope tick fires on room transition in room_graph mode
       - keeper_awareness_modifier from room data scales the multiplier
       - Trope escalation events fire at thresholds
       - Existing per-turn tick behavior unchanged in region mode
       - Test: 5 room transitions advance trope by 5 × rate_per_turn × modifier
-
   - id: 19-4
     title: "MAP_UPDATE for room graph — send discovered rooms with exits to UI"
     description: >-
@@ -84,14 +83,14 @@ stories:
     status: backlog
     repos: sidequest-api
     workflow: tdd
-    depends_on: [19-2]
+    depends_on:
+      - 19-2
     acceptance_criteria:
       - ExploredLocation includes exits, room_type, size fields
       - MAP_UPDATE only includes discovered rooms
       - Current room flagged in payload
       - Protocol types updated in sidequest-protocol
       - Test: discover 3 rooms, verify MAP_UPDATE contains exactly 3 with correct exits
-
   - id: 19-5
     title: "Consumable item depletion — uses_remaining on items, decrement on room transition"
     description: >-
@@ -105,14 +104,14 @@ stories:
     status: backlog
     repos: sidequest-api
     workflow: tdd
-    depends_on: [19-3]
+    depends_on:
+      - 19-3
     acceptance_criteria:
       - Item.uses_remaining field added, serialized/deserialized
       - consume_use() decrements and removes at 0
       - Room transition decrements active light source
       - GameMessage fired on light exhaustion
       - Test: torch with 6 uses survives 5 transitions, removed on 6th
-
   - id: 19-6
     title: "Wire ResourceDeclaration.decay_per_turn — apply resource decay on trope tick"
     description: >-
@@ -125,13 +124,13 @@ stories:
     status: backlog
     repos: sidequest-api
     workflow: tdd
-    depends_on: [19-3]
+    depends_on:
+      - 19-3
     acceptance_criteria:
       - decay_per_turn applied to resource_state after trope tick
       - Resources clamped to declared min/max
       - GameMessage when resource hits min
       - Test: resource with decay -0.1 reaches 0 after 10 ticks
-
   - id: 19-7
     title: "Weight-based encumbrance — total_weight, carry_mode, overencumbered state"
     description: >-
@@ -144,7 +143,8 @@ stories:
     status: backlog
     repos: sidequest-api
     workflow: tdd
-    depends_on: [19-5]
+    depends_on:
+      - 19-5
     acceptance_criteria:
       - total_weight() sums all item weights × quantities
       - CarryMode::Weight rejects over-limit adds
@@ -152,7 +152,6 @@ stories:
       - Trope multiplier increased when overencumbered
       - Existing count-based carry unaffected
       - Test: add items to weight limit, verify rejection and overencumbered flag
-
   - id: 19-8
     title: "Automapper UI component — render room graph as dungeon floorplan"
     description: >-
@@ -166,7 +165,8 @@ stories:
     status: backlog
     repos: sidequest-ui
     workflow: tdd
-    depends_on: [19-4]
+    depends_on:
+      - 19-4
     acceptance_criteria:
       - Automapper component renders room graph from MAP_UPDATE data
       - Fog of war hides undiscovered rooms
@@ -175,7 +175,6 @@ stories:
       - Graph-paper aesthetic matching C&C theme
       - Responsive — works in sidebar panel
       - Test: render 5-room graph, verify SVG/canvas output
-
   - id: 19-9
     title: "Treasure-as-XP — gold extraction grants affinity progress"
     description: >-
@@ -189,7 +188,8 @@ stories:
     status: backlog
     repos: sidequest-api
     workflow: tdd
-    depends_on: [19-2]
+    depends_on:
+      - 19-2
     acceptance_criteria:
       - Gold increase on surface location triggers affinity progress
       - xp_affinity field in genre rules configures target affinity
