@@ -73,7 +73,7 @@ stories:
       timestamp proximity to watcher turn events.
     points: 5
     priority: p1
-    status: in_progress
+    status: done
     repos: orchestrator
     workflow: tdd
     acceptance_criteria:
@@ -84,6 +84,7 @@ stories:
       - Tool failures highlighted with error indicator
       - Events correlate to game turns via timestamp
       - Tab badge shows count of tool invocations
+    completed: '2026-04-02'
     branch: feat/21-3-dashboard-claude-tab
     assignee: keithavery
   - id: 21-4

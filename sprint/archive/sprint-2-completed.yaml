@@ -291,3 +291,8 @@ completed_stories:
     title: "OTLP receiver in playtest dashboard — parse and broadcast Claude Code telemetry"
     points: 5
     completed: '2026-04-02'
+  - id: 21-3
+    epic: ''
+    title: "Dashboard Claude tab — tool timeline, token breakdown, cost accumulator"
+    points: 5
+    completed: '2026-04-02'
