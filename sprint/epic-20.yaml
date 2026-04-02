@@ -20,9 +20,11 @@ stories:
     title: scene_mood and scene_intent tool calls
     points: 3
     priority: p1
-    status: backlog
+    status: done
     repos: api
     workflow: tdd
+    completed: '2026-04-02'
+    branch: feat/20-2-scene-mood-intent-tools
   - id: 20-3
     title: item_acquire and merchant_transact tools
     points: 5

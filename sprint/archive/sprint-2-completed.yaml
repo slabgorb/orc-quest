@@ -246,3 +246,8 @@ completed_stories:
     title: assemble_turn infrastructure + action preprocessors
     points: 5
     completed: '2026-04-02'
+  - id: 20-2
+    epic: ''
+    title: scene_mood and scene_intent tool calls
+    points: 3
+    completed: '2026-04-02'
