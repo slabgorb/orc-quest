@@ -7,10 +7,7 @@ See ADR-058.
 
 from __future__ import annotations
 
-import logging
 from collections import deque
-
-logger = logging.getLogger(__name__)
 
 
 # ── Attribute helpers ──────────────────────────────────────────────────────────
