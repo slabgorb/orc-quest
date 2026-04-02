@@ -31,27 +31,27 @@ Generation pattern: **Call tool FIRST, narrate around result** (not narrate then
 
 ## Acceptance Criteria
 
-- [ ] **AC1:** item_acquire tool call is fully wired in the sidecar tool call pipeline
+- [x] **AC1:** item_acquire tool call is fully wired in the sidecar tool call pipeline
   - Tool definition is recognized by narrator prompt
   - Tool output is captured in ToolCallResults
   - Parser validates tool calls and extracts ItemAcquireCall structs
 
-- [ ] **AC2:** Parser validates item references against genre pack item_catalog
+- [x] **AC2:** Parser validates item references against genre pack item_catalog
   - Existing items (catalog lookups) resolve to ItemId
   - Narrator-described items (improvised) create synthesized ItemId
   - Invalid item references fail gracefully (error logged, no silent fallbacks)
 
-- [ ] **AC3:** assemble_turn feeds item_acquire results into items_gained
+- [x] **AC3:** assemble_turn feeds item_acquire results into items_gained
   - items_gained vector populates from tool calls
   - State patching applies inventory changes correctly
   - OTEL spans log item acquisitions (source, item_id, narrator/origin)
 
-- [ ] **AC4:** Tests verify full pipeline
+- [x] **AC4:** Tests verify full pipeline
   - Unit: parser validates catalog lookups and improvised items
   - Integration: tool call → parser → assemble_turn → ActionResult with items_gained
   - Wiring test: production code path exercises item_acquire (not test-only)
 
-- [ ] **AC5:** No regressions in other tool pipelines (scene_mood, lore_mark, quest_update, etc.)
+- [x] **AC5:** No regressions in other tool pipelines (scene_mood, lore_mark, quest_update, etc.)
 
 ## Workflow Tracking
 
