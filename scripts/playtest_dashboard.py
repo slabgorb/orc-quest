@@ -324,10 +324,10 @@ function switchTab(i) {
   if (i===5) renderPrompt();
   if (i===6) renderLore();
   if (i===4) renderConsole();
-  if (i===7) renderClaudeTimeline();
+  if (i===7) { renderClaudeTimeline(); renderClaudeTokens(); }
 }
 function togglePause() { S.paused = !S.paused; }
-function clearAll() { S.turns.length=0; S.allEvents.length=0; Object.keys(S.componentMap).forEach(k=>delete S.componentMap[k]); S.selectedTurn=null; updateAll(); }
+function clearAll() { S.turns.length=0; S.allEvents.length=0; Object.keys(S.componentMap).forEach(k=>delete S.componentMap[k]); S.selectedTurn=null; S.claudeEvents.length=0; S.claudeTokens={input:0,output:0,cache_read:0,cache_creation:0}; updateAll(); }
 
 // ── Header update ──
 function updateHeader() {
@@ -996,7 +996,7 @@ function renderClaudeTimeline() {
     el.innerHTML = '<span style="color:var(--muted)">Waiting for Claude OTEL events...</span>';
     return;
   }
-  const maxDur = Math.max(...S.claudeEvents.map(e => e.duration_ms || 1), 1);
+  const maxDur = S.claudeEvents.reduce((m, e) => Math.max(m, e.duration_ms || 1), 1);
   el.innerHTML = S.claudeEvents.map(e => {
     const name = e.tool_name || e.name || '?';
     const dur = e.duration_ms || 0;
