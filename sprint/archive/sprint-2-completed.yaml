@@ -231,3 +231,8 @@ completed_stories:
     title: "Wire chase cinematography — chase_depth context never injected into narrator prompt"
     points: 3
     completed: '2026-04-01'
+  - id: 15-20
+    epic: ''
+    title: "Wire StateDelta computation — broadcast_state_changes and delta.rs bypassed in server"
+    points: 3
+    completed: '2026-04-02'

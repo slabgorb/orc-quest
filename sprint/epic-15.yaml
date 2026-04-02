@@ -349,9 +349,12 @@ stories:
       (changed_fields, snapshot_size_bytes).
     points: 3
     priority: p2
-    status: backlog
+    status: ready
     repos: api
     workflow: tdd
+    branch: feat/15-20-wire-state-delta
+    assignee: keith
+    started: '2026-04-02'
   - id: 15-21
     title: "Wire level_to_defense — defense scaling ignored in combat resolution"
     description: >-
