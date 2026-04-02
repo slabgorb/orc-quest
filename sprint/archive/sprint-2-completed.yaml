@@ -251,3 +251,8 @@ completed_stories:
     title: scene_mood and scene_intent tool calls
     points: 3
     completed: '2026-04-02'
+  - id: 20-3
+    epic: ''
+    title: item_acquire and merchant_transact tools
+    points: 5
+    completed: '2026-04-02'
