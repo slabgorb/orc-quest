@@ -99,9 +99,11 @@ stories:
       OTEL flush timeout set to 3000ms to ensure spans export before process exit.
     points: 3
     priority: p1
-    status: backlog
+    status: in_progress
     repos: sidequest-api
     workflow: tdd
+    branch: feat/21-4-claude-otel-endpoint-injection
+    assignee: keithavery
     acceptance_criteria:
       - ClaudeClientBuilder gains .otel_endpoint(url) method
       - send_impl() sets 7 OTEL env vars on Command when endpoint is configured
