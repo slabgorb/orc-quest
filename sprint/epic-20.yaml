@@ -79,9 +79,12 @@ stories:
     description: Remove remaining JSON field schemas from narrator prompt. Delete extractor.rs and the 3-tier extraction pipeline. assemble_turn is now the sole ActionResult producer. Only safe AFTER 20-10 proves tools are firing reliably.
     points: 3
     priority: p2
-    status: backlog
+    status: done
+    started: '2026-04-02'
     repos: api
     workflow: tdd
+    completed: '2026-04-02'
+    branch: feat/20-8-eliminate-narrator-json
   - id: 20-9
     title: Wire assemble_turn into dispatch pipeline
     points: 3

@@ -10,7 +10,6 @@ sprint:
 completed_epics:
   - '14'
   - '18'
-  - '21'
 completed_stories:
   - id: 13-8
     epic: ''
@@ -302,13 +301,8 @@ completed_stories:
     title: personality_event, resource_change, play_sfx tools
     points: 3
     completed: '2026-04-02'
-  - id: 21-4
+  - id: 20-8
     epic: ''
-    title: "ClaudeClient OTEL endpoint injection — env vars on subprocess Command"
-    points: 3
-    completed: '2026-04-02'
-  - id: 21-1
-    epic: '21'
-    title: "Split playtest.py into focused modules"
+    title: Eliminate narrator JSON block — delete extractor.rs
     points: 3
     completed: '2026-04-02'
