@@ -8,7 +8,7 @@ description: >-
   dashboard. Requires splitting playtest.py into focused modules, adding
   the OTLP receiver, and injecting OTEL env vars in ClaudeClient. See ADR-058.
 priority: p1
-status: in_progress
+status: done
 repos: sidequest-api, orchestrator
 stories:
   - id: 21-1
@@ -99,11 +99,9 @@ stories:
       OTEL flush timeout set to 3000ms to ensure spans export before process exit.
     points: 3
     priority: p1
-    status: in_progress
+    status: done
     repos: sidequest-api
     workflow: tdd
-    branch: feat/21-4-claude-otel-endpoint-injection
-    assignee: keithavery
     acceptance_criteria:
       - ClaudeClientBuilder gains .otel_endpoint(url) method
       - send_impl() sets 7 OTEL env vars on Command when endpoint is configured
@@ -113,3 +111,7 @@ stories:
       - Unit test verifies env vars are set on Command when endpoint configured
       - Unit test verifies no env vars when endpoint is None
       - Integration test with echo subprocess confirms env inheritance
+    completed: '2026-04-02'
+    branch: feat/21-4-claude-otel-endpoint-injection
+    assignee: keithavery
+completed: '2026-04-02'
