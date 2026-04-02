@@ -281,3 +281,8 @@ completed_stories:
     title: scene_render tool — visual scene via tool call
     points: 3
     completed: '2026-04-02'
+  - id: 20-6
+    epic: ''
+    title: quest_update tool — quest state transitions
+    points: 3
+    completed: '2026-04-02'

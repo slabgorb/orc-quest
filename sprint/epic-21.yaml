@@ -24,9 +24,6 @@ stories:
     status: done
     repos: orchestrator
     workflow: tdd
-    branch: feat/21-1-split-playtest-modules
-    assignee: keithavery
-    completed: '2026-04-02'
     acceptance_criteria:
       - playtest.py contains only CLI parsing, main(), and mode dispatch
       - playtest_dashboard.py contains DASHBOARD_HTML, WebSocket server, HTTP serving, broadcast
@@ -34,7 +31,9 @@ stories:
       - playtest_otlp.py exists as empty module (populated in 21-2)
       - just playtest still works for interactive, scripted, and dashboard-only modes
       - No functional changes — pure extraction refactor
-
+    completed: '2026-04-02'
+    branch: feat/21-1-split-playtest-modules
+    assignee: keithavery
   - id: 21-2
     title: "OTLP receiver in playtest dashboard — parse and broadcast Claude Code telemetry"
     description: >-
@@ -60,7 +59,6 @@ stories:
       - Late-joining browsers receive span history
       - --otlp-port CLI flag configures receiver port
       - Unit tests for all three parse functions (modeled on Frame's test_148_5)
-
   - id: 21-3
     title: "Dashboard Claude tab — tool timeline, token breakdown, cost accumulator"
     description: >-
@@ -83,7 +81,6 @@ stories:
       - Tool failures highlighted with error indicator
       - Events correlate to game turns via timestamp
       - Tab badge shows count of tool invocations
-
   - id: 21-4
     title: "ClaudeClient OTEL endpoint injection — env vars on subprocess Command"
     description: >-
