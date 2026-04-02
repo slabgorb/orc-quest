@@ -56,9 +56,11 @@ stories:
     title: quest_update tool — quest state transitions
     points: 3
     priority: p2
-    status: backlog
+    status: in_progress
+    started: '2026-04-02'
     repos: api
     workflow: tdd
+    branch: feat/20-6-quest-update-tool
   - id: 20-7
     title: personality_event, resource_change, play_sfx tools
     points: 3
