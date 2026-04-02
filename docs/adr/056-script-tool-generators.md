@@ -3,7 +3,7 @@
 **Status:** Proposed
 **Date:** 2026-04-01
 **Deciders:** Keith
-**Relates to:** ADR-001 (Claude CLI Only), ADR-003 (Genre Pack Architecture), ADR-011 (JSON Patches), ADR-018 (Trope Engine)
+**Relates to:** ADR-001 (Claude CLI Only), ADR-003 (Genre Pack Architecture), ADR-011 (JSON Patches), ADR-018 (Trope Engine), ADR-057 (Narrator Crunch Separation)
 
 ## Context
 
@@ -90,12 +90,11 @@ entity portraits and location landscapes come pre-prompted from the tool.
 ### What Stays with Claude
 
 - **Narration prose** — the core creative act
-- **Visual scene for narrative moments** — cinematic framing that isn't an entity
-  introduction (atmosphere shots, action scenes, reveals)
-- **Personality events** — require narrative context to detect significance
-- **Quest status updates** — depend on what actually happened in the story
-- **Scene intent / scene mood** — lightweight classification, not worth a tool call
-- **Footnote markers** — Claude decides what's notable, the content may come from tools
+- **Intent interpretation** — deciding what happened, who's present, what changed
+
+All other mechanical output (visual scene, personality events, quest updates, scene
+mood/intent, footnotes, resource deltas) migrates to tool calls per ADR-057. Claude
+still *decides* when these happen — it just calls a tool instead of emitting JSON.
 
 ### Prompt Protocol
 
@@ -149,9 +148,11 @@ The tool returns JSON, Claude incorporates it.
 
 ### Neutral
 
-- **Does not replace the JSON block entirely.** Some fields (visual_scene, scene_mood,
-  quest_updates, footnotes) remain in the narrator's JSON output because they require
-  narrative judgment. The block gets smaller, not eliminated.
+- **Superseded by ADR-057 for JSON block elimination.** This ADR introduced the tool
+  pattern for entity *generation*. ADR-057 extends the same pattern to all mechanical
+  extraction — eliminating the narrator JSON block entirely. Fields originally expected
+  to stay in the JSON output (visual_scene, scene_mood, quest_updates, footnotes) are
+  now migrating to discrete tool calls per ADR-057's phased plan.
 
 ## Alternatives Considered
 
