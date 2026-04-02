@@ -414,3 +414,33 @@ stories:
     completed: '2026-04-02'
     repos: api
     workflow: tdd
+  - id: 15-25
+    title: "Wire propose_ocean_shifts — OCEAN personality shift pipeline not called from dispatch"
+    description: >-
+      propose_ocean_shifts() and apply_ocean_shifts() in ocean_shift_proposals.rs
+      are fully implemented and tested (story 10-6, story 15-2 wired the event
+      detection) but the server dispatch pipeline never calls propose_ocean_shifts()
+      to generate shift proposals after narration. The server reads ocean_summary
+      for NPC context but never triggers personality evolution. Wire
+      propose_ocean_shifts() into the post-narration path in dispatch, call
+      apply_ocean_shifts() with approved proposals, and emit OTEL events for
+      the GM panel (ocean.shift_proposed, ocean.shift_applied).
+    points: 3
+    priority: p2
+    status: backlog
+    repos: api
+    workflow: tdd
+  - id: 15-26
+    title: "Wire select_npc_action — NPC autonomous actions not invoked from server"
+    description: >-
+      select_npc_action() and available_actions() in npc_actions.rs are implemented
+      and used by sidequest-agents but the server dispatch pipeline never invokes
+      the agent path that calls them. NPCs currently only act when the narrator
+      improvises their behavior. Wire the NPC action selection into the turn
+      pipeline so NPCs with ScenarioRole take autonomous actions during structured
+      encounters. OTEL events: npc.action_selected (npc_name, action, role).
+    points: 3
+    priority: p2
+    status: backlog
+    repos: api
+    workflow: tdd
