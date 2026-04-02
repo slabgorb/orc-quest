@@ -66,8 +66,24 @@ stories:
     workflow: tdd
   - id: 20-8
     title: Eliminate narrator JSON block — delete extractor.rs
-    points: 5
+    description: Remove remaining JSON field schemas from narrator prompt. Delete extractor.rs and the 3-tier extraction pipeline. assemble_turn is now the sole ActionResult producer. Only safe AFTER 20-10 proves tools are firing reliably.
+    points: 3
     priority: p2
+    status: backlog
+    repos: api
+    workflow: tdd
+  - id: 20-9
+    title: Wire assemble_turn into dispatch pipeline
+    points: 3
+    priority: p1
+    status: backlog
+    repos: api
+    workflow: tdd
+    type: refactor
+  - id: 20-10
+    title: Wire tool call parsing — connect Claude tool output to ToolCallResults
+    points: 5
+    priority: p1
     status: backlog
     repos: api
     workflow: tdd
