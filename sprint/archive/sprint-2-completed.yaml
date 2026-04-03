@@ -12,6 +12,7 @@ completed_epics:
   - '18'
   - '9'
   - '20'
+  - '12'
 completed_stories:
   - id: 13-8
     epic: ''
@@ -422,4 +423,9 @@ completed_stories:
     epic: ''
     title: Per-variation crossfade durations — overture fades slow, tension_build hits hard
     points: 2
+    completed: '2026-04-03'
+  - id: 12-3
+    epic: '12'
+    title: Variation telemetry in watcher — see which score cue was chosen and why
+    points: 1
     completed: '2026-04-03'

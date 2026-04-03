@@ -4,7 +4,7 @@ title: Cinematic Audio — Score Cue Variations, Soundtrack Pacing
 description: >-
   Wire the existing themed music variation library into the MusicDirector. Genre packs already have overtures, ambient, sparse, full, tension_build, and resolution variants per mood — the AudioTheme/AudioVariation types exist, audio.yaml themes sections are populated, but the MusicDirector only reads the flat mood_tracks list. This epic makes the soundtrack cinematic: the right score cue plays at the right narrative moment.
 priority: p2
-status: ready
+status: done
 repos: sidequest-api
 stories:
   - id: 12-1
@@ -13,24 +13,28 @@ stories:
       Wire AudioConfig.themes into MusicDirector. Add TrackVariation enum, variation selection logic (overture on arrival, resolution after combat, intensity-driven ambient/sparse/full), extend MoodContext with 5 new fields. 90% of the infrastructure exists — this is a wiring exercise.
     points: 5
     priority: p1
-    status: ready
+    status: done
     repos: sidequest-api
     workflow: tdd
+    completed: '2026-04-03'
   - id: 12-2
     title: Per-variation crossfade durations — overture fades slow, tension_build hits hard
     description: >-
       AudioCue carries fade_duration_ms. Client uses variation-specific crossfade timing instead of the flat 3000ms default. Overtures get 5s fade-in, tension_build gets 1s, resolution gets 4s fade-out.
     points: 2
     priority: p2
-    status: backlog
+    status: done
     repos: sidequest-ui
     workflow: tdd
+    completed: '2026-04-03'
   - id: 12-3
     title: Variation telemetry in watcher — see which score cue was chosen and why
     description: >-
       Add TrackVariation and selection reason to WatcherEvent for music cues. Visible in the GM telemetry panel.
     points: 1
     priority: p2
-    status: backlog
+    status: done
     repos: sidequest-api
     workflow: trivial
+    completed: '2026-04-03'
+completed: '2026-04-03'
