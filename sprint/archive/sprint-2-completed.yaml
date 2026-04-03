@@ -326,3 +326,8 @@ completed_stories:
     title: "Wire materialize_world — world builder ignores progressive materialization"
     points: 2
     completed: '2026-04-02'
+  - id: 15-21
+    epic: ''
+    title: "Wire level_to_defense — defense scaling ignored in combat resolution"
+    points: 2
+    completed: '2026-04-02'

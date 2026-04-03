@@ -373,9 +373,13 @@ stories:
       (defender_name, level, defense_value, damage_before, damage_after).
     points: 2
     priority: p2
-    status: backlog
+    status: done
+    started: '2026-04-02T20:35:00Z'
     repos: api
     workflow: tdd
+    completed: '2026-04-02'
+    branch: feat/15-21-wire-level-to-defense
+    assignee: keith
   - id: 15-22
     title: "Wire tier_to_dimensions — image dimensions never sent to daemon, daemon guesses"
     description: >-
