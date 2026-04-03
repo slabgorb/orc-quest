@@ -11,6 +11,7 @@ completed_epics:
   - '14'
   - '18'
   - '9'
+  - '20'
 completed_stories:
   - id: 13-8
     epic: ''
@@ -411,4 +412,9 @@ completed_stories:
     epic: ''
     title: Cinematic track variation selection — MusicDirector uses themed score cues
     points: 5
+    completed: '2026-04-03'
+  - id: 23-1
+    epic: ''
+    title: "Wire reworked narrator prompt — replace hardcoded narrator.rs with template sections"
+    points: 8
     completed: '2026-04-03'

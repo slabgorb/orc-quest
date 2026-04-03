@@ -3,7 +3,7 @@ type: epic
 title: Narrator Crunch Separation — Tool-Based Mechanical Extraction (ADR-057)
 description: "Replace the narrator's monolithic JSON output block with discrete tool calls. LLM narrates and interprets intent; scripts handle all mechanical extraction (items, quests, mood, visual scene, etc). Two-phase architecture: tools fire during narration, assemble_turn collects results after. Eliminates extractor.rs and the 3-tier JSON recovery pipeline. See ADR-057."
 priority: p1
-status: backlog
+status: done
 repos: pennyfarthing
 stories:
   - id: 20-1
@@ -158,3 +158,4 @@ stories:
     workflow: tdd
     depends_on: 20-11
     completed: '2026-04-03'
+completed: '2026-04-03'
