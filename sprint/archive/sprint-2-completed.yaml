@@ -429,3 +429,8 @@ completed_stories:
     title: Variation telemetry in watcher — see which score cue was chosen and why
     points: 1
     completed: '2026-04-03'
+  - id: 19-5
+    epic: ''
+    title: "Consumable item depletion — uses_remaining on items, decrement on room transition"
+    points: 5
+    completed: '2026-04-03'

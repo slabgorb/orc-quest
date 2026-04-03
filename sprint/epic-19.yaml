@@ -88,6 +88,7 @@ stories:
       - Room transition decrements active light source
       - GameMessage fired on light exhaustion
       - Test: torch with 6 uses survives 5 transitions, removed on 6th
+    review_verdict: approved
   - id: 19-6
     title: "Wire ResourceDeclaration.decay_per_turn — apply resource decay on trope tick"
     description: >-
