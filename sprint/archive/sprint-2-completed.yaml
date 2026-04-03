@@ -311,3 +311,8 @@ completed_stories:
     title: "item_acquire sidecar tool — narrator calls tool to grant items, sidecar parser validates and feeds assemble_turn"
     points: 5
     completed: '2026-04-02'
+  - id: 20-12
+    epic: ''
+    title: "merchant_transact sidecar tool — narrator calls tool to execute buy/sell, sidecar parser validates against merchant inventory"
+    points: 5
+    completed: '2026-04-02'
