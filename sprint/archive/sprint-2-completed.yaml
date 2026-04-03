@@ -439,3 +439,8 @@ completed_stories:
     title: Rework tool sections — wrapper names, env vars, compact XML format
     points: 5
     completed: '2026-04-03'
+  - id: 23-10
+    epic: ''
+    title: Deduplicate SOUL overlap — audit Agency and Genre Truth double-injection in narrator prompt
+    points: 3
+    completed: '2026-04-03'
