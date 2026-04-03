@@ -77,8 +77,8 @@ def filter_soul_for_agent(principles: list[SoulPrinciple], agent: str) -> str:
             # Narrator has richer versions of these as Primacy guardrails (story 23-10)
             if agent == "narrator" and p.name in NARRATOR_COVERED_PRINCIPLES:
                 continue
-            lines.append(f"- {p.name}: {p.text}")
-    return "\n".join(lines)
+            lines.append(f"<important>\n{p.name}: {p.text}\n</important>")
+    return "\n\n".join(lines)
 
 
 # ---------------------------------------------------------------------------
@@ -154,32 +154,33 @@ Advance the quest instead."""
 
 SCRIPT_TOOL_ENCOUNTERGEN = """\
 <tool name="ENCOUNTER">
-When to call: any time new enemies enter the scene.
-<command>sidequest-encounter [--tier N] [--count N] [--culture NAME]</command>
+When to call: any time new enemies enter the scene. Pick flags based on narrative context.
+<command>sidequest-encounter [--tier N] [--count N] [--culture NAME] [--archetype NAME] [--role ROLE] [--context TEXT]</command>
 <usage>
 - [ ] Use the generated name in your narration
-- [ ] Reference abilities from the abilities list
+- [ ] Reference abilities from the abilities list (not invented ones)
 </usage>
 </tool>"""
 
 SCRIPT_TOOL_NAMEGEN = """\
 <tool name="NPC">
-MANDATORY: Call before introducing any new NPC.
-When to call: any time a new NPC appears (is_new: true).
-<command>sidequest-npc [--culture NAME]</command>
+MANDATORY: Call this BEFORE introducing any new NPC. Do NOT invent NPC names.
+<command>sidequest-npc [--culture NAME] [--archetype NAME] [--gender GENDER] [--role ROLE] [--description TEXT]</command>
 <usage>
-- [ ] Use the generated name exactly
-- [ ] Use dialogue_quirks in speech
+- [ ] Use the generated name exactly — do NOT modify or replace it
+- [ ] Use dialogue_quirks to flavor their speech
+- [ ] Reference their role and appearance in narration
 </usage>
 </tool>"""
 
 SCRIPT_TOOL_LOADOUTGEN = """\
 <tool name="LOADOUT">
-When to call: at character creation or session start.
-<command>sidequest-loadout --class CLASS</command>
+When to call: at character creation when introducing the character's starting gear.
+<command>sidequest-loadout --class CLASS [--tier N]</command>
 <usage>
-- [ ] Weave the narrative_hook into the scene
-- [ ] Use the currency_name for money
+- [ ] Weave the narrative_hook into the opening scene naturally
+- [ ] Reference specific items by name when the character uses them
+- [ ] Use the currency_name for all money references
 </usage>
 </tool>"""
 
@@ -258,7 +259,7 @@ def build_sections(soul_principles: list[SoulPrinciple]) -> list[Section]:
     # --- Primacy: Identity ---
     sections.append(Section(
         name="narrator_identity",
-        content=NARRATOR_IDENTITY,
+        content=f"<identity>\n{NARRATOR_IDENTITY}\n</identity>",
         zone="Primacy",
         category="Identity",
     ))
@@ -266,25 +267,25 @@ def build_sections(soul_principles: list[SoulPrinciple]) -> list[Section]:
     # --- Primacy: Guardrails (4 critical blocks) ---
     sections.append(Section(
         name="narrator_constraints",
-        content=NARRATOR_CONSTRAINTS,
+        content=f"<critical>\n{NARRATOR_CONSTRAINTS}\n</critical>",
         zone="Primacy",
         category="Guardrail",
     ))
     sections.append(Section(
         name="narrator_agency",
-        content=NARRATOR_AGENCY,
+        content=f"<critical>\n{NARRATOR_AGENCY}\n</critical>",
         zone="Primacy",
         category="Guardrail",
     ))
     sections.append(Section(
         name="narrator_consequences",
-        content=NARRATOR_CONSEQUENCES,
+        content=f"<critical>\n{NARRATOR_CONSEQUENCES}\n</critical>",
         zone="Primacy",
         category="Guardrail",
     ))
     sections.append(Section(
         name="narrator_output_only",
-        content=NARRATOR_OUTPUT_ONLY,
+        content=f"<critical>\n{NARRATOR_OUTPUT_ONLY}\n</critical>",
         zone="Primacy",
         category="Guardrail",
     ))
@@ -292,13 +293,13 @@ def build_sections(soul_principles: list[SoulPrinciple]) -> list[Section]:
     # --- Early: Output style + Referral rule ---
     sections.append(Section(
         name="narrator_output_style",
-        content=NARRATOR_OUTPUT_STYLE,
+        content=f"<output-style>\n{NARRATOR_OUTPUT_STYLE}\n</output-style>",
         zone="Early",
         category="Format",
     ))
     sections.append(Section(
         name="narrator_referral_rule",
-        content=NARRATOR_REFERRAL_RULE,
+        content=f"<important>\n{NARRATOR_REFERRAL_RULE}\n</important>",
         zone="Early",
         category="Guardrail",
     ))
@@ -308,7 +309,7 @@ def build_sections(soul_principles: list[SoulPrinciple]) -> list[Section]:
     if soul_text:
         sections.append(Section(
             name="soul_principles",
-            content=f"## Guiding Principles\n{soul_text}",
+            content=soul_text,
             zone="Early",
             category="Soul",
         ))
