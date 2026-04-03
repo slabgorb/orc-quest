@@ -402,3 +402,8 @@ completed_stories:
     title: Footnote rendering in narration view — superscript markers, bottom-of-block entries, discovery vs callback styling
     points: 3
     completed: '2026-03-28'
+  - id: 20-13
+    epic: ''
+    title: "lore_mark sidecar tool — narrator calls tool to emit footnotes, sidecar parser collects into lore_established"
+    points: 3
+    completed: '2026-04-03'
