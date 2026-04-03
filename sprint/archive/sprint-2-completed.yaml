@@ -418,3 +418,8 @@ completed_stories:
     title: "Wire reworked narrator prompt — replace hardcoded narrator.rs with template sections"
     points: 8
     completed: '2026-04-03'
+  - id: 12-2
+    epic: ''
+    title: Per-variation crossfade durations — overture fades slow, tension_build hits hard
+    points: 2
+    completed: '2026-04-03'
