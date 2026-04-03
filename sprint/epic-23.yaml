@@ -120,3 +120,19 @@ stories:
     status: backlog
     repos: api
     workflow: tdd
+  - id: 23-10
+    title: Deduplicate SOUL overlap — audit Agency and Genre Truth double-injection in narrator prompt
+    points: 3
+    priority: p1
+    status: backlog
+    repos: api
+    workflow: tdd
+    type: refactor
+  - id: 23-11
+    title: Simplify tool sections — replace verbose flag tables with compact checklist format from prompt-reworked.md
+    points: 3
+    priority: p1
+    status: backlog
+    repos: api
+    workflow: tdd
+    type: refactor
