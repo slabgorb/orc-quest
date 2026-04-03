@@ -434,3 +434,8 @@ completed_stories:
     title: "Consumable item depletion — uses_remaining on items, decrement on room transition"
     points: 5
     completed: '2026-04-03'
+  - id: 23-11
+    epic: ''
+    title: Rework tool sections — wrapper names, env vars, compact XML format
+    points: 5
+    completed: '2026-04-03'

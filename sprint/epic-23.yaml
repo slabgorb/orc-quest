@@ -117,7 +117,10 @@ stories:
     title: Rework tool sections — wrapper names, env vars, compact XML format
     points: 5
     priority: p1
-    status: backlog
+    status: done
+    started: '2026-04-03'
     repos: api
     workflow: tdd
+    completed: '2026-04-03'
     type: refactor
+    branch: feat/23-11-rework-tool-sections
