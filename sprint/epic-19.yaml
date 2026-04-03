@@ -150,3 +150,11 @@ stories:
       - xp_affinity field in genre rules configures target affinity
       - No effect when gold changes inside dungeon
       - Test: extract 100 GP to surface, verify 100 progress on configured affinity
+  - id: 19-10
+    title: Wire deplete_light_on_transition into room transition dispatch — server call site, GameMessage, OTEL spans
+    points: 5
+    priority: p0
+    status: backlog
+    repos: sidequest-api
+    workflow: tdd
+    depends_on: 19-5
