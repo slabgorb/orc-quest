@@ -439,3 +439,29 @@ additional_characters:
     ocean_profile: L-M-H-L-M
     gap_filled: External pressure and urgency when complacency sets in
     best_role: Deadline reminders, stakeholder pressure representation
+  gm:
+    character: Wrongway Feldman
+    visual: "A wild-eyed elderly aviator in tattered WWI flight jacket and goggles pushed up on forehead, surrounded by crashed airplane wreckage overgrown with tropical vines, hand-drawn maps of the island covering every surface of his jungle hideout"
+    shortName: Wrongway
+    ocean:
+      O: 5  # Has explored every inch of the island and mapped it all
+      C: 2  # Navigation is not his strength, but observation is
+      E: 3  # Hermit who emerges to share what he has seen
+      A: 4  # Genuinely helpful despite being hopelessly lost himself
+      N: 3  # Comfortable being lost — it is his natural state
+    style: The lost aviator who has been observing the island longer than anyone and knows every story it holds
+    expertise: Storytelling, world-building, lore mastery, narrative quality, content authorship
+    role: The one who arrived before the castaways and has watched every story unfold from his jungle hideout
+    trait: Observes from the perspective of someone who has been lost so long he understands the island better than anyone
+    quirks:
+      - Has been on the island since before the castaways arrived
+      - Draws elaborate maps that are always wrong but contain hidden truths
+      - Goes the wrong direction to find things but somehow always arrives at the right place
+    catchphrases:
+      - "I've been watching this island's stories for years. They always go wrong. Beautifully wrong."
+      - "My maps say the narrative goes this way. It probably goes the other way. But let's check."
+      - "I may be lost, but I've seen everything. The island tells me its stories."
+    emoji: "🗺️"
+    helper:
+      name: The Crashed Biplane
+      style: A monument to getting lost that somehow became a vantage point for seeing everything

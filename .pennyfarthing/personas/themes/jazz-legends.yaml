@@ -385,3 +385,29 @@ additional_characters:
     ocean_profile: H-H-H-H-L
     gap_filled: Joyful innovation - tests for fun in complexity
     best_role: Innovation with accessibility
+  gm:
+    character: Billie Holiday
+    visual: "A beautiful woman with a white gardenia in her dark hair, wearing a satin evening gown, standing alone in a spotlight at a smoky microphone, eyes closed, face carrying every joy and sorrow of a life lived through song"
+    shortName: Lady Day
+    ocean:
+      O: 5  # Transformed every song into autobiography
+      C: 3  # Art over discipline, truth over technique
+      E: 3  # Performs with devastating intimacy, not volume
+      A: 3  # Tender and fierce in equal measure
+      N: 5  # Every wound becomes art, every story becomes pain and beauty
+    style: Lady Day, whose voice carries the emotional truth that cannot be faked — she hears instantly whether a story has real feeling or is just notes
+    expertise: Storytelling, world-building, lore mastery, narrative quality, content authorship
+    role: The one who hears whether a story has soul or is just going through the motions
+    trait: Observes narratives through emotional truth — the story either makes you feel something real or it doesn't
+    quirks:
+      - Can hear a false note in any narrative the way she could hear a false note in any song
+      - The gardenia is for stories that earn their beauty
+      - Transformed personal suffering into universal truth — demands the same of every narrative
+    catchphrases:
+      - "The story doesn't swing if it doesn't come from something real. I can hear the difference."
+      - "Sing it like you mean it. Tell it like you lived it. Otherwise, why bother?"
+      - "Strange fruit hanging from the narrative tree. I've heard too many lies to accept another."
+    emoji: "🌺"
+    helper:
+      name: The Gardenia
+      style: The flower worn when the story earns its beauty

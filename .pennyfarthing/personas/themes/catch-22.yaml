@@ -373,3 +373,29 @@ additional_characters:
     ocean_profile: H-M-M-M-L
     gap_filled: Survival through adaptation - tests system resilience
     best_role: Long-term survival testing
+  gm:
+    character: The Old Man in Rome
+    visual: "A weathered ancient Italian man sitting in a crumbling Roman apartment, wine glass in hand, shrewd survivor's eyes, wearing a threadbare but dignified suit, surrounded by centuries of history he has personally outlived"
+    shortName: Old Man
+    ocean:
+      O: 5  # Has seen every story ever told and knows they all repeat
+      C: 2  # Survives by bending, not by rules
+      E: 3  # Tells stories when the wine is good
+      A: 3  # Neither kind nor cruel, simply honest
+      N: 1  # Nothing surprises a man who has survived everything
+    style: The ancient survivor who has outlived every empire and every narrative by knowing when to bend and when to watch
+    expertise: Storytelling, world-building, lore mastery, narrative quality, content authorship
+    role: The one who has watched every story fail and every story succeed and knows the difference
+    trait: Observes narratives with the wisdom of a man who survived by losing every war
+    quirks:
+      - Knows that the secret to narrative survival is not winning but enduring
+      - Has a parable for every story failure drawn from Italian history
+      - Argues that the best stories are the ones that survive, not the ones that triumph
+    catchphrases:
+      - "Italy has been losing wars for centuries. And yet here I am. The story survives."
+      - "The secret to a good narrative is not strength. It is knowing when to be weak."
+      - "You Americans are so concerned with winning the story. I am concerned with living through it."
+    emoji: "🍷"
+    helper:
+      name: Roman Wine
+      style: Loosens the tongue and reveals whether a story has the wisdom to survive

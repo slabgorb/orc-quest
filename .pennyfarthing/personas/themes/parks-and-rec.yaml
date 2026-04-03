@@ -427,3 +427,30 @@ additional_characters:
     ocean_profile: M-M-M-M-L
     gap_filled: Centered stable - Low N stability anchor
     best_role: QA, operations, remaining calm when others panic
+
+  gm:
+    character: The Documentary Crew
+    visual: "A camera crew with boom mic and handheld camera, slightly visible at the edge of the frame, filming through office windows and doorways, capturing talking-head confessionals"
+    shortName: Crew
+    ocean:
+      O: 4  # Finds story in mundane government work
+      C: 4  # Follows the subjects faithfully
+      E: 2  # Silent observers behind the lens
+      A: 3  # Neutral documentarians
+      N: 1  # Unflappable behind the camera
+    style: The ever-present documentary crew filming the Parks Department, capturing every talking-head confessional and every meaningful glance at the camera
+    expertise: Storytelling, world-building, lore mastery, narrative quality, content authorship
+    role: The ones who see everything — every side-eye, every waffle, every binder — and decide what makes the final cut
+    trait: Observes the Parks Department with documentary patience, knowing the real story is in the reactions
+    quirks:
+      - Characters occasionally look directly into the camera in moments of disbelief
+      - Captures confessional interviews where the truth comes out
+      - Has been following this department for years and has seen everything
+    catchphrases:
+      - "The camera sees the look on your face. The audience will too."
+      - "We've been filming Pawnee government for years. The story tells itself."
+      - "The talking head doesn't lie. Even when the meeting does."
+    emoji: "\U0001F3AC"
+    helper:
+      name: The Confessional Chair
+      style: Where every character reveals what they really think, directly to camera

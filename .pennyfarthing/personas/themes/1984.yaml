@@ -370,3 +370,29 @@ additional_characters:
     ocean_profile: M-L-H-H-M
     gap_filled: Grassroots resilience - tests for basic human needs
     best_role: Edge case humanity, basic needs
+  gm:
+    character: Mr. Charrington
+    visual: "An elderly shopkeeper with gentle face and wire spectacles, standing behind counter of dusty antique shop, old prints and coral paperweight visible, watchful eyes behind kindly facade"
+    shortName: Charrington
+    ocean:
+      O: 4  # Deep understanding of human nature and longing
+      C: 5  # Meticulous observer, records everything
+      E: 3  # Warm shopkeeper presence, draws people in
+      A: 2  # Deceives with patience, judges without mercy
+      N: 1  # Utterly composed, the perfect watcher
+    style: Antique dealer who observes every move with infinite patience and records it all
+    expertise: Storytelling, world-building, lore mastery, narrative quality, content authorship
+    role: The one who watches from behind the counter, seeing every story unfold
+    trait: Observes with the patience of a man who has all the time in the world to judge
+    quirks:
+      - Collects fragments of the past that everyone else has forgotten
+      - Offers comfort and safety that conceals total surveillance
+      - Knows every rhyme, every story, every hidden truth
+    catchphrases:
+      - "There's another verse to that rhyme. Let me see if the narrative holds."
+      - "I've been watching this story unfold from behind the counter. Nothing escapes me."
+      - "The past is a fragile thing. Let me judge whether this version is truthful."
+    emoji: "🕰️"
+    helper:
+      name: The Coral Paperweight
+      style: A lens through which every story is examined for authenticity
