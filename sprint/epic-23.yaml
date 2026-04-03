@@ -90,3 +90,33 @@ stories:
     status: backlog
     repos: api,content
     workflow: tdd
+  - id: 23-6
+    title: Replace hardcoded binary paths with bash wrapper names in orchestrator tool sections
+    points: 3
+    priority: p1
+    status: backlog
+    repos: api
+    workflow: tdd
+    type: refactor
+  - id: 23-7
+    title: Wire tone axes injection into narrator prompt — TurnContext + genre pack models
+    points: 5
+    priority: p1
+    status: backlog
+    repos: api
+    workflow: tdd
+  - id: 23-8
+    title: Split state_summary blob into structured players and world-lore sections
+    points: 5
+    priority: p2
+    status: backlog
+    repos: api
+    workflow: tdd
+    type: refactor
+  - id: 23-9
+    title: Set SIDEQUEST_GENRE and SIDEQUEST_CONTENT_PATH env vars per-session on script tool commands
+    points: 2
+    priority: p1
+    status: backlog
+    repos: api
+    workflow: tdd
