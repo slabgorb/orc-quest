@@ -139,101 +139,41 @@ talking to Y, do NOT have Y send the player back to X for the same objective. \
 Advance the quest instead."""
 
 # ---------------------------------------------------------------------------
-# Script tool sections (from orchestrator.rs — example with placeholder paths)
+# Script tool sections — compact XML format (story 23-11)
+# Wrapper names replace binary paths. --genre/--genre-packs-path replaced by
+# env vars SIDEQUEST_GENRE and SIDEQUEST_CONTENT_PATH on the Claude subprocess.
 # ---------------------------------------------------------------------------
 
-EXAMPLE_BINARY = "/path/to/sidequest-encountergen"
-EXAMPLE_PACKS = "/path/to/genre_packs"
-EXAMPLE_GENRE = "mutant_wasteland"
-
-SCRIPT_TOOL_ENCOUNTERGEN = f"""\
-[ENCOUNTER GENERATOR]
-Generate enemy stat blocks from genre pack data.
-
-Command:
-```
-{EXAMPLE_BINARY} --genre-packs-path {EXAMPLE_PACKS} --genre {EXAMPLE_GENRE} [options]
-```
-
-| Flag | Required | Description |
-|------|----------|-------------|
-| --tier | No | Power tier 1-4 (default: random 1-3) |
-| --count | No | Number of enemies (default: 1) |
-| --class | No | Character class (e.g., Mutant, Scavenger) |
-| --culture | No | Culture for name generation |
-| --archetype | No | Archetype (e.g., "Wasteland Trader") |
-| --role | No | Role description (e.g., "ambush predator") |
-| --context | No | Scene context for visual prompt |
-
+SCRIPT_TOOL_ENCOUNTERGEN = """\
+<tool name="ENCOUNTER">
 When to call: any time new enemies enter the scene.
-Pick flags based on narrative context — use --culture for the local faction, \
---tier for the threat level, --role for the enemy's purpose in the scene.
-
-Output: JSON with enemies[].{{name, class, level, hp, abilities, weaknesses, \
-stat_scores, visual_prompt, ...}}
-
-Checklist after calling:
+<command>sidequest-encounter [--tier N] [--count N] [--culture NAME]</command>
+<usage>
 - [ ] Use the generated name in your narration
-- [ ] Reference abilities from the abilities list (not invented ones)
-- [ ] Include the enemy in npcs_present with is_new: true
-- [ ] Set hp_changes in combat patch using the generated HP as the baseline
-- [ ] The visual_prompt field goes to image generation automatically"""
+- [ ] Reference abilities from the abilities list
+</usage>
+</tool>"""
 
-SCRIPT_TOOL_NAMEGEN = f"""\
-[NPC GENERATOR]
-Generate NPC identity from genre pack data.
-
-Command:
-```
-/path/to/sidequest-namegen --genre-packs-path {EXAMPLE_PACKS} --genre {EXAMPLE_GENRE} [options]
-```
-
-| Flag | Required | Description |
-|------|----------|-------------|
-| --culture | No | Culture/faction name |
-| --archetype | No | Archetype name |
-| --gender | No | male, female, nonbinary |
-| --role | No | Role override |
-| --description | No | Physical description hints |
-
+SCRIPT_TOOL_NAMEGEN = """\
+<tool name="NPC">
+MANDATORY: Call before introducing any new NPC.
 When to call: any time a new NPC appears (is_new: true).
-Pick --culture based on where the scene takes place.
-
-Output: JSON with {{name, pronouns, culture, role, appearance, personality, \
-dialogue_quirks, history, ocean, inventory, trope_connections}}
-
-Checklist after calling:
+<command>sidequest-npc [--culture NAME]</command>
+<usage>
 - [ ] Use the generated name exactly
-- [ ] Use dialogue_quirks to flavor their speech
-- [ ] Include in npcs_present with the generated details
-- [ ] Reference their role and appearance in narration"""
+- [ ] Use dialogue_quirks in speech
+</usage>
+</tool>"""
 
-SCRIPT_TOOL_LOADOUTGEN = f"""\
-[STARTING LOADOUT GENERATOR]
-Generate starting equipment and currency for a character.
-
-Command:
-```
-/path/to/sidequest-loadoutgen --genre-packs-path {EXAMPLE_PACKS} --genre {EXAMPLE_GENRE} --class <class_name>
-```
-
-| Flag | Required | Description |
-|------|----------|-------------|
-| --class | Yes | Character class or archetype name |
-| --tier | No | Power tier 1-4 (default: 1) |
-
-When to call: at character creation completion or session start, \
-when introducing the character's starting gear.
-
-Output: JSON with {{class, currency_name, starting_gold, equipment[], \
-narrative_hook, total_value}}
-Each equipment item has: id, name, description, category, value, tags, lore.
-
-Checklist after calling:
-- [ ] Weave the narrative_hook into the opening scene naturally
-- [ ] Reference specific items by name when the character uses them
-- [ ] Use the currency_name for all money references
-- [ ] Include equipment in the character's inventory state"""
+SCRIPT_TOOL_LOADOUTGEN = """\
+<tool name="LOADOUT">
+When to call: at character creation or session start.
+<command>sidequest-loadout --class CLASS</command>
+<usage>
+- [ ] Weave the narrative_hook into the scene
+- [ ] Use the currency_name for money
+</usage>
+</tool>"""
 
 # ---------------------------------------------------------------------------
 # Dynamic placeholders (runtime values shown as examples)
