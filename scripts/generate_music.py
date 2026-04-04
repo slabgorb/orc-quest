@@ -105,6 +105,7 @@ GENRE_MOODS: dict[str, dict[str, tuple[str, int]]] = {
         "extraction": ("urgent driving rhythm, running footsteps tempo, rattling coins, building panic, pursuit, dungeon escape, breathless, relentless, no resolution, cuts to silence", 60),
         "keeper_monologue": ("single sustained bass drone, cavernous reverb, ominous, deep rumble, subterranean, organ-like, dark, slow, alien intelligence, geological timescale", 60),
         "town": ("sparse acoustic guitar, tired folk, mud and rain, tavern at dawn, melancholy, functional, no celebration, weary, simple, provisioning", 60),
+        "rest": ("crackling campfire, underground echo, distant dripping water, quiet breathing, chalk on stone, waterskin, safe room, medieval folk lullaby, tired, warm, reprieve from darkness, dungeon rest", 60),
     },
     "road_warrior": {
         "exploration": ("desert rock, slide guitar, dusty road, heat haze, V8 engines idle, desolate highway, atmospheric, gritty, sun-bleached", 60),
