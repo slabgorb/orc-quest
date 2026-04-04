@@ -469,3 +469,8 @@ completed_stories:
     title: "Social confrontation types — negotiation, interrogation, trial"
     points: 5
     completed: '2026-04-04'
+  - id: 23-4
+    epic: ''
+    title: "LoreFilter — graph-distance + intent-based context retrieval for Valley zone"
+    points: 5
+    completed: '2026-04-04'
