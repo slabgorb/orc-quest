@@ -12,6 +12,7 @@ workflow: "tdd"
 - **Workflow:** tdd
 - **Epic:** 16 — Genre Mechanics Engine — Confrontations & Resource Pools
 - **Repository:** sidequest-api (Rust backend)
+- **Branch:** feat/16-5-migrate-chase-confrontation
 - **Points:** 5
 - **Priority:** p1
 - **Status:** in-progress
@@ -97,12 +98,12 @@ Story 16-5 refactors the existing ChaseState into a specialization of the new St
 
 **Workflow:** tdd
 **Phase:** setup
-**Phase Started:** 2026-03-31T20:15Z
+**Phase Started:** 2026-04-04T17:45Z
 
 ### Phase History
 | Phase | Started | Ended | Duration |
 |-------|---------|-------|----------|
-| setup | 2026-03-31T20:15Z | — | — |
+| setup | 2026-04-04T17:45Z | — | — |
 
 ## Delivery Findings
 
