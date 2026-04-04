@@ -1,0 +1,92 @@
+# ADR-065: Protocol Message Decomposition — Split message.rs by Domain
+
+**Status:** Proposed
+**Date:** 2026-04-04
+**Deciders:** Keith
+**Relates to:** ADR-060 (Genre Models Decomposition)
+
+## Context
+
+`sidequest-protocol/src/message.rs` contains 1,111 lines with 47 struct/enum
+definitions and a single large `GameMessage` enum. Every payload type for every
+message category lives in this one file:
+
+| Category | Types |
+|----------|-------|
+| **Core** | `GameMessage` (the top-level enum), `PlayerActionPayload`, `ErrorPayload` |
+| **Narration** | `NarrationPayload`, `Footnote`, `FactCategory`, `NarrationChunkPayload`, `NarrationEndPayload`, `ThinkingPayload`, `ChapterMarkerPayload` |
+| **Session** | `SessionEventPayload`, `TurnStatusPayload`, `ActionQueuePayload`, `ActionRevealPayload`, `PlayerActionEntry` |
+| **Character** | `CharacterCreationPayload`, `CharacterSheetPayload`, `PartyStatusPayload`, `PartyMember`, `CharacterState`, `StatusEffectInfo` |
+| **Combat** | `CombatEventPayload`, `CombatEnemy` |
+| **World/Map** | `MapUpdatePayload`, `ExploredLocation`, `RoomExitInfo`, `FogBounds`, `InitialState` |
+| **Economy** | `InventoryPayload`, `InventoryItem`, `ItemGained`, `StateDelta` |
+| **Media** | `ImagePayload`, `AudioCuePayload`, `VoiceSignalPayload`, `VoiceTextPayload`, `TtsStartPayload`, `TtsChunkPayload` |
+| **Scenario** | `ScenarioEventPayload`, `AchievementEarnedPayload` |
+| **Journal** | `JournalSortOrder`, `JournalRequestPayload`, `JournalResponsePayload`, `JournalEntry` |
+| **Narrator config** | `NarratorVerbosity`, `NarratorVocabulary` |
+
+This mirrors the `models.rs` anti-pattern from `sidequest-genre` (ADR-060) — a
+type dumping ground where every protocol addition means editing one file.
+
+## Decision
+
+**Split `message.rs` into a `message/` directory grouped by message domain.**
+
+### Module Structure
+
+```
+sidequest-protocol/src/message/
+├── mod.rs              # GameMessage enum + re-exports
+├── narration.rs        # NarrationPayload, Footnote, FactCategory,
+│                       #   NarrationChunkPayload, NarrationEndPayload,
+│                       #   ThinkingPayload, ChapterMarkerPayload,
+│                       #   NarratorVerbosity, NarratorVocabulary
+├── session.rs          # SessionEventPayload, TurnStatusPayload,
+│                       #   ActionQueuePayload, ActionRevealPayload,
+│                       #   PlayerActionPayload, PlayerActionEntry
+├── character.rs        # CharacterCreationPayload, CharacterSheetPayload,
+│                       #   PartyStatusPayload, PartyMember, CharacterState,
+│                       #   CreationChoice, StatusEffectInfo
+├── combat.rs           # CombatEventPayload, CombatEnemy
+├── world.rs            # MapUpdatePayload, ExploredLocation, RoomExitInfo,
+│                       #   FogBounds, InitialState
+├── economy.rs          # InventoryPayload, InventoryItem, ItemGained, StateDelta
+├── media.rs            # ImagePayload, AudioCuePayload, VoiceSignalPayload,
+│                       #   VoiceTextPayload, TtsStartPayload, TtsChunkPayload
+├── scenario.rs         # ScenarioEventPayload, AchievementEarnedPayload
+├── journal.rs          # JournalSortOrder, JournalRequestPayload,
+│                       #   JournalResponsePayload, JournalEntry
+└── error.rs            # ErrorPayload
+```
+
+### GameMessage Stays in mod.rs
+
+The `GameMessage` enum references all payload types — it's the union type.
+It belongs in the module root. Each variant imports its payload from the
+appropriate submodule.
+
+### API Preservation
+
+`mod.rs` re-exports all types via `pub use`. Downstream crates continue to use
+`use sidequest_protocol::message::NarrationPayload`. Zero-breakage migration.
+
+## Alternatives Considered
+
+### Keep single file, use type aliases
+Doesn't reduce the file size or improve discoverability. Rejected.
+
+### One file per payload type
+47 files would be over-split. Many payloads are 10-15 lines. Domain grouping
+keeps related types together at a manageable granularity. Rejected.
+
+## Consequences
+
+- **Positive:** Adding a new narration payload means editing `narration.rs`, not
+  scrolling through 47 other types.
+- **Positive:** Protocol reviews can focus on the affected domain module.
+- **Positive:** Aligns with the UI's `types/` directory which already groups by
+  domain — both sides of the protocol speak the same organizational language.
+- **Negative:** `GameMessage` enum in `mod.rs` imports from all submodules.
+  Acceptable — it's the point of convergence by definition.
+- **Risk:** `combat.rs` may end up very small (2 types). Acceptable — combat
+  payloads will grow as the combat system matures. If not, fold into `session.rs`.
