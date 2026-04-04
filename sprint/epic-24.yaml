@@ -1,0 +1,66 @@
+id: '24'
+type: epic
+title: Procedural World-Grounding Systems
+description: 'Anti-mode-collapse infrastructure: weather, demographics, NPC schedules, economy, establishments, calendar — following Monster Manual pattern (ADR-059). Phase 1: schemas + low_fantasy proof of concept.'
+priority: p1
+status: ready
+repos: api,content,orchestrator
+stories:
+  - id: 24-1
+    title: Define YAML schemas for weather, demographics, calendar, economy, establishments, quest shapes, NPC schedules
+    points: 3
+    priority: p0
+    status: backlog
+    repos: content,orchestrator
+    workflow: trivial
+    type: chore
+  - id: 24-2
+    title: Author low_fantasy weather rules (climate zones, seasonal conditions, special events)
+    points: 2
+    priority: p0
+    status: backlog
+    repos: content
+    workflow: trivial
+  - id: 24-3
+    title: Author low_fantasy/pinwheel_coast demographics (settlement profiles, population, services)
+    points: 2
+    priority: p0
+    status: backlog
+    repos: content
+    workflow: trivial
+  - id: 24-4
+    title: Author low_fantasy/pinwheel_coast calendar (months, days, moons, festivals, time precision)
+    points: 2
+    priority: p0
+    status: backlog
+    repos: content
+    workflow: trivial
+  - id: 24-5
+    title: 'Rust: weather generator (read climate YAML + RNG seed → weather state, following namegen pattern)'
+    points: 3
+    priority: p0
+    status: backlog
+    repos: api
+    workflow: tdd
+  - id: 24-6
+    title: Prompt zone injection for weather + demographics + calendar (extend narrator template, verify with preview-prompt.py)
+    points: 3
+    priority: p0
+    status: backlog
+    repos: api
+    workflow: tdd
+  - id: 24-7
+    title: OTEL spans for weather generation (proposed vs used) and demographics injection
+    points: 2
+    priority: p1
+    status: backlog
+    repos: api
+    workflow: tdd
+  - id: 24-8
+    title: 'Playtest validation: narrator uses weather/demographics grounding in low_fantasy/pinwheel_coast'
+    points: 2
+    priority: p1
+    status: backlog
+    repos: orchestrator
+    workflow: trivial
+    type: chore

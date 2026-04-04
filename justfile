@@ -16,7 +16,7 @@ api-release:
     cd sidequest-api && cargo build --release
 
 api-run *flags:
-    cd sidequest-api && cargo run -p sidequest-server -- --genre-packs-path {{content}} {{flags}}
+    cd sidequest-api && cargo build -p sidequest-namegen -p sidequest-encountergen -p sidequest-loadoutgen 2>/dev/null; cargo run -p sidequest-server -- --genre-packs-path {{content}} {{flags}}
 
 api-lint:
     cd sidequest-api && cargo clippy -- -D warnings
@@ -126,7 +126,7 @@ setup:
 
 # Headless playtest
 playtest-server *flags:
-    cd sidequest-api && cargo run -p sidequest-server -- --genre-packs-path {{content}} --headless {{flags}}
+    cd sidequest-api && cargo build -p sidequest-namegen -p sidequest-encountergen -p sidequest-loadoutgen 2>/dev/null; cargo run -p sidequest-server -- --genre-packs-path {{content}} --headless {{flags}}
 
 playtest *flags:
     python3 scripts/playtest.py {{flags}}

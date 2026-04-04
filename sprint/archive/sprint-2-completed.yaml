@@ -479,3 +479,8 @@ completed_stories:
     title: "Wire conlang knowledge — language learning, name bank, and prompt injection all unwired"
     points: 5
     completed: '2026-04-04'
+  - id: 19-8
+    epic: ''
+    title: "Automapper UI component — render room graph as dungeon floorplan"
+    points: 8
+    completed: '2026-04-04'
