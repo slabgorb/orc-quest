@@ -1,0 +1,72 @@
+# Caverns & Claudes smoke test — exercises dungeon loop, resource tracking,
+# keeper awareness, room navigation, NPC interaction, combat, and extraction.
+# Run: just playtest-scenario caverns_smoke
+
+name: Caverns & Claudes Smoke Test
+genre: caverns_and_claudes
+world: mawdeep
+
+character:
+  strategy: auto
+
+actions:
+  # Town phase — test NPC interaction and provisioning
+  - "look around Gristwell Square"
+  - "talk to the provisioner about what I need for a delve"
+  - "buy three torches, a day's rations, and a waterskin"
+  - "go to the tavern and ask about the dungeon"
+  - "/status"
+  - "/inventory"
+
+  # Dungeon entry — test room graph navigation
+  - "head to the mouth of Mawdeep"
+  - "examine the chalk marks and the entrance"
+  - "light a torch and enter the dungeon"
+  - "go west toward the Throat"
+
+  # Exploration — test keeper awareness and room descriptions
+  - "examine the ribbed walls carefully"
+  - "continue west to the Junction"
+  - "look at the pale rats feeding on the amber substance"
+  - "/status"
+
+  # Treasure — test inventory acquisition
+  - "go north to the Antechamber"
+  - "search the abandoned equipment pile"
+  - "take the copper pieces"
+  - "/inventory"
+
+  # Deeper exploration — test room graph fidelity
+  - "go east through the archway to the Gallery"
+  - "examine the alcoves and their contents"
+  - "take the jeweled hatpin"
+  - "/status"
+
+  # Combat — test confrontation system
+  - "go south through the teeth-door to the Swallowing Hall"
+  - "approach the pale scavenger creatures cautiously"
+  - "attack the nearest scavenger with my weapon"
+  - "/status"
+
+  # Resource pressure — test keeper awareness thresholds
+  - "examine the well in the center of the hall"
+  - "go south toward the stairs down"
+  - "descend the stairs to Level 2"
+
+  # Level 2 — test atmosphere shift and resource drain
+  - "look around the Landing"
+  - "check my torch — how much is left?"
+  - "/status"
+  - "/inventory"
+
+  # Extraction — test the return journey
+  - "head back up the stairs to Level 1"
+  - "move quickly through the Swallowing Hall toward the Junction"
+  - "continue through the Throat to the Mouth"
+  - "exit the dungeon into daylight"
+
+  # Post-delve — test town return and treasure economy
+  - "return to Gristwell"
+  - "sell my loot to Kel Bonecounter"
+  - "/status"
+  - "/inventory"
