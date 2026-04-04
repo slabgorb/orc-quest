@@ -27,7 +27,26 @@ Use `/sq-audit` to check completeness:
 
 This checks for missing files, schema violations, and structural gaps.
 
-### 2. YAML Parse Check
+### 2. Schema Validation (BLOCKING)
+
+Run the schema validator to check every YAML file against the actual Rust data models:
+```bash
+cd /Users/keithavery/Projects/oq-2/sidequest-api && cargo run -p sidequest-validate -- \
+  --genre-packs-path /Users/keithavery/Projects/oq-2/sidequest-content/genre_packs \
+  --genre <GENRE_SLUG>
+```
+
+**This is the most important check.** The validator deserializes each file against the exact
+Rust struct the server uses. If it fails here, the server will fail at runtime. Fix ALL errors
+before proceeding — do not skip this step.
+
+Common failures:
+- Missing required fields (the struct has a field, your YAML doesn't)
+- Extra wrapper keys (nesting under `colors:` when struct expects flat fields)
+- Wrong types (string where number expected, array where map expected)
+- Wrong field names (snake_case vs camelCase, abbreviated vs full)
+
+### 3. YAML Parse Check
 
 Verify every generated file parses as valid YAML:
 - No tab/space mixing

@@ -60,11 +60,28 @@ Generate only the files that need updating based on user's session goals.
 
 ## RULES
 
+- **Schema first.** Before writing any YAML file, read the corresponding Rust struct
+  from `sidequest-api/crates/sidequest-genre/src/models/`. The struct IS the schema.
+  Match field names, types, and nesting exactly. Do not invent fields or wrapper keys.
+  Key model files: `audio.rs`, `theme.rs`, `culture.rs`, `world.rs`, `lore.rs`,
+  `cartography.rs`, `pack.rs`. If unsure, check a working genre pack (e.g. `mutant_wasteland`)
+  for the expected YAML shape.
 - **Every name through the conlang.** English in descriptions only.
 - **Cartography adjacency is bidirectional.** If A connects to B, B must connect to A.
 - **Factions must conflict.** No world where everyone gets along.
 - **History chapters must have valid session_ranges.**
 - **POI descriptions must be visually rich** — paint the scene for Flux.
+
+## POST-FILE VALIDATION
+
+After writing each file, immediately validate it:
+```bash
+# Quick single-file check — parse against the expected type
+cd /Users/keithavery/Projects/oq-2/sidequest-api && cargo run -p sidequest-validate -- \
+  --genre-packs-path /Users/keithavery/Projects/oq-2/sidequest-content/genre_packs \
+  --genre <GENRE_SLUG>
+```
+Fix any errors before proceeding to the next file. Do not batch errors to the validate step.
 
 ## AFTER GENERATION
 
