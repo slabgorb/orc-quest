@@ -474,3 +474,8 @@ completed_stories:
     title: "LoreFilter — graph-distance + intent-based context retrieval for Valley zone"
     points: 5
     completed: '2026-04-04'
+  - id: 15-19
+    epic: ''
+    title: "Wire conlang knowledge — language learning, name bank, and prompt injection all unwired"
+    points: 5
+    completed: '2026-04-04'
