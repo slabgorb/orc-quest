@@ -98,7 +98,9 @@ stories:
       ResourceDeclaration.decay_per_turn is parsed from YAML but never applied. After trope tick (which fires per room transition in room_graph mode), apply decay_per_turn to each resource in resource_state via existing apply_resource_deltas(). Resources at min value trigger a GameMessage.
     points: 2
     priority: p1
-    status: backlog
+    status: done
+    assigned_to: keith.avery@1898andco.io
+    started: '2026-04-04'
     repos: sidequest-api
     workflow: tdd
     acceptance_criteria:
@@ -106,6 +108,8 @@ stories:
       - Resources clamped to declared min/max
       - GameMessage when resource hits min
       - Test: resource with decay -0.1 reaches 0 after 10 ticks
+    completed: '2026-04-04'
+    branch: feat/19-6-wire-decay-per-turn
   - id: 19-7
     title: "Weight-based encumbrance — total_weight, carry_mode, overencumbered state"
     description: >-

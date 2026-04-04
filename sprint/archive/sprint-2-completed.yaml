@@ -454,3 +454,8 @@ completed_stories:
     title: Wire deplete_light_on_transition into room transition dispatch — server call site, GameMessage, OTEL spans
     points: 5
     completed: '2026-04-04'
+  - id: 19-6
+    epic: ''
+    title: "Wire ResourceDeclaration.decay_per_turn — apply resource decay on trope tick"
+    points: 2
+    completed: '2026-04-04'
