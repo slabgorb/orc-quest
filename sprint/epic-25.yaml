@@ -52,10 +52,13 @@ stories:
     title: Chrome archetypes — genre-themed panel styling via CSS custom properties
     points: 3
     priority: p1
-    status: backlog
+    status: done
+    assigned_to: keith.avery@1898andco.io
+    started: '2026-04-05'
     repos: ui,content
     workflow: tdd
     depends_on: 25-2
+    completed: '2026-04-05'
   - id: 25-7
     title: Chrome CSS — parchment, terminal, rugged archetype rulesets
     points: 3
