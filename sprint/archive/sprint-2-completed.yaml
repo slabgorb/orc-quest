@@ -13,6 +13,7 @@ completed_epics:
   - '9'
   - '20'
   - '12'
+  - '16'
 completed_stories:
   - id: 13-8
     epic: ''
@@ -554,3 +555,13 @@ completed_stories:
     title: CharacterPanel — persistent docked sidebar with tabbed character info
     points: 5
     completed: '2026-04-05'
+  - id: 25-3
+    epic: ''
+    title: Refactor OverlayManager to SettingsOverlay — strip non-settings logic
+    points: 2
+    completed: '2026-04-05'
+  - id: 16-3
+    epic: '16'
+    title: "Confrontation YAML schema — genres declare encounter types in rules.yaml"
+    points: 5
+    completed: '2026-03-31'

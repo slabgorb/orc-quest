@@ -25,7 +25,7 @@ stories:
     title: Refactor OverlayManager to SettingsOverlay — strip non-settings logic
     points: 2
     priority: p1
-    status: backlog
+    status: done
     repos: ui
     workflow: tdd
     type: refactor
