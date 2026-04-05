@@ -534,3 +534,8 @@ completed_stories:
     title: "Genre-specific confrontation types — net combat, ship combat, auction"
     points: 5
     completed: '2026-04-05'
+  - id: 16-15
+    epic: ''
+    title: "Faction music routing — trigger faction themes by context"
+    points: 3
+    completed: '2026-04-05'
