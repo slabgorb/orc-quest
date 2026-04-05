@@ -89,6 +89,28 @@ LLM-interpreted at narration time unless noted.
 | spaghetti_western | GRIT, DRAW, NERVE, CUNNING, PRESENCE, LUCK | **Standoff system**, Luck resource, Bounty board, 5-faction rep | LLM-interpreted |
 | victoria | **Angst, Pride, Humour, Nerve, Cunning, Passion** | Emotional ability scores, class-stratified society | LLM-interpreted |
 
+## Confrontation & Resource Completeness (Epic 16)
+
+As of 2026-04-05, all 9 genre packs declare at least one confrontation type.
+Every pack has a negotiation variant. Genre-specific confrontation types and
+resource pools are documented below.
+
+| Genre Pack | Confrontation Types | Resources |
+|-----------|-------------------|-----------|
+| elemental_harmony | negotiation | — |
+| low_fantasy | negotiation | — |
+| mutant_wasteland | negotiation | — |
+| neon_dystopia | negotiation, net_combat | humanity |
+| pulp_noir | negotiation, interrogation, roulette, craps | heat |
+| road_warrior | negotiation | fuel |
+| space_opera | negotiation, ship_combat | — |
+| spaghetti_western | standoff, negotiation, poker | luck |
+| victoria | negotiation, trial, auction | standing |
+
+**Validation:** `cargo test -p sidequest-game --test content_audit_story_16_16_tests`
+verifies all 9 packs load, confrontation structure, beat/ability score consistency,
+and resource range validity.
+
 ## Content vs Engine Gap Map
 
 Features defined in content YAML that have no engine-level enforcement.
@@ -104,7 +126,7 @@ and applies them narratively. Risk: LLM may forget or drift mid-session.
 | Humanity Tracker | neon_dystopia | Degrades at thresholds (50/25/0) — engine could enforce |
 | Heat Tracker | pulp_noir | 0-5 scale affecting faction behavior — engine could enforce |
 | Ship Block (separate HP pool) | space_opera | Like Rig HP but for ships — pattern already exists in chase_depth.rs |
-| Faction music routing | road_warrior | 10 faction themes exist as .ogg files, no trigger logic |
+| ~~Faction music routing~~ | road_warrior | **RESOLVED (story 16-15):** `evaluate_with_faction()` + `FactionContext` + 10 faction themes in audio.yaml |
 
 ### Gaps where engine has data but UI doesn't show
 
@@ -116,22 +138,23 @@ and applies them narratively. Risk: LLM may forget or drift mid-session.
 
 ### MusicDirector Mood Coverage
 
-The engine's `Mood` enum has 7 variants. Genre packs define 15+ custom moods.
+**Updated (story 16-14):** The engine now uses string-keyed `MoodKey` instead of a
+hardcoded enum. Genre packs declare `mood_aliases` in audio.yaml to map custom mood
+strings to core moods or mood tracks. 7 core moods remain as constants; any string
+is valid as a mood key.
 
-| Engine Mood | Maps To |
-|------------|---------|
-| Combat | combat |
-| Exploration | exploration |
-| Tension | tension |
-| Triumph | triumph |
-| Sorrow | sorrow |
-| Mystery | mystery |
-| Calm | rest, calm |
+| Core Mood | Constant |
+|----------|---------|
+| combat | `MoodKey::COMBAT` |
+| exploration | `MoodKey::EXPLORATION` |
+| tension | `MoodKey::TENSION` |
+| triumph | `MoodKey::TRIUMPH` |
+| sorrow | `MoodKey::SORROW` |
+| mystery | `MoodKey::MYSTERY` |
+| calm | `MoodKey::CALM` |
 
-**Custom moods that fall through to nearest match:**
-standoff, saloon, betrayal, riding, convoy, speakeasy, intrigue, chase,
-cyberspace, club, corporate, teahouse, spirit, ceremony, settlement, ruins,
-tavern, galley, drift, docking, void
+**Custom moods** resolve through `mood_aliases` chain or direct track lookup.
+Genre packs can declare any mood string and map it to tracks or core moods.
 
 ## Music Strategy by Genre
 

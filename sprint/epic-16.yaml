@@ -14,7 +14,7 @@ description: >-
   Key references: chase.rs, chase_depth.rs (the prototype), combat.rs, music_director.rs,
   docs/genre-pack-status.md (gap map), ADR-017 (chase types).
 priority: p1
-status: planning
+status: done
 repos: sidequest-api, sidequest-ui, sidequest-content
 stories:
   - id: 16-1
@@ -138,9 +138,11 @@ stories:
       rules.yaml.
     points: 5
     priority: p2
-    status: backlog
+    status: done
     repos: sidequest-content
     workflow: tdd
+    completed: '2026-04-05'
+    review_verdict: approved
   - id: 16-9
     title: "Confrontation UI — generic encounter display with genre theming"
     description: >-
@@ -153,9 +155,11 @@ stories:
       treatment.
     points: 5
     priority: p1
-    status: backlog
+    status: done
     repos: sidequest-ui
     workflow: tdd
+    completed: '2026-04-05'
+    review_verdict: approved
   - id: 16-10
     title: "ResourcePool struct + YAML schema — generic named resource with thresholds"
     description: >-
@@ -167,9 +171,11 @@ stories:
       impossible spends.
     points: 5
     priority: p1
-    status: backlog
+    status: done
     repos: sidequest-api
     workflow: tdd
+    completed: '2026-04-05'
+    review_verdict: approved
   - id: 16-11
     title: "Resource threshold → KnownFact pipeline — permanent narrator memory"
     description: >-
@@ -181,9 +187,11 @@ stories:
       appears in narrator context.
     points: 3
     priority: p1
-    status: backlog
+    status: done
     repos: sidequest-api
     workflow: tdd
+    completed: '2026-04-05'
+    review_verdict: approved
   - id: 16-12
     title: "Wire genre resources — Luck, Humanity, Heat, Fuel-at-rest as ResourcePool instances"
     description: >-
@@ -194,9 +202,11 @@ stories:
       RigStats when confrontation starts). Verify each loads and tracks correctly.
     points: 3
     priority: p1
-    status: backlog
+    status: done
     repos: sidequest-content, sidequest-api
     workflow: tdd
+    completed: '2026-04-05'
+    review_verdict: approved
   - id: 16-13
     title: "UI resource display — generic ResourceBar component with genre theming"
     description: >-
@@ -207,9 +217,11 @@ stories:
       animation and toast. Audio sting on threshold via existing AudioCue system.
     points: 3
     priority: p1
-    status: backlog
+    status: done
     repos: sidequest-ui
     workflow: tdd
+    completed: '2026-04-05'
+    review_verdict: approved
   - id: 16-14
     title: "String-keyed moods + fallback aliases — genre packs declare custom moods"
     description: >-
@@ -221,9 +233,11 @@ stories:
       All existing mood tests pass with backward-compatible enum-to-string mapping.
     points: 3
     priority: p1
-    status: backlog
+    status: done
     repos: sidequest-api
     workflow: tdd
+    completed: '2026-04-05'
+    review_verdict: approved
   - id: 16-15
     title: "Faction music routing — trigger faction themes by context"
     description: >-
@@ -234,9 +248,11 @@ stories:
       conditions (location, npc_present, reputation_threshold).
     points: 3
     priority: p2
-    status: backlog
+    status: done
     repos: sidequest-api, sidequest-content
     workflow: tdd
+    completed: '2026-04-05'
+    review_verdict: approved
   - id: 16-16
     title: "Content audit — all genre packs declare confrontations and resources"
     description: >-
@@ -246,6 +262,8 @@ stories:
       YAML parses correctly with genre loader.
     points: 3
     priority: p2
-    status: backlog
+    status: done
     repos: sidequest-content
     workflow: trivial
+    completed: '2026-04-05'
+    review_verdict: approved
