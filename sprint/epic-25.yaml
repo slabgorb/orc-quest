@@ -69,3 +69,35 @@ stories:
     repos: ui
     workflow: tdd
     depends_on: 25-4
+  - id: 25-9
+    title: Wire ConfrontationOverlay — render structured encounters in GameLayout
+    description: >-
+      Import ConfrontationOverlay (built in 16-9) into GameLayout or GameScreen.
+      Subscribe to WebSocket StructuredEncounter messages to populate ConfrontationData.
+      Show overlay when a confrontation is active (combat, chase, standoff, negotiation,
+      etc.), hide when resolved. Map server confrontation state to ConfrontationData props
+      (type, label, actors, metric, beats, secondary_stats, genre_slug, mood). Wire beat
+      action buttons to send player beat selections back via WebSocket. Verify with
+      spaghetti_western standoff and road_warrior chase as test cases.
+    points: 3
+    priority: p1
+    status: backlog
+    repos: ui
+    workflow: tdd
+    depends_on: 25-4
+  - id: 25-10
+    title: Wire GenericResourceBar — render genre resources in CharacterPanel
+    description: >-
+      Import GenericResourceBar (built in 16-13) into CharacterPanel's status tab.
+      Subscribe to WebSocket PARTY_STATUS or resource state updates to populate
+      resource bar props (name, value, max, genre_slug, thresholds). Render one bar
+      per active resource pool (Luck, Humanity, Heat, Fuel, etc.). Wire
+      onThresholdCrossed to play audio sting via existing AudioCue system. Verify
+      with spaghetti_western Luck (0-6, voluntary) and neon_dystopia Humanity
+      (0-100, involuntary with thresholds at 50/25/0).
+    points: 3
+    priority: p1
+    status: backlog
+    repos: ui
+    workflow: tdd
+    depends_on: 25-2
