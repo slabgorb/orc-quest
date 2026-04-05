@@ -529,3 +529,8 @@ completed_stories:
     title: "UI resource display — generic ResourceBar component with genre theming"
     points: 3
     completed: '2026-04-05'
+  - id: 16-8
+    epic: ''
+    title: "Genre-specific confrontation types — net combat, ship combat, auction"
+    points: 5
+    completed: '2026-04-05'
