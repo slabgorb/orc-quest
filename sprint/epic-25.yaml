@@ -63,10 +63,13 @@ stories:
     title: Chrome CSS — parchment, terminal, rugged archetype rulesets
     points: 3
     priority: p1
-    status: backlog
+    status: done
+    assigned_to: keith.avery@1898andco.io
+    started: '2026-04-05'
     repos: ui
     workflow: tdd
     depends_on: 25-6
+    completed: '2026-04-05'
   - id: 25-8
     title: Layout modes — scroll, focus, cards narrative view with settings toggle
     points: 5

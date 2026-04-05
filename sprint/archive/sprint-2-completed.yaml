@@ -580,3 +580,8 @@ completed_stories:
     title: Chrome archetypes — genre-themed panel styling via CSS custom properties
     points: 3
     completed: '2026-04-05'
+  - id: 25-7
+    epic: ''
+    title: Chrome CSS — parchment, terminal, rugged archetype rulesets
+    points: 3
+    completed: '2026-04-05'
