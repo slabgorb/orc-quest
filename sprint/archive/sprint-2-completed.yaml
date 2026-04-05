@@ -549,3 +549,8 @@ completed_stories:
     title: useLocalPrefs hook — localStorage-persisted client preferences
     points: 1
     completed: '2026-04-05'
+  - id: 25-2
+    epic: ''
+    title: CharacterPanel — persistent docked sidebar with tabbed character info
+    points: 5
+    completed: '2026-04-05'
