@@ -595,3 +595,8 @@ completed_stories:
     title: Wire ConfrontationOverlay — render structured encounters in GameLayout
     points: 3
     completed: '2026-04-05'
+  - id: 25-10
+    epic: ''
+    title: Wire GenericResourceBar — render genre resources in CharacterPanel
+    points: 3
+    completed: '2026-04-05'

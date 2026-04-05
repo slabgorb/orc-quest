@@ -106,7 +106,12 @@ stories:
       (0-100, involuntary with thresholds at 50/25/0).
     points: 3
     priority: p1
-    status: backlog
+    status: done
+    assigned_to: keith.avery@1898andco.io
+    started: '2026-04-05'
     repos: ui
     workflow: tdd
     depends_on: 25-2
+    completed: '2026-04-05'
+    branch: feat/25-10-wire-generic-resource-bar
+    review_verdict: approved
