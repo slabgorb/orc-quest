@@ -10,14 +10,14 @@ stories:
     title: useLocalPrefs hook — localStorage-persisted client preferences
     points: 1
     priority: p1
-    status: backlog
+    status: done
     repos: ui
     workflow: trivial
   - id: 25-2
     title: CharacterPanel — persistent docked sidebar with tabbed character info
     points: 5
     priority: p1
-    status: backlog
+    status: done
     repos: ui
     workflow: tdd
     depends_on: 25-1
