@@ -610,3 +610,8 @@ completed_stories:
     title: "Voice/mic architecture — solve TTS feedback loop before re-enabling"
     points: 5
     completed: '2026-04-05'
+  - id: 25-11
+    epic: ''
+    title: Wire GameLayout to pass resources and genreSlug to CharacterPanel
+    points: 3
+    completed: '2026-04-05'
