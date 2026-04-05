@@ -544,3 +544,8 @@ completed_stories:
     title: "Content audit — all genre packs declare confrontations and resources"
     points: 3
     completed: '2026-04-05'
+  - id: 25-1
+    epic: ''
+    title: useLocalPrefs hook — localStorage-persisted client preferences
+    points: 1
+    completed: '2026-04-05'

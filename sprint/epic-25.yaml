@@ -1,0 +1,71 @@
+id: '25'
+type: epic
+title: UI Redesign — Character Panel, Layout Modes, Chrome Archetypes
+description: Replace modal overlay system with persistent docked character panel sidebar. Add 3 selectable narrative layouts (scroll/focus/cards). Genre-themed panel chrome via CSS archetypes. See docs/mockups/ for design specs.
+priority: p1
+status: ready
+repos: ui,content
+stories:
+  - id: 25-1
+    title: useLocalPrefs hook — localStorage-persisted client preferences
+    points: 1
+    priority: p1
+    status: backlog
+    repos: ui
+    workflow: trivial
+  - id: 25-2
+    title: CharacterPanel — persistent docked sidebar with tabbed character info
+    points: 5
+    priority: p1
+    status: backlog
+    repos: ui
+    workflow: tdd
+    depends_on: 25-1
+  - id: 25-3
+    title: Refactor OverlayManager to SettingsOverlay — strip non-settings logic
+    points: 2
+    priority: p1
+    status: backlog
+    repos: ui
+    workflow: tdd
+    type: refactor
+  - id: 25-4
+    title: Rewire GameLayout — CharacterPanel integration, hotkeys, slash commands
+    points: 5
+    priority: p1
+    status: backlog
+    repos: ui
+    workflow: tdd
+    depends_on: 25-2
+  - id: 25-5
+    title: Remove Roman numeral turn counter from running header
+    points: 1
+    priority: p2
+    status: backlog
+    repos: ui
+    workflow: trivial
+    type: chore
+  - id: 25-6
+    title: Chrome archetypes — genre-themed panel styling via CSS custom properties
+    points: 3
+    priority: p1
+    status: backlog
+    repos: ui,content
+    workflow: tdd
+    depends_on: 25-2
+  - id: 25-7
+    title: Chrome CSS — parchment, terminal, rugged archetype rulesets
+    points: 3
+    priority: p1
+    status: backlog
+    repos: ui
+    workflow: tdd
+    depends_on: 25-6
+  - id: 25-8
+    title: Layout modes — scroll, focus, cards narrative view with settings toggle
+    points: 5
+    priority: p1
+    status: backlog
+    repos: ui
+    workflow: tdd
+    depends_on: 25-4
