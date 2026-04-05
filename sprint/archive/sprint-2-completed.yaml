@@ -600,3 +600,8 @@ completed_stories:
     title: Wire GenericResourceBar — render genre resources in CharacterPanel
     points: 3
     completed: '2026-04-05'
+  - id: 15-26
+    epic: ''
+    title: "Wire select_npc_action — NPC autonomous actions not invoked from server"
+    points: 3
+    completed: '2026-04-05'
