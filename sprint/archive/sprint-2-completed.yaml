@@ -524,3 +524,8 @@ completed_stories:
     title: "Confrontation UI — generic encounter display with genre theming"
     points: 5
     completed: '2026-04-05'
+  - id: 16-13
+    epic: ''
+    title: "UI resource display — generic ResourceBar component with genre theming"
+    points: 3
+    completed: '2026-04-05'
