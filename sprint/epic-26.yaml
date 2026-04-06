@@ -22,7 +22,7 @@ stories:
     title: Wire exercise_tracker into orchestrator dispatch
     points: 3
     priority: p1
-    status: backlog
+    status: in_progress
     repos: api
     workflow: trivial
     type: chore
