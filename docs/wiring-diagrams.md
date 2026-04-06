@@ -3,7 +3,7 @@
 > End-to-end signal traces for every major feature. Each diagram shows the path from
 > visible UI feature through server layers to storage, with file paths and function names.
 >
-> **Last updated:** 2026-03-30
+> **Last updated:** 2026-04-06
 > **Source of truth:** `sidequest-api/crates/` — traced from actual code, not design docs.
 
 ---
@@ -11,20 +11,21 @@
 ## Table of Contents
 
 1. [Core Turn Loop](#1-core-turn-loop) — Action → Narration → State Delta
-2. [Image Generation](#2-image-generation) — Narration → Subject → Beat Filter → Daemon → IMAGE
-3. [TTS Voice Pipeline](#3-tts-voice-pipeline) — Narration → Segments → Kokoro → Audio Chunks
-4. [Music & Audio](#4-music--audio) — Narration → Mood → Track Selection → AUDIO_CUE
-5. [Multiplayer Turn Barrier](#5-multiplayer-turn-barrier) — Sealed Letter Collection → Resolution
-6. [Combat Flow](#6-combat-flow) — Detection → State Machine → COMBAT_EVENT
-7. [Character Creation](#7-character-creation) — Builder State Machine → Character
-8. [Pacing & Drama Engine](#8-pacing--drama-engine) — TensionTracker → Delivery Mode → Prompt
-9. [Knowledge Pipeline](#9-knowledge-pipeline) — Footnotes → KnownFacts → Lore → Prompt
-10. [NPC Personality (OCEAN)](#10-npc-personality-ocean) — Profiles → Behavioral Summary → Prompt
-11. [Faction Agendas & Scene Directives](#11-faction-agendas--scene-directives) — Agendas → Directives → Narrator
-12. [Slash Commands](#12-slash-commands) — /command → Router → Response
-13. [Trope Engine](#13-trope-engine) — Tick → Beat Firing → Narrator Injection
-14. [Session Persistence](#14-session-persistence) — GameSnapshot → SQLite → Recovery
-15. [Genre Pack Loading](#15-genre-pack-loading) — YAML → Typed Structs → Session State
+2. [Narrator Prompt Assembly](#2-narrator-prompt-assembly) — Attention Zones → Tiered Composition → Claude CLI
+3. [Image Generation](#3-image-generation) — Narration → Subject → Beat Filter → Daemon → IMAGE
+4. [TTS Voice Pipeline](#4-tts-voice-pipeline) — Narration → Segments → Kokoro → Audio Chunks
+5. [Music & Audio](#5-music--audio) — Narration → Mood → Track Selection → AUDIO_CUE
+6. [Multiplayer Turn Barrier](#6-multiplayer-turn-barrier) — Sealed Letter Collection → Resolution
+7. [Combat Flow](#7-combat-flow) — State Override → Mutations → COMBAT_EVENT
+8. [Character Creation](#8-character-creation) — Builder State Machine → Character
+9. [Pacing & Drama Engine](#9-pacing--drama-engine) — TensionTracker → Delivery Mode → Prompt
+10. [Knowledge Pipeline](#10-knowledge-pipeline) — Footnotes → KnownFacts → Lore → Prompt
+11. [NPC Personality (OCEAN)](#11-npc-personality-ocean) — Profiles → Behavioral Summary → Prompt
+12. [Faction Agendas & Scene Directives](#12-faction-agendas--scene-directives) — Agendas → Directives → Narrator
+13. [Slash Commands](#13-slash-commands) — /command → Router → Response
+14. [Trope Engine](#14-trope-engine) — Tick → Beat Firing → Narrator Injection
+15. [Session Persistence](#15-session-persistence) — GameSnapshot → SQLite → Recovery
+16. [Genre Pack Loading](#16-genre-pack-loading) — YAML → Typed Structs → Session State
 
 ---
 
@@ -77,49 +78,172 @@ flowchart TD
     style M fill:#ff6b6b,color:#fff
 ```
 
-**Key files:** `ws.rs` → `dispatch.rs` (1950 LOC monolith) → `orchestrator.rs` → `client.rs` → back through `dispatch.rs`
+**Key files:** `ws.rs` → `dispatch.rs` → `orchestrator.rs` → `client.rs` → back through `dispatch.rs`
 
 **Storage touched:** NPC registry, quest log, inventory, XP/level, narration history, lore store
 
 ---
 
-## 2. Image Generation
+## 2. Narrator Prompt Assembly
 
-Background pipeline — narration triggers render, result arrives asynchronously.
+How the narrator prompt is composed from ~30 sections across 5 attention zones, with Full vs Delta tiering (ADR-066).
 
 ```mermaid
 flowchart TD
-    A["Narration text<br/>(clean_narration)"] --> B["dispatch.rs:3126<br/>SubjectExtractor::extract()<br/>(subject.rs)"]
-    B --> C{"RenderSubject?"}
-    C -->|"None"| Z1["No image this turn"]
-    C -->|"Some(subject)"| D["dispatch.rs:3141<br/>BeatFilter::evaluate()<br/>(beat_filter.rs:212)"]
+    subgraph TRIGGER["Trigger"]
+        A["dispatch_player_action()<br/>(dispatch/mod.rs)"]
+    end
 
-    D --> E{"FilterDecision"}
-    E -->|"Suppress"| Z2["Filtered: low weight,<br/>cooldown, or duplicate"]
-    E -->|"Render"| F["dispatch.rs:3148<br/>queue.enqueue()"]
+    A --> B["IntentRouter::classify_with_state()<br/>(intent_router.rs)<br/>State override — no keyword matching"]
+    B --> C{"Game state?"}
+    C -->|"in_combat"| C1["Intent::Combat"]
+    C -->|"in_chase"| C2["Intent::Chase"]
+    C -->|"default"| C3["Intent::Exploration"]
 
-    F --> G["state.rs:65<br/>Art style routing<br/>(visual_style overrides)"]
-    G --> H["daemon-client/client.rs:89<br/>DaemonClient::render()<br/>Unix socket → /tmp/sidequest-renderer.sock<br/>300s timeout"]
+    C1 & C2 & C3 --> D{"First turn<br/>of session?"}
+    D -->|"yes"| E["Full Tier<br/>(~15KB system prompt)"]
+    D -->|"no"| F["Delta Tier<br/>(dynamic state only)"]
 
-    H --> I["sidequest-daemon (Python)<br/>Flux.1 schnell/dev<br/>GPU inference"]
-    I --> J["RenderResult<br/>{image_url, generation_ms}"]
+    E & F --> G["ContextBuilder<br/>(context_builder.rs)"]
 
-    J --> K["render_integration.rs:80<br/>Build ImagePayload<br/>(url, tier, scene_type, generation_ms)"]
-    K --> L["render_integration.rs:108<br/>broadcast::send()<br/>GameMessage::Image"]
-    L --> M["Client: IMAGE<br/>(async, arrives after narration)"]
+    subgraph PRIMACY["Primacy Zone — Maximum Attention"]
+        P1["narrator_identity<br/>'You are the Game Master…'"]
+        P2["narrator_constraints<br/>Silent constraint handling"]
+        P3["narrator_agency<br/>PC puppet prevention + multiplayer"]
+        P4["narrator_consequences<br/>Genre tone alignment"]
+        P5["narrator_output_only ★<br/>Complete game_patch schema<br/>(~150 lines, ALL fields)"]
+        P6["genre_identity ★<br/>'You are narrating a {genre} game'"]
+    end
+
+    subgraph EARLY["Early Zone — High Attention"]
+        E1["narrator_output_style<br/>Formatting rules"]
+        E2["narrator_combat_rules ★<br/>Always injected (ADR-067)"]
+        E3["narrator_chase_rules<br/>If in_chase"]
+        E4["narrator_dialogue_rules ★<br/>Always injected"]
+        E5["soul_principles<br/>From SOUL.md (filtered per agent)"]
+        E6["trope_beat_directives<br/>MANDATORY scene elements"]
+    end
+
+    subgraph VALLEY["Valley Zone — Moderate Attention"]
+        V1["game_state ★<br/>HP, inventory, quests,<br/>known facts, tropes,<br/>resources, party roster<br/>(dispatch/prompt.rs)"]
+        V2["ocean_personalities<br/>NPC behavioral summaries"]
+        V3["ability_context<br/>Character involuntary abilities"]
+        V4["world_lore<br/>Graph-filtered by distance<br/>(lore_filter.rs)"]
+        V5["merchant_context<br/>Available merchants + inventory"]
+        V6["world_context<br/>History chapters by maturity"]
+        V7["genre_resources<br/>Current/max, decay rates"]
+        V8["sfx_library<br/>Available SFX IDs"]
+    end
+
+    subgraph LATE["Late Zone — Lower Attention"]
+        L1["narrator_vocabulary<br/>Accessible / Literary / Epic"]
+        L2["footnote_protocol<br/>Knowledge extraction rules"]
+        L3["backstory_capture<br/>If intent == Backstory"]
+    end
+
+    subgraph RECENCY["Recency Zone — Highest Attention"]
+        R1["narrator_verbosity ★<br/>Length limits in chars"]
+        R2["opening_scene_constraint<br/>First-turn length cap"]
+        R3["player_action ★<br/>'{character} says: {action}'"]
+    end
+
+    G --> PRIMACY --> EARLY --> VALLEY --> LATE --> RECENCY
+
+    RECENCY --> H{"Tier?"}
+    H -->|"Full"| I["claude --model opus<br/>--session-id {UUID}<br/>--system-prompt {zones}<br/>-p {action}"]
+    H -->|"Delta"| J["claude --model opus<br/>--resume {session_id}<br/>-p {zones + action}"]
+
+    I & J --> K["Parse JSON response"]
+    K --> L["Extract:<br/>narration, game_patch,<br/>combat_patch, chase_patch,<br/>footnotes, items, NPCs,<br/>visual_scene, sfx_triggers,<br/>personality_events"]
+    L --> M["ActionResult<br/>→ back to dispatch"]
 
     style A fill:#6c5ce7,color:#fff
-    style M fill:#4a9eff,color:#fff
-    style I fill:#00b894,color:#fff
+    style M fill:#6c5ce7,color:#fff
+    style I fill:#ff6b6b,color:#fff
+    style J fill:#ff6b6b,color:#fff
+    style PRIMACY fill:#ff634720,stroke:#ff6347
+    style EARLY fill:#ffa50020,stroke:#ffa500
+    style VALLEY fill:#32cd3220,stroke:#32cd32
+    style LATE fill:#4169e120,stroke:#4169e1
+    style RECENCY fill:#9370db20,stroke:#9370db
 ```
 
-**Beat filter gates:** weight threshold, cooldown timer, burst rate, duplicate hash suppression
+**★ = injected on EVERY tier** (Full and Delta). Unmarked = Full tier only or conditional.
 
-**Render tiers:** portrait, scene, landscape, abstract, text, cartography, tactical
+**Attention zone ordering:** Primacy (0) → Early (1) → Valley (2) → Late (3) → Recency (4). Sections added in any order; `compose()` sorts by zone before joining.
+
+**Delta tier key rule:** `narrator_output_only` (complete game_patch schema) is re-sent every turn — without it, the LLM stops emitting structured JSON.
+
+**Token telemetry:** Per-zone token estimates emitted via OTEL for the Prompt Inspector dashboard.
 
 ---
 
-## 3. TTS Voice Pipeline
+## 3. Image Generation
+
+Background pipeline — narration triggers render, result arrives asynchronously via RENDER_QUEUED → IMAGE replacement.
+
+```mermaid
+flowchart TD
+    A["ActionResult from narrator"] --> B{"visual_scene<br/>in game_patch?"}
+    B -->|"yes"| C["Use narrator's visual_scene<br/>(tier, subject, mood, tags)"]
+    B -->|"no"| D["SubjectExtractor::extract()<br/>(subject.rs)<br/>Regex fallback from narration"]
+    C & D --> E{"RenderSubject?"}
+    E -->|"None"| Z1["No image this turn"]
+    E -->|"Some(subject)"| F["SceneRelevanceValidator<br/>(render.rs)<br/>Reject mismatched context"]
+
+    F --> G{"Valid?"}
+    G -->|"rejected"| Z3["OTEL: relevance_rejected"]
+    G -->|"valid"| H["BeatFilter::evaluate()<br/>(beat_filter.rs)"]
+
+    H --> I{"FilterDecision"}
+    I -->|"Suppress"| Z2["Filtered: low weight,<br/>cooldown, or burst rate"]
+    I -->|"Render"| J["RenderQueue::enqueue()<br/>SHA256 content dedup"]
+
+    J --> K["RENDER_QUEUED broadcast<br/>(render_id, tier, dimensions)"]
+    K --> K2["Client: shimmer placeholder"]
+
+    J --> L["Visual style lookup<br/>(visual_style.yaml)<br/>positive_suffix, negative_prompt,<br/>LoRA path, seed"]
+    L --> M["DaemonClient::render()<br/>Unix socket → /tmp/sidequest-renderer.sock<br/>RenderParams (300s timeout)"]
+
+    M --> N["sidequest-daemon (Python)"]
+
+    subgraph DAEMON["Daemon Pipeline"]
+        N1["PromptComposer<br/>Tier prefix + subject + style<br/>T5 (512 tok) + CLIP (77 tok)<br/>+ negative prompt"]
+        N2["FluxWorker<br/>Flux.1-dev (12 steps) or<br/>Flux.1-schnell (4 steps)"]
+        N3["Optional: LoRA adapter<br/>(ADR-032)"]
+        N4["Optional: IP-Adapter<br/>reference portrait (ADR-034)"]
+        N1 --> N2
+        N3 -.-> N2
+        N4 -.-> N2
+    end
+    N --> N1
+
+    N2 --> O["RenderResult<br/>{image_url, generation_ms}"]
+
+    O --> P["Image Broadcaster<br/>(render_integration.rs)<br/>Pacing throttle: 30s solo, 60s multi"]
+    P --> Q{"image_url<br/>empty?"}
+    Q -->|"yes"| Z4["Reject — no silent fallback"]
+    Q -->|"no"| R["GameMessage::Image<br/>{url, description, tier,<br/>scene_type, handout, render_id}"]
+
+    R --> S["Client: replace shimmer<br/>with actual image<br/>(match by render_id)"]
+
+    style A fill:#6c5ce7,color:#fff
+    style S fill:#4a9eff,color:#fff
+    style K2 fill:#4a9eff,color:#fff
+    style N2 fill:#00b894,color:#fff
+```
+
+**Subject extraction:** Narrator's `visual_scene` (from game_patch) is preferred; regex `SubjectExtractor` is fallback only.
+
+**Beat filter gates:** narrative weight (>0.4), cooldown (2-4 turns), burst rate (max 2/turn), SHA256 dedup.
+
+**Render tiers:** portrait (768×1024), landscape (1024×768), scene_illustration (768×768), tactical_sketch (1024×1024), cartography (1024×1024), text_overlay (768×512).
+
+**Handout classification:** Discovery scenes and dialogue portraits flagged as `handout: true` → persisted in player journal.
+
+---
+
+## 4. TTS Voice Pipeline
 
 Parallel to narration delivery — segments synthesized and streamed as audio chunks.
 
@@ -155,13 +279,17 @@ flowchart TD
     style K fill:#00b894,color:#fff
 ```
 
-**Audio ducking:** Music and ambience volumes reduced during speech, restored after TTS_END
+**Audio ducking:** Music and ambience volumes reduced during speech (0.15 over 300ms), restored after TTS_END (500ms asymmetric ramp)
 
 **Frame format:** `[uint32 header_len][JSON: {type, segment_id, sample_rate, format}][raw PCM]`
 
+**Client playback (AudioEngine.ts):** Web Audio API graph — PCM s16le → float32 AudioBuffer → Voice gain node → Master gain → AudioContext.destination. Voice segments queued via Promise chain for sequential playback. Ducker ducks music/ambience on voice start, Crossfader handles smooth music transitions.
+
+**Voice routing (voice_router.rs):** narrator → configured voice; character → archetype lookup; creature → creature_voice_presets; unknown → narrator fallback. Engine inferred from voice_id prefix (en_male_*/en_female_* → Kokoro, else → Piper).
+
 ---
 
-## 4. Music & Audio
+## 5. Music & Audio
 
 Mood classification drives track selection with anti-repetition rotation.
 
@@ -193,13 +321,19 @@ flowchart TD
 
 **Moods:** Combat, Exploration, Tension, Triumph, Sorrow, Mystery, Calm
 
-**3 channels:** music, sfx, ambience — each with independent volume and action (play/fade_in/fade_out/duck/restore/stop)
+**Variation selection (6-tier priority):** Overture (session start/location change) → Resolution (combat ended/quest completed) → TensionBuild (intensity ≥0.7 or drama ≥0.7) → Ambient (intensity ≤0.3 or scene turn ≥4) → Sparse (mid-intensity, low drama) → Full (fallback)
+
+**MoodContext inputs:** in_combat, in_chase, party_health_pct, quest_completed, npc_died, encounter_mood_override, location_changed, scene_turn_count, drama_weight (from TensionTracker)
+
+**3 channels:** music, sfx, ambience — each with independent volume and action (play/fade_in/fade_out/duck/restore/stop). Default volumes: music 0.7, sfx 0.8, voice 1.0, ambience 0.3.
 
 **Rotation depth:** 3 tracks per mood before repeat allowed
 
+**Client (useAudioCue.ts):** Routes AUDIO_CUE by action field — configure/duck/restore/fade_out/play. AudioEngine handles crossfade between tracks, AudioCache prevents re-decoding.
+
 ---
 
-## 5. Multiplayer Turn Barrier
+## 6. Multiplayer Turn Barrier
 
 Sealed letter pattern — all players submit, one handler resolves.
 
@@ -246,41 +380,63 @@ flowchart TD
 
 ---
 
-## 6. Combat Flow
+## 7. Combat Flow
 
-Intent-based and keyword-fallback detection, with state machine transitions.
+State-override detection (ADR-067, no keyword matching), structured mutations, and CombatOverlay broadcast.
 
 ```mermaid
 flowchart TD
-    A["ActionResult from narrator"] --> B{"classified_intent<br/>== 'Combat'?"}
-    B -->|"yes"| C["dispatch.rs:2826<br/>combat_state.set_in_combat(true)"]
-    B -->|"no"| D{"Keyword scan:<br/>'attacks', 'lunges',<br/>'initiative'?"}
-    D -->|"match"| C
-    D -->|"no match"| E{"Keyword scan:<br/>'defeated', 'retreats',<br/>'surrender'?"}
-    E -->|"match"| F["combat_state.set_in_combat(false)"]
-    E -->|"no match"| G["No combat change"]
+    A["Player action"] --> B["IntentRouter::classify_with_state()<br/>(intent_router.rs)<br/>ADR-067: state override only"]
+    B --> C{"in_combat == true?"}
+    C -->|"yes"| D["Intent::Combat<br/>source: StateOverride<br/>confidence: 1.0"]
+    C -->|"no"| E["Intent::Exploration<br/>(or Chase if in_chase)"]
 
-    C --> H["turn_mode.rs:36<br/>TurnMode::apply(<br/>CombatStarted)<br/>FreePlay → Structured"]
-    F --> I["turn_mode.rs:36<br/>TurnMode::apply(<br/>CombatEnded)<br/>Structured → FreePlay"]
+    D --> F["Narrator agent responds<br/>with combat_patch in game_patch"]
+    E --> F
 
-    C --> J["dispatch.rs:2370<br/>Apply CombatPatch<br/>(HP deltas, effects)"]
-    J --> K["combat.rs:57<br/>advance_round()"]
-    K --> L["combat.rs:140<br/>tick_effects()<br/>(decay status durations)"]
+    F --> G["apply_state_mutations()<br/>(state_mutations.rs)"]
 
-    L --> M["dispatch.rs:2950<br/>GameMessage::CombatEvent<br/>{in_combat, enemies,<br/>turn_order, current_turn}"]
-    M --> N["Client: CombatOverlay"]
+    G --> H{"combat_patch<br/>.in_combat?"}
+    H -->|"Some(true) &<br/>!was_in_combat"| I["CombatState::engage()<br/>Build turn order<br/>Register combatants in NPC registry<br/>TurnMode: FreePlay → Structured<br/>Activate turn barrier (multiplayer)"]
+    H -->|"Some(false) &<br/>was_in_combat"| J["CombatState::disengage()<br/>Clear turn order, reset rounds<br/>TurnMode: Structured → FreePlay"]
+    H -->|"None / no change"| K["Continue in current state"]
 
-    style A fill:#6c5ce7,color:#fff
-    style N fill:#4a9eff,color:#fff
+    G --> L["Apply HP changes"]
+    L --> L1{"Target == player?"}
+    L1 -->|"yes"| L2["clamp_hp(hp, delta, max_hp)<br/>OTEL: hp_change"]
+    L1 -->|"no"| L3["npc_registry[target].hp += delta"]
+
+    I & J & K --> M["process_combat_and_chase()<br/>(dispatch/combat.rs)"]
+    L2 & L3 --> M
+
+    M --> N["Tick status effects<br/>(decay durations)"]
+    N --> O["Build enemies list<br/>from turn_order + NPC registry<br/>(skip player character)"]
+    O --> P["CombatEnemy per NPC:<br/>{name, hp, max_hp, ac,<br/>status_effects[]}"]
+
+    P --> Q["GameMessage::CombatEvent<br/>{in_combat, enemies,<br/>turn_order, current_turn}"]
+    Q --> R["WebSocket broadcast"]
+
+    R --> S["App.tsx: setCombatState()"]
+    S --> T["CombatOverlay renders:<br/>Turn order (current highlighted)<br/>Enemy HP bars (color-coded)<br/>Status effects + remaining rounds<br/>Fixed top-right, z-index 30"]
+
+    style A fill:#4a9eff,color:#fff
+    style T fill:#4a9eff,color:#fff
+    style F fill:#ff6b6b,color:#fff
 ```
+
+**No keyword matching** — combat detection is purely state-driven (ADR-067). `in_combat` flag in game state triggers Intent::Combat.
 
 **Turn mode FSM:** `FreePlay` ↔ `Structured` (on combat start/end), `FreePlay` → `Cinematic` (on cutscene)
 
-**CombatState tracks:** round counter, damage log, status effects (with duration decay), drama_weight
+**CombatState tracks:** round counter, turn_order, current_turn, damage log, status effects (Poison/Stun/Bless/Curse with duration decay), drama_weight, available_actions
+
+**HP bar colors:** green (>50%), orange (25-50%), red (<25%). Status indicators: "bloodied" at 50%, "defeated" at 0 HP.
+
+**Status effect colors:** Poison (green), Stun (yellow), Bless (blue), Curse (purple)
 
 ---
 
-## 7. Character Creation
+## 8. Character Creation
 
 Genre-driven scene-based state machine with bidirectional messages.
 
@@ -318,7 +474,7 @@ flowchart TD
 
 ---
 
-## 8. Pacing & Drama Engine
+## 9. Pacing & Drama Engine
 
 Dual-track tension model drives narration length and delivery speed.
 
@@ -361,7 +517,7 @@ flowchart TD
 
 ---
 
-## 9. Knowledge Pipeline
+## 10. Knowledge Pipeline
 
 Narrator footnotes become persistent facts that feed back into future prompts.
 
@@ -401,7 +557,7 @@ flowchart TD
 
 ---
 
-## 10. NPC Personality (OCEAN)
+## 11. NPC Personality (OCEAN)
 
 Big Five profiles loaded from genre packs, summarized into narrator prompts.
 
@@ -440,7 +596,7 @@ flowchart TD
 
 ---
 
-## 11. Faction Agendas & Scene Directives
+## 12. Faction Agendas & Scene Directives
 
 Factions pursue goals that inject into every narrator turn.
 
@@ -474,7 +630,7 @@ flowchart TD
 
 ---
 
-## 12. Slash Commands
+## 13. Slash Commands
 
 Server-side interception before intent classification.
 
@@ -518,7 +674,7 @@ flowchart TD
 
 ---
 
-## 13. Trope Engine
+## 14. Trope Engine
 
 Genre-defined narrative pacing via trope lifecycle and beat injection.
 
@@ -553,7 +709,7 @@ flowchart TD
 
 ---
 
-## 14. Session Persistence
+## 15. Session Persistence
 
 Atomic save after every turn, full recovery on reconnect.
 
@@ -596,7 +752,7 @@ flowchart TD
 
 ---
 
-## 15. Genre Pack Loading
+## 16. Genre Pack Loading
 
 Lazy binding — packs loaded per-session on connect, not at startup.
 

@@ -1,7 +1,7 @@
 # CLAUDE.md — SideQuest (Rust Rewrite)
 
 This is the orchestrator repo for the SideQuest Rust rewrite. It coordinates four subrepos:
-- **sidequest-api** — Rust game engine and WebSocket API (workspace with 6 crates)
+- **sidequest-api** — Rust game engine and WebSocket API (workspace with 10 crates)
 - **sidequest-ui** — React/TypeScript game client
 - **sidequest-daemon** — Python media services (image gen, TTS, audio)
 - **sidequest-content** — Genre packs (YAML configs, audio, images, world data)
@@ -27,7 +27,7 @@ achieving a clean frontend/backend repo split.
 ```
 orc-quest/                    # This repo (orchestrator)
 ├── sprint/                   # Sprint tracking
-├── docs/                     # Architecture docs and 54 ADRs
+├── docs/                     # Architecture docs and 71 ADRs
 │   ├── api-contract.md       # WebSocket + REST contract (from UI)
 │   ├── tech-stack.md         # Crate choices
 │   ├── architecture.md       # System design and layer diagram
@@ -38,6 +38,7 @@ orc-quest/                    # This repo (orchestrator)
 
 sidequest-content/            # Genre packs — single source of truth (subrepo)
 ├── genre_packs/
+│   ├── caverns_and_claudes/
 │   ├── elemental_harmony/
 │   ├── low_fantasy/
 │   ├── mutant_wasteland/
@@ -46,6 +47,7 @@ sidequest-content/            # Genre packs — single source of truth (subrepo)
 │   ├── road_warrior/
 │   ├── space_opera/
 │   ├── spaghetti_western/
+│   ├── star_chamber/
 │   ├── victoria/
 │   └── <genre>/worlds/<world>/
 └── CLAUDE.md
@@ -58,22 +60,36 @@ sidequest-api/                # Rust backend (subrepo)
 │   ├── sidequest-game/       # State, characters, combat, chase, tropes
 │   ├── sidequest-agents/     # Claude CLI subprocess orchestration
 │   ├── sidequest-daemon-client/ # Client for Python media daemon
-│   └── sidequest-server/     # axum HTTP/WebSocket, sessions
+│   ├── sidequest-server/     # axum HTTP/WebSocket, sessions, dispatch
+│   ├── sidequest-encountergen/ # CLI: enemy stat block generator
+│   ├── sidequest-loadoutgen/ # CLI: starting equipment generator
+│   ├── sidequest-namegen/    # CLI: NPC identity block generator
+│   └── sidequest-validate/   # Genre pack validation utilities
 └── tests/
 
 sidequest-ui/                 # React frontend (subrepo)
 ├── src/
-│   ├── components/
-│   ├── screens/
-│   ├── providers/
-│   ├── hooks/
+│   ├── __tests__/
+│   ├── assets/
 │   ├── audio/
+│   ├── components/
+│   ├── hooks/
+│   ├── lib/
+│   ├── providers/
+│   ├── screens/
+│   ├── styles/
 │   ├── types/
 │   └── webrtc/
 └── package.json
 
 sidequest-daemon/             # Python media services (subrepo)
 ├── sidequest_daemon/         # Package root
+│   ├── audio/
+│   ├── genre/
+│   ├── media/
+│   ├── ml/
+│   ├── renderer/
+│   └── voice/
 ├── tests/
 └── pyproject.toml
 ```
@@ -93,34 +109,43 @@ sidequest-daemon/             # Python media services (subrepo)
 # From orchestrator root:
 just api-test          # Run Rust tests
 just api-build         # Build Rust backend
-just api-run           # Run API server
+just api-run           # Run API server (builds CLI tools first)
+just api-lint          # cargo clippy -- -D warnings
+just api-fmt           # cargo fmt
+just api-check         # fmt + clippy + test (full gate)
 just ui-dev            # Start React dev server
-just ui-test           # Run frontend tests
+just ui-test           # Run frontend tests (vitest)
 just ui-build          # Build frontend
+just ui-lint           # Run frontend linter
+just daemon-run        # Start media daemon with warmup
+just daemon-test       # Run daemon pytest suite
+just daemon-lint       # ruff check
+just check-all         # api-check + ui-lint + ui-test
+just tmux              # tmuxinator dev session (4 panes)
 ```
 
 ## Velocity & Quality Standards
 
 ### The Numbers
 
-First commit: 2026-03-25. In 3.5 days:
+First commit: 2026-03-25. As of 2026-04-06:
 
 | Repo | Commits | LOC | Language |
 |------|---------|-----|----------|
-| **sidequest-api** | 299 | 68,358 | Rust |
-| **orc-quest** (orchestrator) | 164 | — | YAML/MD |
-| **sidequest-ui** | 45 | 15,675 | TypeScript/React |
-| **sidequest-content** | 9 | 33,059 | YAML |
-| **sidequest-daemon** | 11 | 8,071 | Python |
-| **Total** | **528** | **125,163** | |
+| **sidequest-api** | 738 | 136,012 | Rust |
+| **orc-quest** (orchestrator) | 481 | — | YAML/MD |
+| **sidequest-ui** | 196 | 27,558 | TypeScript/React |
+| **sidequest-content** | 101 | 57,935 | YAML |
+| **sidequest-daemon** | 34 | 6,823 | Python |
+| **Total** | **1,550** | **228,328** | |
 
-672 of 726 story points delivered. 85 stories completed. 12 epics.
+903 of 999 story points delivered. 247 stories completed across 2 sprints.
 
 ### What This Means for You
 
-This velocity is real. We shipped a 5-crate Rust game engine, a React client,
-a Python media daemon, 7 genre packs, 30 ADRs, and a full WebSocket protocol
-in under 4 days. When you identify the correct fix, it takes minutes — the
+This velocity is real. We shipped a 10-crate Rust game engine, a React client,
+a Python media daemon, 11 genre packs, 71 ADRs, and a full WebSocket protocol
+in under two weeks. When you identify the correct fix, it takes minutes — the
 item-acquisition rewrite (regex-on-prose to LLM-structured-extraction, touching
 protocol types, orchestrator, narrator prompt, server wiring, and tests) took
 5 minutes 38 seconds wall time.
