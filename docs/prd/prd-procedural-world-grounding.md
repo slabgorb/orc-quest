@@ -70,7 +70,7 @@ encounters. New grounding systems MUST follow the same pattern — not reinvent 
 | **Compound key dedup** | `(name, culture, world)` prevents duplicates | `monster_manual.rs` |
 | **World materialization** | Maturity-driven history chapter filtering | `world_materialization.rs` |
 
-**The narrator prompt template** (`docs/prompt-reworked.md`) already has injection
+**The narrator prompt template** (see `sidequest-server` orchestrator) already has injection
 points for `<game-state>`, `<world-lore>`, `<players>`, and `<tone>`. New grounding
 systems add new sections or extend existing ones using the same attention-zone
 architecture (Primacy → Early → Valley → Late → Recency).
@@ -494,7 +494,7 @@ arbitrary YAML, the code effort is much smaller than a greenfield build:
 | Phase 3 | 6-8 stories | 3-5 stories | 1-2 stories | 10-15 stories |
 
 **Content-to-code ratio: ~4:1.** Most work is authoring YAML and validating
-narrator usage via `preview-prompt.py`. Rust code follows the namegen/encountergen
+narrator usage via `sidequest-promptpreview`. Rust code follows the namegen/encountergen
 template — read YAML, apply RNG, emit structured JSON.
 
 ## Risks
@@ -525,13 +525,13 @@ which systems it uses and which are null/simplified.
 
 ### Prompt Preview Loop (Primary)
 
-Use `scripts/preview-prompt.py` for rapid iteration. This reconstructs the full
+Use the `sidequest-promptpreview` crate for rapid iteration. This reconstructs the full
 narrator prompt with attention-zone ordering — the exact text Claude receives.
 
 **The loop:**
 1. Author YAML content (e.g., `weather.yaml` for low_fantasy)
 2. Wire into prompt zone (add section to template)
-3. Run `python scripts/preview-prompt.py` to verify injection
+3. Run `cargo run -p sidequest-promptpreview` to verify injection
 4. Check: Is the grounding data in the right zone? Is it concise enough?
    Does it give the narrator what it needs without bloating the context?
 5. Iterate YAML/template until the preview looks right
@@ -560,7 +560,7 @@ This is how we catch mode collapse in production — if the narrator ignores
 
 ## Success Metric
 
-**Prompt preview validation:** `preview-prompt.py` shows grounding data in the
+**Prompt preview validation:** `sidequest-promptpreview` shows grounding data in the
 correct attention zones, at reasonable token cost, with genre-appropriate content.
 
 **Narrator usage validation:** Across 5+ scripted scenario runs, the narrator
@@ -589,7 +589,7 @@ The Rust infrastructure for all of this already exists:
 - `markov.rs` generates culture-appropriate names from corpus
 - `monster_manual.rs` demonstrates persistent pool + lifecycle pattern
 - Attention zones (Primacy/Early/Valley/Late/Recency) are already ordered
-- `preview-prompt.py` enables rapid iteration without full playtest cycles
+- `sidequest-promptpreview` enables rapid iteration without full playtest cycles
 
 **The gap is content + prompt wiring, not architecture.**
 
@@ -597,7 +597,7 @@ For **baked** systems (demographics, calendar): YAML authoring + prompt injectio
 For **on-tick** systems (weather, NPC schedules): small Rust generator + prompt injection.
 For **hybrid** systems (economy, establishments): YAML baseline + Rust modifier + prompt injection.
 
-**Existing prompt template zones** (`docs/prompt-reworked.md`):
+**Existing prompt template zones** (see orchestrator `build_narrator_prompt()`):
 - `<world-lore>` — demographics, calendar fit here naturally
 - `<game-state>` — weather, economy fluctuations, NPC schedules inject here
 - `<players>` — loadout already injected here

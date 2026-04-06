@@ -108,6 +108,46 @@
 |-----|--------|---------|
 | [Two-Tier Turn Counter](051-two-tier-turn-counter.md) | Accepted | Interaction (monotonic) vs Round (narrative beats) separation |
 
+## Room Graph / Dungeon Crawl
+
+| ADR | Status | Summary |
+|-----|--------|---------|
+| [Room Graph Navigation](055-room-graph-navigation.md) | Accepted | Graph-based dungeon navigation with resource pressure |
+
+## Code Generation / Tooling
+
+| ADR | Status | Summary |
+|-----|--------|---------|
+| [Script Tool Generators](056-script-tool-generators.md) | Accepted | Offload structured generation from LLM to Rust CLI binaries |
+| [Monster Manual — Server-Side Pre-Generation](059-monster-manual-server-side-pregen.md) | Accepted | Pre-gen NPCs/encounters via Rust tools, inject into game_state |
+| [Scenario Fixtures](069-scenario-fixtures.md) | Accepted | Pre-configured world states for testing |
+
+## Narrator Architecture
+
+| ADR | Status | Summary |
+|-----|--------|---------|
+| [Narrator Crunch Separation](057-narrator-crunch-separation.md) | Accepted | LLM narrates prose, sidecar tools handle mechanical state |
+| [Persistent Opus Narrator Sessions](066-persistent-opus-narrator-sessions.md) | Accepted | Long-lived Opus sessions for narrator continuity |
+| [Unified Narrator Agent](067-unified-narrator-agent.md) | Accepted | Collapse multi-agent into single persistent session |
+
+## Observability
+
+| ADR | Status | Summary |
+|-----|--------|---------|
+| [Claude Subprocess OTEL Passthrough](058-claude-subprocess-otel-passthrough.md) | Accepted | See inside Claude CLI subprocess calls via OTEL spans |
+
+## Codebase Decomposition
+
+| ADR | Status | Summary |
+|-----|--------|---------|
+| [Genre Models Decomposition](060-genre-models-decomposition.md) | Accepted | Split models.rs by domain |
+| [Lore Module Decomposition](061-lore-module-decomposition.md) | Accepted | Split lore.rs by responsibility |
+| [Server lib.rs Extraction](062-server-lib-extraction.md) | Accepted | Route groups, state, and watcher events |
+| [Dispatch Handler Splitting](063-dispatch-handler-splitting.md) | Accepted | Split dispatch by pipeline stage |
+| [Game Crate Domain Modules](064-game-crate-domain-modules.md) | Accepted | Organize flat files into domain modules |
+| [Protocol Message Decomposition](065-protocol-message-decomposition.md) | Accepted | Split message.rs by domain |
+| [Magic Literal Extraction](068-magic-literal-extraction.md) | Accepted | Domain-scoped constants replace magic literals |
+
 ## Media Pipeline (stays in sidequest-daemon)
 
 These decisions govern the Python media daemon, not the Rust API. Listed here

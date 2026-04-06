@@ -1,9 +1,9 @@
 # SideQuest API — Architecture
 
 > System design for the Rust port of the SideQuest AI Narrator engine.
-> 6-crate workspace, 52 game modules, 7 agent types, 3 turn modes.
+> 12-crate workspace, 71 game modules, 7 agent types, 3 turn modes.
 >
-> **Last updated:** 2026-04-04
+> **Last updated:** 2026-04-06
 
 ## Architectural Layers
 
@@ -40,7 +40,7 @@
          ▼                      ▼
 ┌──────────────────────┐ ┌────────────────────────────────────────────┐
 │    Agent Layer       │ │              Game Layer (sidequest-game)    │
-│  (sidequest-agents)  │ │  52 modules: state, combat, chase, tropes, │
+│  (sidequest-agents)  │ │  71 modules: state, combat, chase, tropes, │
 │  Claude CLI subproc  │ │  inventory, NPCs, OCEAN, lore, conlang,    │
 │  7 agent types       │ │  faction agendas, world materialization,   │
 │  Timeout + recovery  │ │  music direction, voice routing, barriers  │
@@ -52,7 +52,7 @@
 │  Genre Layer         │ │           Persistence Layer                 │
 │  (sidequest-genre)   │ │  rusqlite (saves), serde_yaml (genre packs)│
 │  YAML pack loader    │ │  Narrative log, KnownFact accumulation     │
-│  7 genre packs       │ │  persistence.rs                            │
+│  11 genre packs       │ │  persistence.rs                            │
 └──────────────────────┘ └────────────────────────────────────────────┘
 
          ┌────────────────────────────────────────────────────────────┐
@@ -68,12 +68,18 @@
 sidequest-api/
 ├── Cargo.toml                        # [workspace] root
 ├── crates/
-│   ├── sidequest-protocol/           # GameMessage enum, 20+ typed payloads, serde
-│   ├── sidequest-genre/              # YAML loader, genre pack structs, 7 packs
-│   ├── sidequest-game/               # 52 modules — state, combat, NPCs, lore, audio, etc.
+│   ├── sidequest-protocol/           # GameMessage enum, 31 typed payloads, serde
+│   ├── sidequest-genre/              # YAML loader, genre pack structs, 11 packs
+│   ├── sidequest-game/               # 71 modules — state, combat, NPCs, lore, audio, etc.
 │   ├── sidequest-agents/             # Claude CLI subprocess, 7 agent types, timeout/recovery
 │   ├── sidequest-server/             # axum HTTP/WS, session management, orchestrator
-│   └── sidequest-daemon-client/      # Unix socket client for Python media daemon
+│   ├── sidequest-daemon-client/      # Unix socket client for Python media daemon
+│   ├── sidequest-telemetry/          # OTEL tracing and watcher event infrastructure
+│   ├── sidequest-validate/           # Genre pack validation utilities
+│   ├── sidequest-encountergen/       # CLI: enemy stat block generator
+│   ├── sidequest-loadoutgen/         # CLI: starting equipment generator
+│   ├── sidequest-namegen/            # CLI: NPC identity block generator
+│   └── sidequest-promptpreview/      # CLI: prompt template preview tool
 └── tests/                            # Integration tests
 ```
 
@@ -97,7 +103,7 @@ All LLM calls use `claude -p` subprocess via `tokio::process::Command`. No Anthr
 
 ### ADR-002: Typed Protocol
 
-Strongly-typed Rust structs for every message payload using `serde(tag = "type")` on the `GameMessage` enum. 20+ message types. The type system catches payload mismatches at compile time — eliminates the `KeyError` class of bugs from the Python codebase.
+Strongly-typed Rust structs for every message payload using `serde(tag = "type")` on the `GameMessage` enum. 33 message types. The type system catches payload mismatches at compile time — eliminates the `KeyError` class of bugs from the Python codebase.
 
 ### ADR-003: Session as Actor
 
@@ -105,7 +111,7 @@ Each WebSocket connection spawns a tokio task owning a `Session`. Single-player:
 
 ### ADR-004: Genre Packs as YAML
 
-7 genre packs loaded via `serde_yaml` into typed structs. Read-only at runtime. Shared with sq-2 and sidequest-content repo. Each pack defines: world topology, NPC archetypes (with OCEAN profiles), item catalogs, trope definitions, audio themes, visual style, conlang morphemes, and faction agendas.
+11 genre packs loaded via `serde_yaml` into typed structs. Read-only at runtime. Shared with sq-2 and sidequest-content repo. Each pack defines: world topology, NPC archetypes (with OCEAN profiles), item catalogs, trope definitions, audio themes, visual style, conlang morphemes, and faction agendas.
 
 ### ADR-005: Background-First Pipeline
 
@@ -145,7 +151,7 @@ consistently ignores `--allowedTools` instructions.
 ### ADR-047: Input Sanitization
 All player text passes through `sanitize_player_text()` at the protocol layer — strips injection attempts before routing.
 
-## Game Systems (sidequest-game, 52 modules)
+## Game Systems (sidequest-game, 71 modules)
 
 ### Core State
 - **GameState:** Central state composition — characters, NPCs, world, combat, chase
@@ -247,7 +253,7 @@ sidequest-api (Rust)  ◄──── HTTP / Unix socket ────►  sidequ
 
 ## ADR Index
 
-54 Architecture Decision Records govern the system. See [docs/adr/README.md](adr/README.md) for the full index covering: core architecture (7), prompt engineering (2), agent system (4), game systems (12), frontend/protocol (2), multiplayer (6), transport/infrastructure (4), narrator/text (4), NPC/character (4), media/audio/rendering (4), turn management (1), and media pipeline (12 from sq-2).
+69 Architecture Decision Records govern the system. See [docs/adr/README.md](adr/README.md) for the full index covering: core architecture (7), prompt engineering (2), agent system (4), game systems (12), frontend/protocol (2), multiplayer (6), transport/infrastructure (4), narrator/text (4), NPC/character (4), media/audio/rendering (4), turn management (1), and media pipeline (12 from sq-2).
 
 ## Wiring Diagrams
 

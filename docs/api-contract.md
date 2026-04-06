@@ -1,9 +1,9 @@
 # SideQuest API Contract
 
 > WebSocket + REST protocol between sidequest-api (Rust) and sidequest-ui (React).
-> Source of truth: `sidequest-protocol/src/message.rs` — 23 message types, 35 payload structs.
+> Source of truth: `sidequest-protocol/src/message.rs` — 33 message types, 31 payload structs.
 >
-> **Last updated:** 2026-04-01
+> **Last updated:** 2026-04-06
 
 ## Transport
 
@@ -33,7 +33,7 @@ That's the only REST endpoint. Everything else flows through WebSocket.
 
 ---
 
-## Message Types (23 total)
+## Message Types (33 total)
 
 ```
 Client → Server:
@@ -41,6 +41,7 @@ Client → Server:
   SESSION_EVENT       Session lifecycle (connect)
   CHARACTER_CREATION  Creation scene response
   VOICE_SIGNAL        WebRTC signaling (outbound)
+  JOURNAL_REQUEST     Request journal contents
 
 Server → Client:
   NARRATION           Complete narration with state delta + footnotes
@@ -55,6 +56,8 @@ Server → Client:
   INVENTORY           Full inventory snapshot
   MAP_UPDATE          World map state for map overlay
   COMBAT_EVENT        Combat state for combat overlay
+  CONFRONTATION       Confrontation engine state (resource pools)
+  RENDER_QUEUED       Image render queued notification
   IMAGE               Image delivery (scene, portrait, handout)
   AUDIO_CUE           Music, SFX, and ambience control
   TTS_START           TTS stream initiation (segment count)
@@ -63,7 +66,13 @@ Server → Client:
   VOICE_TEXT          TTS text companion (displayed alongside audio)
   VOICE_SIGNAL        WebRTC signaling (inbound, from peer)
   ACTION_QUEUE        Queued actions
+  ACTION_REVEAL       Sealed letter action reveal (multiplayer)
   CHAPTER_MARKER      Chapter/scene transition
+  SCENARIO_EVENT      Scenario lifecycle events
+  ACHIEVEMENT_EARNED  Achievement/milestone notification
+  JOURNAL_RESPONSE    Journal contents response
+  ITEM_DEPLETED       Item consumed/destroyed notification
+  RESOURCE_MIN_REACHED Resource threshold warning
   ERROR               Error with optional reconnect_required flag
 ```
 
