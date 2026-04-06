@@ -125,9 +125,10 @@ stories:
       when the rules change (e.g., entering combat switches to Structured).
     points: 2
     priority: p1
-    status: ready
+    status: done
     repos: sidequest-ui
     workflow: tdd
+    completed: '2026-04-06'
     review_verdict: approved
   - id: 13-6
     title: "DM override for turn resolution — allow DM to force-resolve a turn or extend the timeout"
@@ -138,7 +139,7 @@ stories:
       or AFK player.
     points: 3
     priority: p1
-    status: ready
+    status: canceled
     repos: sidequest-api, sidequest-ui
     workflow: tdd
     depends_on: 13-2
