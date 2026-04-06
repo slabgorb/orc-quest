@@ -78,13 +78,15 @@ stories:
     title: Add OTEL watcher events for location transitions
     points: 2
     priority: p1
-    status: in_progress
+    status: done
     assigned_to: keith.avery@1898andco.io
     started: '2026-04-06'
     repos: api
     workflow: trivial
+    completed: '2026-04-06'
     type: chore
     branch: feat/26-8-otel-location-transitions
+    review_verdict: approved
   - id: 26-9
     title: Remove orphaned TurnModeIndicator and markdownToHtml
     points: 1

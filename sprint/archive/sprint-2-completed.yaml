@@ -717,3 +717,8 @@ completed_stories:
     title: Wire session_restore into dispatch_connect
     points: 3
     completed: '2026-04-06'
+  - id: 26-8
+    epic: ''
+    title: Add OTEL watcher events for location transitions
+    points: 2
+    completed: '2026-04-06'
