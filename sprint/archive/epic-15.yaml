@@ -4,7 +4,7 @@ title: Playtest Debt Cleanup — Stubs, Dead Code, Disabled Features
 description: >-
   Address technical debt identified in the 2026-03-29 post-playtest audit. Stubs that were never wired, dead code behind if-false branches, disabled features that need architectural rethink, and placeholder values that could leak to users. Lower priority than Epic 13/14 multiplayer fixes.
 priority: p2
-status: ready
+status: done
 repos: sidequest-api, sidequest-ui
 stories:
   - id: 15-1
@@ -456,9 +456,13 @@ stories:
       the GM panel (ocean.shift_proposed, ocean.shift_applied).
     points: 3
     priority: p2
-    status: ready
+    status: done
+    assigned_to: keith.avery@1898andco.io
+    started: '2026-04-06'
     repos: api
     workflow: tdd
+    completed: '2026-04-06'
+    review_verdict: approved
   - id: 15-26
     title: "Wire select_npc_action — NPC autonomous actions not invoked from server"
     description: >-
@@ -589,3 +593,4 @@ stories:
     repos: sidequest-content
     workflow: trivial
     completed: '2026-04-02'
+completed: '2026-04-06'

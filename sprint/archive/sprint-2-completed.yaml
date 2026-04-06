@@ -15,6 +15,7 @@ completed_epics:
   - '12'
   - '16'
   - '25'
+  - '15'
 completed_stories:
   - id: 13-8
     epic: ''
@@ -636,3 +637,78 @@ completed_stories:
     title: Wire scenario_archiver into save/load endpoints
     points: 3
     completed: '2026-04-06'
+  - id: 15-25
+    epic: ''
+    title: "Wire propose_ocean_shifts — OCEAN personality shift pipeline not called from dispatch"
+    points: 3
+    completed: '2026-04-06'
+  - id: 15-4
+    epic: '15'
+    title: "Perception rewriter — implement at least one rewrite strategy"
+    points: 5
+    completed: '2026-03-30'
+  - id: 15-9
+    epic: '15'
+    title: "Wire narrative_log SQLite table — append_narrative per turn, enable recap generation"
+    points: 3
+    completed: "2026-04-01"
+  - id: 15-10
+    epic: '15'
+    title: "Wire seed_lore_from_char_creation — character backstory/hooks never enter lore store"
+    points: 2
+    completed: '2026-04-01'
+  - id: 15-11
+    epic: '15'
+    title: "Fix OCEAN shift pipeline — propose_ocean_shifts skipped between detect and apply"
+    points: 2
+    completed: "2026-04-01"
+  - id: 15-12
+    epic: '15'
+    title: "Wire SceneRelevanceValidator — art renders scenes that don't match current location"
+    points: 3
+    completed: "2026-03-30"
+  - id: 15-14
+    epic: '15'
+    title: "Wire enrich_registry_from_npcs — NPC registry has regex-only data, ignores structured fields"
+    points: 2
+    completed: '2026-04-02'
+  - id: 15-15
+    epic: '15'
+    title: "Wire resolve_abilities — affinity tiers tick but unlocked abilities never computed"
+    points: 2
+    completed: '2026-04-02'
+  - id: 15-17
+    epic: '15'
+    title: "Wire chase cinematography — chase_depth context never injected into narrator prompt"
+    points: 3
+    completed: "2026-04-02"
+  - id: 15-22
+    epic: '15'
+    title: "Wire tier_to_dimensions — image dimensions never sent to daemon, daemon guesses"
+    points: 2
+    completed: '2026-04-02'
+  - id: 15-24
+    epic: '15'
+    title: "Persist LoreFragments to SQLite — game-accumulated lore lost between sessions"
+    points: 3
+    completed: '2026-04-02'
+  - id: 15-28
+    epic: '15'
+    title: "Reinforce narrator structured output compliance — footnotes, quest_updates, scene_mood"
+    points: 3
+    completed: '2026-04-06'
+  - id: 15-30
+    epic: '15'
+    title: "Genre-aware chargen loading text — replace hardcoded 'old woman' with genre NPC"
+    points: 1
+    completed: '2026-04-02'
+  - id: 15-31
+    epic: '15'
+    title: "Add missing ambient SFX files — neon_hum.ogg and rain.ogg 404"
+    points: 1
+    completed: '2026-04-02'
+  - id: 15-32
+    epic: '15'
+    title: "Add Orbitron font — neon_dystopia theme references missing woff2"
+    points: 1
+    completed: '2026-04-02'
