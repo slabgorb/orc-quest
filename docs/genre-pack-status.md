@@ -1,11 +1,12 @@
 # Genre Pack Status Guide
 
-> Last updated: 2026-03-31 | Source: `sidequest-content` develop branch
+> Last updated: 2026-04-06 | Source: `sidequest-content` develop branch
 
 ## Pack Overview
 
 | Genre Pack | Worlds | Genre YAMLs | Music | Fonts | Corpus | Images | Tier |
 |-----------|--------|-------------|-------|-------|--------|--------|------|
+| caverns_and_claudes | 2 | 18/16+ | 2 | 0 | 1 | 2 | 2 |
 | elemental_harmony | 2 | 14/16 | 182 | 2 | 9 | 38 | 1 |
 | low_fantasy | 2 | 16/16 | 137 | 2 | 6 | 23 | 1/2 |
 | mutant_wasteland | 1 | 13/16 | 150 | 1 | 7 | 3 | 2 |
@@ -14,6 +15,7 @@
 | road_warrior | 1 | 14/16 | 147 | 0 | 12 | 16 | 1 |
 | space_opera | 2 | 14/16 | 60 | 0 | 8 | 0 | 2 |
 | spaghetti_western | 1 | 16/16 | 18+ | 1 | 5 | 0 | 2 |
+| star_chamber | 1 | 20/16+ | 0 | 0 | 0 | 0 | 3 |
 | victoria | 1 | 16/16 | 33 (PD) | 1 | 10 | 13 | 1 |
 
 ### Tiers
@@ -47,6 +49,8 @@ archetypes, tropes, visual_style, legends.
 
 | World | history | carto | cultures | archetypes | tropes | visual_style | legends |
 |-------|---------|-------|----------|-----------|--------|-------------|---------|
+| caverns_and_claudes/grimvault | + | + | + | + | + | + | + |
+| caverns_and_claudes/mawdeep | + | + | + | + | + | + | + |
 | elemental/burning_peace | + | + | + | + | + | + | + |
 | elemental/shattered_accord | + | + | + | — | + | — | + |
 | low_fantasy/pinwheel_coast | — | + | + | — | — | — | + |
@@ -58,10 +62,11 @@ archetypes, tropes, visual_style, legends.
 | space_opera/aureate_span | + | + | + | — | — | — | + |
 | space_opera/coyote_reach | + | + | + | — | — | — | + |
 | spaghetti_western/dust_and_lead | + | + | + | — | — | — | + |
+| star_chamber/pyre_of_vanities | + | — | + | — | — | + | — |
 | victoria/blackthorn_moor | + | + | + | + | + | + | + |
 
 **Fully complete worlds (all optional files):**
-burning_peace, franchise_nations, annees_folles, the_circuit, blackthorn_moor
+grimvault, mawdeep, burning_peace, franchise_nations, annees_folles, the_circuit, blackthorn_moor
 
 ## Missing Assets
 
@@ -91,12 +96,13 @@ LLM-interpreted at narration time unless noted.
 
 ## Confrontation & Resource Completeness (Epic 16)
 
-As of 2026-04-05, all 9 genre packs declare at least one confrontation type.
+As of 2026-04-06, all 11 genre packs declare at least one confrontation type.
 Every pack has a negotiation variant. Genre-specific confrontation types and
 resource pools are documented below.
 
 | Genre Pack | Confrontation Types | Resources |
 |-----------|-------------------|-----------|
+| caverns_and_claudes | negotiation | — |
 | elemental_harmony | negotiation | — |
 | low_fantasy | negotiation | — |
 | mutant_wasteland | negotiation | — |
@@ -105,10 +111,11 @@ resource pools are documented below.
 | road_warrior | negotiation | fuel |
 | space_opera | negotiation, ship_combat | — |
 | spaghetti_western | standoff, negotiation, poker | luck |
+| star_chamber | negotiation | — |
 | victoria | negotiation, trial, auction | standing |
 
 **Validation:** `cargo test -p sidequest-game --test content_audit_story_16_16_tests`
-verifies all 9 packs load, confrontation structure, beat/ability score consistency,
+verifies all 11 packs load, confrontation structure, beat/ability score consistency,
 and resource range validity.
 
 ## Content vs Engine Gap Map
