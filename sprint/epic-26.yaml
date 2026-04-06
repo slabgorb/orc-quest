@@ -32,10 +32,15 @@ stories:
     title: Wire session_restore into dispatch_connect
     points: 3
     priority: p1
-    status: backlog
+    status: done
+    assigned_to: keith.avery@1898andco.io
+    started: '2026-04-06'
     repos: api
     workflow: trivial
+    completed: '2026-04-06'
     type: chore
+    review_findings: 'HIGH: serde_json::to_value failure in session_restore.rs:41-49 silently degrades character_json to None. Must return None to trigger error path.'
+    review_verdict: approved
   - id: 26-4
     title: Wire turn_reminder into dispatch idle detection
     points: 5
