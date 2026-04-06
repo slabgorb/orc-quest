@@ -621,3 +621,8 @@ completed_stories:
     title: Add missing protocol types — JOURNAL_REQUEST, JOURNAL_RESPONSE, ITEM_DEPLETED, RESOURCE_MIN_REACHED
     points: 5
     completed: '2026-04-06'
+  - id: 26-1
+    epic: ''
+    title: Wire entity_reference into run_legality_checks
+    points: 3
+    completed: '2026-04-06'

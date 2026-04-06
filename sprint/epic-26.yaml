@@ -10,10 +10,14 @@ stories:
     title: Wire entity_reference into run_legality_checks
     points: 3
     priority: p1
-    status: backlog
+    status: done
+    assigned_to: keith.avery@1898andco.io
+    started: '2026-04-06'
     repos: api
     workflow: trivial
+    completed: '2026-04-06'
     type: chore
+    review_verdict: approved
   - id: 26-2
     title: Wire exercise_tracker into orchestrator dispatch
     points: 3
@@ -56,9 +60,10 @@ stories:
     title: Add missing protocol types — JOURNAL_REQUEST, JOURNAL_RESPONSE, ITEM_DEPLETED, RESOURCE_MIN_REACHED
     points: 5
     priority: p1
-    status: backlog
+    status: done
     repos: ui
     workflow: tdd
+    completed: '2026-04-06'
     type: bug
   - id: 26-8
     title: Add OTEL watcher events for location transitions
