@@ -110,9 +110,13 @@ stories:
       Genre packs need ConfrontationDef entries for combat and chase if they don't already have them. Combat: metric "hp" descending, beats for attack/defend/flee/special, stat_checks mapping to resolution functions. Chase: metric "separation" ascending, beats for accelerate/maneuver/ shortcut/ram, stat_checks mapping to chase resolution. Each genre can customize beats — neon_dystopia combat has "hack" and "netrun" beats, spaghetti_western has "draw" and "fan_the_hammer". Audit all 11 genre packs, add combat + chase ConfrontationDefs where missing. OTEL: N/A — content changes.
     points: 3
     priority: p0
-    status: ready
+    status: done
     repos: content
     workflow: trivial
+    completed: '2026-04-07'
+    branch: feat/28-10-genre-pack-confrontation-defs
+    session_file: .session/28-10-session.md
+    review_verdict: approved
   - id: 28-11
     title: "Playtest verification — combat AND chase work through unified encounter system"
     description: >-

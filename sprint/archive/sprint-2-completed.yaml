@@ -818,3 +818,8 @@ completed_stories:
     title: "Dead export cleanup — remove unwired pub fns and UI exports"
     points: 3
     completed: '2026-04-07'
+  - id: 28-10
+    epic: ''
+    title: "Genre pack combat/chase ConfrontationDefs — declare combat and chase as confrontation types"
+    points: 3
+    completed: '2026-04-07'
