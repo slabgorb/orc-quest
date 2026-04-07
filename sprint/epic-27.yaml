@@ -1,0 +1,72 @@
+id: '27'
+type: epic
+title: MLX Image Renderer — Replace PyTorch with Apple MLX
+description: Migrate daemon image generation from PyTorch/diffusers to Apple MLX via mflux. Drop TTS (Kokoro) and ACE-Step runtime workers. Daemon becomes single-purpose Flux image renderer. See ADR-070.
+priority: p1
+status: backlog
+repos: daemon
+stories:
+  - id: 27-1
+    title: Strip TTSWorker and Kokoro from daemon
+    points: 2
+    priority: p1
+    status: backlog
+    repos: daemon
+    workflow: trivial
+    type: chore
+  - id: 27-2
+    title: Strip ACEStepWorker from daemon runtime
+    points: 2
+    priority: p1
+    status: backlog
+    repos: daemon
+    workflow: trivial
+    type: chore
+  - id: 27-3
+    title: FluxMLXWorker — replace FluxWorker with mflux backend
+    points: 5
+    priority: p1
+    status: backlog
+    repos: daemon
+    workflow: tdd
+  - id: 27-4
+    title: Daemon dependency swap — remove torch/diffusers, add mlx/mflux
+    points: 2
+    priority: p1
+    status: backlog
+    repos: daemon
+    workflow: trivial
+    depends_on: 27-3
+    type: chore
+  - id: 27-5
+    title: LoRA loading verification — genre style LoRAs via mflux
+    points: 3
+    priority: p1
+    status: backlog
+    repos: daemon
+    workflow: tdd
+    depends_on: 27-3
+  - id: 27-6
+    title: Redux/img2img evaluation — portrait identity without IP-Adapter
+    points: 3
+    priority: p2
+    status: backlog
+    repos: daemon
+    workflow: tdd
+    depends_on: 27-3
+  - id: 27-7
+    title: OTEL spans for MLX render pipeline
+    points: 2
+    priority: p2
+    status: backlog
+    repos: daemon
+    workflow: tdd
+    depends_on: 27-3
+  - id: 27-8
+    title: Playtest validation — MLX renderer end-to-end
+    points: 2
+    priority: p1
+    status: backlog
+    repos: daemon
+    workflow: trivial
+    depends_on: 27-4
