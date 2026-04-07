@@ -762,3 +762,8 @@ completed_stories:
     title: "Load ConfrontationDefs into server — genre pack encounter types available at runtime"
     points: 2
     completed: '2026-04-07'
+  - id: 27-7
+    epic: ''
+    title: OTEL spans for MLX render pipeline
+    points: 2
+    completed: '2026-04-07'
