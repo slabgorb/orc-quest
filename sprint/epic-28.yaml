@@ -129,10 +129,14 @@ stories:
       With sidequest-telemetry already wired into sidequest-game from 28-2, instrument the remaining game crate blind spots found in the 2026-04-06 audit. CreatureCore::apply_hp_delta() — creature.hp_delta (name, old_hp, new_hp, delta, clamped). TropeEngine::tick() — trope.tick (progression before/after, threshold crossed). disposition.rs — disposition.shift (npc_name, old_attitude, new_attitude). TurnManager phase transitions — turn.phase_entered/exited (phase, duration_ms). barrier.rs — barrier .resolved (player_count, submitted, timed_out). These are the remaining LLM Compensation blind spots — subsystems where Claude can narrate around missing mechanics.
     points: 5
     priority: p1
-    status: ready
+    status: done
     repos: api
     workflow: tdd
     depends_on: 28-2
+    completed: '2026-04-07'
+    branch: feat/28-12-otel-game-crate-internals
+    session_file: .session/28-12-session.md
+    review_verdict: approved
   - id: 28-13
     title: "Dead export cleanup — remove unwired pub fns and UI exports"
     description: >-

@@ -788,3 +788,8 @@ completed_stories:
     title: "Wire format_encounter_context() into narrator prompt — replace inline combat/chase context"
     points: 3
     completed: '2026-04-07'
+  - id: 28-12
+    epic: ''
+    title: "OTEL for game crate internals — CreatureCore, trope tick, disposition, turn phases"
+    points: 5
+    completed: '2026-04-07'
