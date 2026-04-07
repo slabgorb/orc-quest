@@ -757,3 +757,8 @@ completed_stories:
     title: Daemon dependency swap — remove torch/diffusers, add mlx/mflux
     points: 2
     completed: '2026-04-07'
+  - id: 28-1
+    epic: ''
+    title: "Load ConfrontationDefs into server — genre pack encounter types available at runtime"
+    points: 2
+    completed: '2026-04-07'
