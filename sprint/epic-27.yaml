@@ -10,10 +10,14 @@ stories:
     title: Strip TTSWorker and Kokoro from daemon
     points: 2
     priority: p1
-    status: backlog
+    status: done
     repos: daemon
     workflow: trivial
+    completed: '2026-04-07'
     type: chore
+    branch: feat/27-1-strip-tts-kokoro
+    session: .session/27-1-session.md
+    review_verdict: approved
   - id: 27-2
     title: Strip ACEStepWorker from daemon runtime
     points: 2

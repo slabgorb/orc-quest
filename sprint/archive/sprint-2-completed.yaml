@@ -737,3 +737,8 @@ completed_stories:
     title: Scenario scoring — evidence collection metrics, accusation accuracy, deduction quality
     points: 3
     completed: '2026-04-06'
+  - id: 27-1
+    epic: ''
+    title: Strip TTSWorker and Kokoro from daemon
+    points: 2
+    completed: '2026-04-07'
