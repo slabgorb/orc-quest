@@ -793,3 +793,8 @@ completed_stories:
     title: "OTEL for game crate internals — CreatureCore, trope tick, disposition, turn phases"
     points: 5
     completed: '2026-04-07'
+  - id: 28-6
+    epic: ''
+    title: "Change creature_smith to output beat selections instead of CombatPatch"
+    points: 5
+    completed: '2026-04-07'
