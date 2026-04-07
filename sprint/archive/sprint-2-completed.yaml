@@ -808,3 +808,8 @@ completed_stories:
     title: "Treasure-as-XP — gold extraction grants affinity progress"
     points: 3
     completed: '2026-04-07'
+  - id: 27-5
+    epic: ''
+    title: LoRA loading verification — genre style LoRAs via mflux
+    points: 3
+    completed: '2026-04-07'

@@ -58,10 +58,14 @@ stories:
     title: LoRA loading verification — genre style LoRAs via mflux
     points: 3
     priority: p1
-    status: backlog
+    status: done
     repos: daemon
     workflow: tdd
     depends_on: 27-3
+    completed: '2026-04-07'
+    branch: feat/27-5-lora-loading-verification
+    session: .session/27-5-session.md
+    review_verdict: approved
   - id: 27-6
     title: Redux/img2img evaluation — portrait identity without IP-Adapter
     points: 3
