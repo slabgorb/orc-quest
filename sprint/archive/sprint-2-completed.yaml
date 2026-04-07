@@ -798,3 +798,8 @@ completed_stories:
     title: "Change creature_smith to output beat selections instead of CombatPatch"
     points: 5
     completed: '2026-04-07'
+  - id: 28-9
+    epic: ''
+    title: "Delete CombatState, ChaseState, CombatPatch, ChasePatch, from_combat_state, from_chase_state"
+    points: 5
+    completed: '2026-04-07'

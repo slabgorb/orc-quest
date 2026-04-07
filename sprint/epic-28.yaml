@@ -100,7 +100,7 @@ stories:
       Hard delete. Remove combat.rs, chase.rs, chase_depth.rs from sidequest-game (except any pure math functions referenced by beat stat_check resolvers — those move to encounter.rs or a resolution module). Remove CombatPatch and ChasePatch from protocol. Remove from_combat_state() and from_chase_state() from encounter.rs. Remove CombatEventPayload from protocol. Remove process_combat_and_chase() from dispatch/combat.rs. Remove all CombatState/ ChaseState references from dispatch/state_mutations.rs, dispatch/audio.rs, dispatch/prompt.rs, dispatch/session_sync.rs. Update UI to remove CombatOverlay (ConfrontationOverlay is the sole overlay). cargo build, cargo test, cargo clippy — clean. If anything references the old types, it's a wiring gap that must be fixed, not papered over. OTEL: N/A — this is deletion.
     points: 5
     priority: p0
-    status: ready
+    status: done
     repos: api,ui
     workflow: tdd
     depends_on: 28-8
