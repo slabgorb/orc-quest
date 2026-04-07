@@ -22,12 +22,14 @@ stories:
     title: Strip ACEStepWorker from daemon runtime
     points: 2
     priority: p1
-    status: in_progress
+    status: done
     repos: daemon
     workflow: trivial
+    completed: '2026-04-07'
     type: chore
     branch: feat/27-2-strip-acestep
     session: .session/27-2-session.md
+    review_verdict: approved
   - id: 27-3
     title: FluxMLXWorker — replace FluxWorker with mflux backend
     points: 5

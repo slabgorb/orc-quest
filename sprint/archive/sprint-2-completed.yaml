@@ -742,3 +742,8 @@ completed_stories:
     title: Strip TTSWorker and Kokoro from daemon
     points: 2
     completed: '2026-04-07'
+  - id: 27-2
+    epic: ''
+    title: Strip ACEStepWorker from daemon runtime
+    points: 2
+    completed: '2026-04-07'
