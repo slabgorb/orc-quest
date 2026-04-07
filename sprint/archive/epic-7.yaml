@@ -13,7 +13,7 @@ description: >-
   creating alibis, confessing, fleeing, or destroying evidence.
   Key reference: sq-2/sidequest/scenario/*.py, oq-2/docs/adr/030-scenario-packs.md.
 priority: p1
-status: ready
+status: done
 repos: sidequest-api
 stories:
   - id: 7-1
@@ -117,7 +117,11 @@ stories:
     title: ScenarioEngine integration — wire scenario lifecycle into orchestrator turn loop
     points: 5
     priority: p2
-    status: backlog
+    status: done
+    assigned_to: keith.avery@1898andco.io
+    started: '2026-04-07'
     repos: sidequest-api
     workflow: tdd
     depends_on: 7-5
+    completed: '2026-04-07'
+completed: '2026-04-07'

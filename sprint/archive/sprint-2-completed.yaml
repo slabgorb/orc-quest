@@ -16,6 +16,7 @@ completed_epics:
   - '16'
   - '25'
   - '15'
+  - '7'
 completed_stories:
   - id: 13-8
     epic: ''
@@ -776,4 +777,9 @@ completed_stories:
     epic: ''
     title: "OTEL for StructuredEncounter — instrument apply_beat, metric changes, resolution"
     points: 3
+    completed: '2026-04-07'
+  - id: 7-9
+    epic: ''
+    title: ScenarioEngine integration — wire scenario lifecycle into orchestrator turn loop
+    points: 5
     completed: '2026-04-07'
