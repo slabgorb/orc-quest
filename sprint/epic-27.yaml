@@ -74,10 +74,12 @@ stories:
     title: OTEL spans for MLX render pipeline
     points: 2
     priority: p2
-    status: backlog
+    status: in_progress
     repos: daemon
     workflow: tdd
     depends_on: 27-3
+    branch: feat/27-7-otel-mlx-render
+    session: .session/27-7-session.md
   - id: 27-8
     title: Playtest validation — MLX renderer end-to-end
     points: 2
