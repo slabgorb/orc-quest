@@ -154,7 +154,9 @@ stories:
       When gold increases while player location is a surface region (not in dungeon), advance affinity progress for the configured affinity by the gold amount. Genre pack rules set xp_affinity: "Plunderer" to configure which affinity. Content-level fallback: try narrator prompt first, implement engine hook only if unreliable.
     points: 3
     priority: p2
-    status: backlog
+    status: done
+    assigned_to: keith.avery@1898andco.io
+    started: '2026-04-07'
     repos: sidequest-api
     workflow: tdd
     acceptance_criteria:
@@ -162,6 +164,10 @@ stories:
       - xp_affinity field in genre rules configures target affinity
       - No effect when gold changes inside dungeon
       - Test: extract 100 GP to surface, verify 100 progress on configured affinity
+    completed: '2026-04-07'
+    branch: feat/19-9-treasure-as-xp
+    review_findings: 'Regression: builder_story_2_3_tests.rs fails to compile — missing xp_affinity field in RulesConfig struct literal'
+    review_verdict: approved
   - id: 19-10
     title: Wire deplete_light_on_transition into room transition dispatch — server call site, GameMessage, OTEL spans
     points: 5

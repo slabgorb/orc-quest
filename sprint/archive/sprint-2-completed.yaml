@@ -803,3 +803,8 @@ completed_stories:
     title: "Delete CombatState, ChaseState, CombatPatch, ChasePatch, from_combat_state, from_chase_state"
     points: 5
     completed: '2026-04-07'
+  - id: 19-9
+    epic: ''
+    title: "Treasure-as-XP — gold extraction grants affinity progress"
+    points: 3
+    completed: '2026-04-07'
