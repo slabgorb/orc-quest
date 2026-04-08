@@ -1,0 +1,24 @@
+id: '30'
+type: epic
+title: Playtest Bug Bash
+description: Bugs found during playtesting — character creation, narrator context, and other issues blocking clean playtest sessions
+priority: p1
+status: backlog
+repos: api,ui
+stories:
+  - id: 30-1
+    title: Character name not saved — persists as numeric index instead of player-entered name
+    points: 3
+    priority: p1
+    status: backlog
+    repos: api
+    workflow: tdd
+    type: bug
+  - id: 30-2
+    title: Narrator missing genre and world context — asks player for information it should already have
+    points: 3
+    priority: p1
+    status: in_progress
+    repos: api
+    workflow: tdd
+    type: bug
