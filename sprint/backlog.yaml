@@ -1,0 +1,32 @@
+
+- id: 28-14
+  title: "Wire LoRA path from visual_style.yaml through render pipeline to daemon"
+  points: 2
+  epic: 28
+  repos: [api, content]
+  description: |
+    The daemon's FluxMLXWorker already supports lora_path and lora_scale in
+    render params (_build_lora_model exists). The gap is the Rust API side:
+    
+    1. Add `lora` and `trigger_word` optional fields to VisualStyle struct
+       (sidequest-genre/src/models/character.rs:142)
+    2. Add `lora_path` field to RenderJob and enqueue() signature
+       (sidequest-game/src/render_queue.rs)
+    3. Read LoRA config from ctx.visual_style and pass to enqueue()
+       (sidequest-server/src/dispatch/render.rs:110)
+    4. Include lora_path in daemon client JSON request
+       (sidequest-daemon-client/src/client.rs)
+    5. Add lora + trigger_word to visual_style.yaml for trained genres
+       (sidequest-content: spaghetti_western, caverns_and_claudes)
+    
+    LoRA files live in Draw Things models dir. The daemon reads them by
+    filename from that path. Trigger word gets prepended to the positive
+    prompt automatically.
+    
+    OTEL: Add lora_path and trigger_word to render span attributes.
+  acceptance_criteria:
+    - visual_style.yaml with lora field is parsed without error
+    - render request to daemon includes lora_path when visual_style has lora
+    - FluxMLXWorker loads LoRA and generates with it
+    - OTEL span shows lora_path attribute on render
+    - genres without LoRA continue to render normally (no regression)
