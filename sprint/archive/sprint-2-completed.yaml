@@ -884,3 +884,8 @@ completed_stories:
     title: Multi-room SVG dungeon map — global grid render, zoom transition, fog of war, current room highlight
     points: 5
     completed: '2026-04-08'
+  - id: 31-1
+    epic: ''
+    title: Implement roll_3d6_strict stat generation in CharacterBuilder
+    points: 5
+    completed: '2026-04-08'
