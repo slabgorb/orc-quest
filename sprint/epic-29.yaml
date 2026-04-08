@@ -5,7 +5,7 @@ description: 'Deterministic tactical dungeon maps from ASCII grids. Tokens, zone
 priority: p1
 status: backlog
 repos: api,ui,content
-jira: MSSCI-16929
+jira:
 stories:
   - id: 29-1
     title: ASCII grid parser — glyph vocabulary, legend, exit extraction from wall gaps
