@@ -18,6 +18,8 @@ completed_epics:
   - '15'
   - '7'
   - '19'
+  - '23'
+  - '30'
 completed_stories:
   - id: 13-8
     epic: ''
@@ -898,4 +900,34 @@ completed_stories:
     epic: ''
     title: Wire tactical grid into MAP_UPDATE — populate ExploredLocation.tactical_grid from RoomDef, parse in useAutomapperData
     points: 3
+    completed: '2026-04-08'
+  - id: 30-3
+    epic: ''
+    title: GM panel StateTab crashes on undefined in_combat — PlayerCard reads uninitialized game state
+    points: 2
+    completed: '2026-04-08'
+  - id: 23-2
+    epic: '23'
+    title: "Tiered lore summaries — add summary field to faction/culture/location YAML schemas"
+    points: 3
+    completed: '2026-04-05'
+  - id: 23-5
+    epic: '23'
+    title: "Dynamic tone axes — genre packs define their own tone axis names and levels"
+    points: 3
+    completed: '2026-04-08'
+  - id: 23-7
+    epic: '23'
+    title: Wire tone axes injection into narrator prompt — TurnContext + genre pack models
+    points: 5
+    completed: '2026-04-08'
+  - id: 23-8
+    epic: '23'
+    title: Split state_summary blob into structured players and world-lore sections
+    points: 5
+    completed: '2026-04-08'
+  - id: 30-4
+    epic: '30'
+    title: Daemon loads Kokoro TTS instead of Mac native — unwired or unmerged TTS backend switch
+    points: 2
     completed: '2026-04-08'

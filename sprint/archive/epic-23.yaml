@@ -11,7 +11,7 @@ description: >-
   (docs/universal-room-graph-cartography.md) makes Epic 19's cyclic graph the standard
   cartography format across all genre packs, enabling location-based context retrieval.
 priority: p1
-status: backlog
+status: done
 repos: api,content,orchestrator
 stories:
   - id: 23-1
@@ -118,7 +118,7 @@ stories:
     title: Split state_summary blob into structured players and world-lore sections
     points: 5
     priority: p2
-    status: backlog
+    status: canceled
     repos: api
     workflow: tdd
     type: refactor
@@ -143,3 +143,4 @@ stories:
     completed: '2026-04-03'
     type: refactor
     branch: feat/23-11-rework-tool-sections
+completed: '2026-04-08'
