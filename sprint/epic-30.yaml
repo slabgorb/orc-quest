@@ -33,15 +33,17 @@ stories:
     title: GM panel StateTab crashes on undefined in_combat — PlayerCard reads uninitialized game state
     points: 2
     priority: p1
-    status: backlog
+    status: in_progress
     repos: ui
     workflow: tdd
     type: bug
+    assigned_to: keithavery
+    branch: feat/30-3-gm-panel-statetab-crash-fix
   - id: 30-4
     title: Daemon loads Kokoro TTS instead of Mac native — unwired or unmerged TTS backend switch
     points: 2
     priority: p1
-    status: backlog
+    status: canceled
     repos: daemon
     workflow: tdd
     type: bug
