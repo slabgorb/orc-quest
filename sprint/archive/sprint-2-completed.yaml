@@ -859,3 +859,8 @@ completed_stories:
     title: "NPC turns through beat system — NPCs mechanically act every round"
     points: 5
     completed: '2026-04-08'
+  - id: 29-5
+    epic: ''
+    title: TACTICAL_STATE protocol message — room grid, entities, zones, wire into dispatch on room entry
+    points: 3
+    completed: '2026-04-08'

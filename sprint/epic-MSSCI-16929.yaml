@@ -53,12 +53,18 @@ stories:
     branch: feat/29-4-svg-tactical-renderer
     session_file: .session/29-4-session.md
   - id: 29-5
+    jira: MSSCI-16931
     title: TACTICAL_STATE protocol message — room grid, entities, zones, wire into dispatch on room entry
     points: 3
     priority: p0
-    status: backlog
+    status: done
+    assigned_to: keith.avery@1898andco.io
+    started: '2026-04-08'
     repos: api
     workflow: tdd
+    completed: '2026-04-08'
+    branch: feat/29-5-tactical-state-protocol
+    session_file: .session/29-5-session.md
   - id: 29-6
     title: Shared-wall layout engine — tree topology placement with actual room dimensions
     points: 5
