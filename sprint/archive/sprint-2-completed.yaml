@@ -931,3 +931,8 @@ completed_stories:
     title: Daemon loads Kokoro TTS instead of Mac native — unwired or unmerged TTS backend switch
     points: 2
     completed: '2026-04-08'
+  - id: 31-4
+    epic: ''
+    title: Wire hp_formula evaluation with CON modifier after stat rolling
+    points: 2
+    completed: '2026-04-08'

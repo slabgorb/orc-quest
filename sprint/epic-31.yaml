@@ -36,6 +36,7 @@ stories:
     title: Wire hp_formula evaluation with CON modifier after stat rolling
     points: 2
     priority: p1
-    status: in_progress
+    status: done
     repos: api
     workflow: tdd
+    completed: '2026-04-08'
