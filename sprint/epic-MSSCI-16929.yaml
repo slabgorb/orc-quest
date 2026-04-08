@@ -89,9 +89,15 @@ stories:
     title: Multi-room SVG dungeon map — global grid render, zoom transition, fog of war, current room highlight
     points: 5
     priority: p0
-    status: backlog
+    status: done
+    assigned_to: keith.avery@1898andco.io
+    started: '2026-04-08'
     repos: ui
     workflow: tdd
+    completed: '2026-04-08'
+    branch: feat/29-8-multi-room-svg-dungeon-map
+    session_file: .session/29-8-session.md
+    review_verdict: approved
   - id: 29-9
     title: Author ASCII grids for Grimvault — second C&C world, validate format across dungeon styles
     points: 3
