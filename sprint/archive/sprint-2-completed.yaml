@@ -869,3 +869,8 @@ completed_stories:
     title: Narrator missing genre and world context — asks player for information it should already have
     points: 3
     completed: '2026-04-08'
+  - id: 30-1
+    epic: ''
+    title: Character name not saved — persists as numeric index instead of player-entered name
+    points: 3
+    completed: '2026-04-08'
