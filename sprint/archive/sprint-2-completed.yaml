@@ -957,3 +957,8 @@ completed_stories:
     title: "Playtest verification — combat AND chase work through unified encounter system"
     points: 3
     completed: '2026-04-08'
+  - id: 13-12
+    epic: ''
+    title: Initiative stat mapping — genre pack schema + caverns authoring
+    points: 3
+    completed: '2026-04-09'
