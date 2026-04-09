@@ -948,6 +948,11 @@ completed_stories:
     title: Fix session resume split-party — reconcile divergent player locations on reconnect
     points: 3
     completed: '2026-04-09'
+  - id: 13-11
+    epic: ''
+    title: Activate sealed-letter mode for multiplayer — flip barrier on, remove timeout
+    points: 3
+    completed: '2026-04-09'
   - id: 28-5
     epic: '28'
     title: "Wire apply_beat() into dispatch — beat selection drives encounter progression"
@@ -991,5 +996,25 @@ completed_stories:
   - id: 35-4
     epic: ''
     title: Wire treasure_xp into state_mutations after item acquisition
+    points: 3
+    completed: '2026-04-09'
+  - id: 13-12
+    epic: ''
+    title: Initiative stat mapping — genre pack schema + caverns authoring
+    points: 3
+    completed: '2026-04-09'
+  - id: 13-13
+    epic: ''
+    title: Player panel sealed-letter prominence — submission indicators and all-in state
+    points: 3
+    completed: '2026-04-09'
+  - id: 13-14
+    epic: ''
+    title: Sealed-round prompt architecture — one narrator call with initiative context
+    points: 5
+    completed: '2026-04-09'
+  - id: 13-7
+    epic: ''
+    title: "Sealed letter integration test — 4-player simultaneous submission, timeout, and reveal flow"
     points: 3
     completed: '2026-04-09'
