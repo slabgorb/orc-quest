@@ -46,10 +46,12 @@ stories:
     title: Wire treasure_xp into state_mutations after item acquisition
     points: 3
     priority: p1
-    status: backlog
+    status: done
     repos: api
     workflow: tdd
     type: chore
+    completed: '2026-04-09'
+    branch: feat/35-4-wire-treasure-xp-state-mutations
   - id: 35-5
     title: Wire turn_reminder into barrier creation — spawn async reminder task
     points: 5

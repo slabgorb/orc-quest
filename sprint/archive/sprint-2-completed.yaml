@@ -988,3 +988,8 @@ completed_stories:
     title: Wire scenario_scoring into /accuse handler with questioned_npcs tracking
     points: 5
     completed: '2026-04-09'
+  - id: 35-4
+    epic: ''
+    title: Wire treasure_xp into state_mutations after item acquisition
+    points: 3
+    completed: '2026-04-09'

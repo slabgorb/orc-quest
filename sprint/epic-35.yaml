@@ -1,0 +1,49 @@
+id: '35'
+type: epic
+title: Treasure XP Integration — Affinity-Based Gold Reward Wiring
+description: >-
+  treasure_xp.rs (story 19-9) implements affinity-based XP progression on gold acquisition.
+  This epic wires the fully-tested but currently unused treasure_xp module into production
+  state_mutations and ensures it emits proper OTEL observability events. All code paths
+  validated with integration tests verifying end-to-end consumers.
+priority: p1
+status: backlog
+repos: api
+jira:
+stories:
+  - id: 35-1
+    title: Extract current gold value from character inventory
+    description: |
+      Query function to get current gold amount from ctx.snapshot.character.inventory. Used as baseline for delta calculation during item acquisition.
+    points: 2
+    priority: p1
+    status: backlog
+    repos: api
+    workflow: tdd
+  - id: 35-2
+    title: Load TreasureXpConfig from genre pack or context
+    description: |
+      Build TreasureXpConfig from genre pack metadata or provide default config. Verify config has affinity names and XP multipliers.
+    points: 2
+    priority: p1
+    status: backlog
+    repos: api
+    workflow: tdd
+  - id: 35-3
+    title: Add OTEL watcher event builder for treasure_xp transitions
+    description: |
+      WatcherEventBuilder for StateTransition events with applied boolean, gold_amount, affinity_name, and new_progress fields. Emitted after apply_treasure_xp() completes.
+    points: 2
+    priority: p1
+    status: backlog
+    repos: api
+    workflow: tdd
+  - id: 35-4
+    title: Wire treasure_xp into state_mutations after item acquisition
+    description: |
+      After item acquisition in state_mutations.rs (~line 287), compute gold delta from inventory changes. Build TreasureXpConfig from genre pack or ctx. Call apply_treasure_xp(&mut ctx.snapshot, gold_delta, &config, rooms). Emit WatcherEventBuilder("treasure_xp", StateTransition) with applied, gold_amount, affinity_name, new_progress. Integration test verifying treasure_xp has a non-test consumer in state_mutations.rs.
+    points: 3
+    priority: p1
+    status: backlog
+    repos: api
+    workflow: tdd
