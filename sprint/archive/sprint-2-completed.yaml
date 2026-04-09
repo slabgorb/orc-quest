@@ -962,3 +962,8 @@ completed_stories:
     title: Initiative stat mapping — genre pack schema + caverns authoring
     points: 3
     completed: '2026-04-09'
+  - id: 13-13
+    epic: ''
+    title: Player panel sealed-letter prominence — submission indicators and all-in state
+    points: 3
+    completed: '2026-04-09'
