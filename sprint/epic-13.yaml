@@ -152,10 +152,13 @@ stories:
       submitted actions, turn counter increments correctly.
     points: 3
     priority: p1
-    status: ready
+    status: done
     repos: sidequest-api
     workflow: tdd
     depends_on: 13-3
+    completed: '2026-04-09'
+    branch: feat/13-7-sealed-letter-integration-test
+    assignee: keith
   - id: 13-11
     title: Activate sealed-letter mode for multiplayer — flip barrier on, remove timeout
     points: 3
@@ -184,10 +187,13 @@ stories:
     title: Sealed-round prompt architecture — one narrator call with initiative context
     points: 5
     priority: p0
-    status: backlog
+    status: done
     repos: sidequest-api
     workflow: tdd
     depends_on: 13-11
+    completed: '2026-04-09'
+    branch: feat/13-14-sealed-round-prompt-architecture
+    assignee: keith
 key_references:
   - sidequest-api/crates/sidequest-game/src/barrier.rs
   - sidequest-api/crates/sidequest-game/src/multiplayer.rs

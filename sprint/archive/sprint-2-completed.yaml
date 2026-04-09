@@ -967,3 +967,13 @@ completed_stories:
     title: Player panel sealed-letter prominence — submission indicators and all-in state
     points: 3
     completed: '2026-04-09'
+  - id: 13-14
+    epic: ''
+    title: Sealed-round prompt architecture — one narrator call with initiative context
+    points: 5
+    completed: '2026-04-09'
+  - id: 13-7
+    epic: ''
+    title: "Sealed letter integration test — 4-player simultaneous submission, timeout, and reveal flow"
+    points: 3
+    completed: '2026-04-09'
