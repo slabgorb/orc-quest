@@ -1,0 +1,57 @@
+# Merchant, inventory, and NPC recruitment test
+# Exercises: gold economy, item buy/sell, NPC hirelings, pronoun disambiguation
+# Run: just playtest-scenario merchant_npc_test
+
+name: Merchant & NPC Recruitment Test
+genre: caverns_and_claudes
+world: mawdeep
+
+character:
+  strategy: auto
+
+actions:
+  # Establish location and check starting state
+  - "look around"
+  - "/status"
+  - "/inventory"
+
+  # Merchant interaction — test buying
+  - "find a merchant or shop"
+  - "ask the merchant what they have for sale"
+  - "buy a healing potion"
+  - "/inventory"
+
+  # Test selling — verify gold increases
+  - "sell my least valuable item"
+  - "/inventory"
+
+  # Test buying something expensive — should refuse if insufficient gold
+  - "buy the most expensive item the merchant has"
+  - "/inventory"
+
+  # NPC interaction — find a hireable NPC
+  - "go to the tavern and look for someone who might join me"
+  - "talk to the most interesting person here"
+  - "ask them to join me on an adventure"
+  - "/status"
+
+  # Pronoun disambiguation test — two NPCs in scene
+  - "look around for anyone else who might help"
+  - "ask her to come along"
+  - "/status"
+
+  # Test NPC following — move and check party
+  - "head to the town gate"
+  - "/status"
+
+  # Combat with NPC companion — test party coordination
+  - "look for trouble outside the town walls"
+  - "attack the nearest threat"
+  - "/status"
+  - "/inventory"
+
+  # Post-combat economy — loot and sell
+  - "search the bodies"
+  - "/inventory"
+  - "return to the merchant and sell my loot"
+  - "/inventory"

@@ -5,7 +5,7 @@ description: Overhaul character creation mechanics — roll_3d6_strict, random b
 priority: p1
 status: backlog
 repos: api,content
-jira: null
+jira:
 stories:
   - id: 31-1
     title: Implement roll_3d6_strict stat generation in CharacterBuilder
@@ -19,10 +19,10 @@ stories:
     points: 3
     priority: p1
     status: in_progress
+    assigned_to: keith.avery@1898andco.io
+    started: '2026-04-08'
     repos: api,content
     workflow: bdd
-    started: '2026-04-08'
-    assigned_to: keith.avery@1898andco.io
     branch: feat/31-2-chargen-random-backstory
     session_file: .session/31-2-session.md
   - id: 31-3
