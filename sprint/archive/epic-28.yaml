@@ -1,0 +1,163 @@
+id: '28'
+type: epic
+title: "Unified Encounter Engine — Kill CombatState/ChaseState, Ship StructuredEncounter"
+description: |-
+  Combat has failed ~13 times across Epics 5, 15, 16, 25, and 26. Root cause: Epic 16 built StructuredEncounter to unify combat and chase but never replaced the old systems. The server uses CombatState/ChaseState as runtime models and wraps them in read-only StructuredEncounter adapters for the protocol message. The beat-driven encounter engine — apply_beat(), format_encounter_context(), ConfrontationDef loading — is dead code. apply_beat() has zero non-test callers. format_encounter_context() has zero non-test callers. The Confrontation message sends beats: vec![]. The UI beat buttons render nothing.
+  This epic kills CombatState and ChaseState. StructuredEncounter becomes the sole runtime model. Genre pack ConfrontationDefs drive ALL encounter types — combat and chase are just confrontation types declared in YAML, same as standoff, negotiation, trial, etc. Genres that don't fit combat (victoria, star_chamber) simply don't declare a combat type. Beats are the universal action unit. The existing math (resolve_attack, check_escape) stays where it is — StructuredEncounter orchestrates it via beat stat_check dispatch. No transition layers. No fallbacks. No save migration. Hard cut.
+priority: p0
+status: done
+repos: api,ui
+stories:
+  - id: 28-1
+    title: "Load ConfrontationDefs into server — genre pack encounter types available at runtime"
+    description: >-
+      Genre packs declare confrontation types in rules.yaml (standoff, negotiation, chase, combat, etc.). sidequest-genre already parses them into ConfrontationDef structs. The server never loads them. Fix: add Vec<ConfrontationDef> to AppState or DispatchContext so encounter types are available when the server needs to start, advance, or format an encounter. Lookup by encounter_type string key. OTEL event: encounter.defs_loaded (genre, count, types).
+    points: 2
+    priority: p0
+    status: done
+    repos: api
+    workflow: tdd
+    review_verdict: approved
+  - id: 28-2
+    title: "OTEL for StructuredEncounter — instrument apply_beat, metric changes, resolution"
+    description: >-
+      Before routing real traffic through StructuredEncounter, make it observable. Add sidequest-telemetry dependency to sidequest-game (only 2 emissions exist today, both in persistence.rs). Instrument: apply_beat() — beat_id, metric before/after, phase transition, resolved; metric threshold checks; phase transitions; escalation triggers. OTEL events: encounter.beat_applied (encounter_type, beat_id, stat_check, metric_before, metric_after, phase), encounter.resolved (encounter_type, beats_total, outcome), encounter.phase_transition (encounter_type, old_phase, new_phase), encounter.escalated (from_type, to_type).
+    points: 3
+    priority: p0
+    status: done
+    repos: api
+    workflow: tdd
+    completed: '2026-04-07'
+    branch: feat/28-2-otel-structured-encounter
+    session_file: .session/28-2-session.md
+  - id: 28-3
+    title: "Populate beats in Confrontation protocol message — UI beat buttons come alive"
+    description: >-
+      dispatch/mod.rs:2393 sends beats: vec![] in every Confrontation message. The ConfrontationOverlay renders beat buttons from this array. Empty array = no buttons = no player interaction with the encounter system. Fix: look up the ConfrontationDef by encounter_type from the defs loaded in 28-1, serialize its beats into the protocol message. Each beat has id, label, stat_check, metric_delta, risk, reveals, narrator_hint. OTEL event: encounter.beats_sent (encounter_type, beat_count, beat_ids).
+    points: 2
+    priority: p0
+    status: done
+    repos: api
+    workflow: tdd
+    depends_on: 28-1
+    completed: '2026-04-07'
+    review_verdict: approved
+  - id: 28-4
+    title: "Wire format_encounter_context() into narrator prompt — replace inline combat/chase context"
+    description: >-
+      dispatch/prompt.rs builds combat and chase context inline with ad-hoc string formatting. format_encounter_context() on StructuredEncounter already produces a complete prompt block with phase, metric, available beats, secondary stats, and cinematography hints — but has zero non-test callers. Fix: replace the inline combat/chase context assembly in dispatch/prompt.rs with a single call to encounter.format_encounter_context(&def). This gives the narrator structured beat options for ALL encounter types, not just combat and chase. OTEL event: encounter.context_injected (encounter_type, phase, beat_count).
+    points: 3
+    priority: p0
+    status: done
+    repos: api
+    workflow: tdd
+    depends_on: 28-1
+    review_findings: Silent fallback on find_confrontation_def miss - needs OTEL ValidationWarning else branch
+    review_verdict: approved
+  - id: 28-5
+    title: "Wire apply_beat() into dispatch — beat selection drives encounter progression"
+    description: >-
+      The core wiring. When creature_smith (or the player via UI beat buttons) selects a beat, dispatch calls apply_beat(beat_id, &def) on the live StructuredEncounter. The beat's stat_check field names the mechanic to resolve. Dispatch maps stat_check to existing resolution functions: "attack" calls resolve_attack() on CreatureCore, "escape" calls the chase escape logic, "persuade"/"intimidate"/etc. use the confrontation metric directly (already handled by apply_beat's metric_delta). After apply_beat(), check resolution. If resolved, handle outcome (victory/ defeat/escape/etc.). If escalates_to is set and threshold crossed, start the escalation encounter. OTEL events: encounter.beat_dispatched (beat_id, stat_check, resolver), encounter.stat_check_resolved (stat_check, result). HP/damage OTEL comes from CreatureCore (story 28-2).
+    points: 5
+    priority: p0
+    status: done
+    repos: api
+    workflow: tdd
+    depends_on:
+  - id: 28-6
+    title: "Change creature_smith to output beat selections instead of CombatPatch"
+    description: >-
+      creature_smith currently produces CombatPatch (engage/disengage, turn order, drama weight). Change its prompt to present available beats from the ConfrontationDef and ask for a beat_id selection per actor. The output format changes from CombatPatch fields to a beat_selections array: [{actor: "Goblin", beat_id: "attack"}, {actor: "Player", beat_id: "defend"}]. For non-combat encounters (standoff, negotiation), the narrator selects beats that advance the dramatic arc. Remove CombatPatch from the agent output schema entirely. OTEL event: encounter.agent_beat_selection (actor, beat_id, encounter_type).
+    points: 5
+    priority: p0
+    status: done
+    repos: api
+    workflow: tdd
+    depends_on: 28-5
+  - id: 28-7
+    title: "Promote StructuredEncounter onto GameSnapshot — replace combat and chase fields"
+    description: >-
+      GameSnapshot currently has combat: CombatState and chase: Option<ChaseState>. Replace both with encounter: Option<StructuredEncounter>. Update every reference to ctx.combat_state and ctx.chase_state in the dispatch pipeline to use ctx.encounter. HP and status effects stay on CreatureCore — the encounter tracks the dramatic arc (beats, metric, phase, resolution), not creature state. This is the point of no return. All dispatch code that reads/writes CombatState or ChaseState now reads/writes StructuredEncounter. state_mutations.rs engage/disengage logic becomes encounter start/resolve. OTEL event: encounter.started (encounter_type, actors, metric_starting), encounter.ended (encounter_type, outcome, total_beats).
+    points: 8
+    priority: p0
+    status: done
+    repos: api
+    workflow: tdd
+    depends_on: 28-6
+    completed: '2026-04-07'
+    branch: feat/28-7-promote-structured-encounter
+    session_file: .session/28-7-session.md
+    review_verdict: approved
+  - id: 28-8
+    title: "NPC turns through beat system — NPCs mechanically act every round"
+    description: >-
+      Story 15-6's original sin: NPCs never mechanically act. The narrator says "the goblin attacks" but resolve_attack() is never called for the NPC. In the unified system: each NPC actor in the encounter gets a beat selection per round. For combat encounters, NPC beats default to "attack" targeting a player. For other encounters, creature_smith selects NPC beats based on the NPC's disposition and role. dispatch loops through all actors in the encounter, calls apply_beat() for each, resolves the stat_check. Every NPC action produces OTEL events. The GM panel shows exactly what each NPC did mechanically. OTEL events: encounter.npc_beat (npc_name, beat_id, target, stat_check_result).
+    points: 5
+    priority: p0
+    status: done
+    repos: api
+    workflow: tdd
+    depends_on: 28-7
+    completed: '2026-04-07'
+  - id: 28-9
+    title: "Delete CombatState, ChaseState, CombatPatch, ChasePatch, from_combat_state, from_chase_state"
+    description: >-
+      Hard delete. Remove combat.rs, chase.rs, chase_depth.rs from sidequest-game (except any pure math functions referenced by beat stat_check resolvers — those move to encounter.rs or a resolution module). Remove CombatPatch and ChasePatch from protocol. Remove from_combat_state() and from_chase_state() from encounter.rs. Remove CombatEventPayload from protocol. Remove process_combat_and_chase() from dispatch/combat.rs. Remove all CombatState/ ChaseState references from dispatch/state_mutations.rs, dispatch/audio.rs, dispatch/prompt.rs, dispatch/session_sync.rs. Update UI to remove CombatOverlay (ConfrontationOverlay is the sole overlay). cargo build, cargo test, cargo clippy — clean. If anything references the old types, it's a wiring gap that must be fixed, not papered over. OTEL: N/A — this is deletion.
+    points: 5
+    priority: p0
+    status: done
+    repos: api,ui
+    workflow: tdd
+    depends_on: 28-8
+  - id: 28-10
+    title: "Genre pack combat/chase ConfrontationDefs — declare combat and chase as confrontation types"
+    description: >-
+      Genre packs need ConfrontationDef entries for combat and chase if they don't already have them. Combat: metric "hp" descending, beats for attack/defend/flee/special, stat_checks mapping to resolution functions. Chase: metric "separation" ascending, beats for accelerate/maneuver/ shortcut/ram, stat_checks mapping to chase resolution. Each genre can customize beats — neon_dystopia combat has "hack" and "netrun" beats, spaghetti_western has "draw" and "fan_the_hammer". Audit all 11 genre packs, add combat + chase ConfrontationDefs where missing. OTEL: N/A — content changes.
+    points: 3
+    priority: p0
+    status: done
+    repos: content
+    workflow: trivial
+    completed: '2026-04-07'
+    branch: feat/28-10-genre-pack-confrontation-defs
+    session_file: .session/28-10-session.md
+    review_verdict: approved
+  - id: 28-11
+    title: "Playtest verification — combat AND chase work through unified encounter system"
+    description: >-
+      Run a playtest scenario that exercises: (1) combat encounter start via narrator, (2) player beat selection via UI buttons, (3) NPC beat resolution with mechanical damage, (4) victory/defeat resolution, (5) chase encounter with escape threshold, (6) encounter escalation (standoff → combat). Verify in GM panel OTEL that every mechanical decision is visible: beat applied, stat_check resolved, HP changed, phase transitioned, encounter resolved. If the narrator improvises damage numbers that don't match OTEL, the story fails. Two genres minimum (one fantasy, one non-fantasy).
+    points: 3
+    priority: p0
+    status: done
+    repos: api,ui,content
+    workflow: tdd
+    depends_on:
+    completed: '2026-04-08'
+  - id: 28-12
+    title: "OTEL for game crate internals — CreatureCore, trope tick, disposition, turn phases"
+    description: >-
+      With sidequest-telemetry already wired into sidequest-game from 28-2, instrument the remaining game crate blind spots found in the 2026-04-06 audit. CreatureCore::apply_hp_delta() — creature.hp_delta (name, old_hp, new_hp, delta, clamped). TropeEngine::tick() — trope.tick (progression before/after, threshold crossed). disposition.rs — disposition.shift (npc_name, old_attitude, new_attitude). TurnManager phase transitions — turn.phase_entered/exited (phase, duration_ms). barrier.rs — barrier .resolved (player_count, submitted, timed_out). These are the remaining LLM Compensation blind spots — subsystems where Claude can narrate around missing mechanics.
+    points: 5
+    priority: p1
+    status: done
+    repos: api
+    workflow: tdd
+    depends_on: 28-2
+    completed: '2026-04-07'
+    branch: feat/28-12-otel-game-crate-internals
+    session_file: .session/28-12-session.md
+    review_verdict: approved
+  - id: 28-13
+    title: "Dead export cleanup — remove unwired pub fns and UI exports"
+    description: >-
+      2026-04-06 audit found 22 API pub exports and 9 UI exports with zero non-test consumers. After the encounter unification (28-9 deletes many of these), audit what remains and remove or downgrade to pub(crate). API targets: dedup_window, format_narrator_context, handle_accusation, last_narration, requires_npc_knowledge, try_claim_resolution, with_dedup_window, with_prompt_fragment, acquire_footnote, add_ambiguity_context, send_with_tools, transact_merchant, troper, troper_mut, with_client, debug_state, describe_player_effects, has_perception_effects, loadoutgen_binary_path, new_with_options, trace. UI targets: CartographyMetadata/Region/Route/ExploredLocation (verify 26-10 didn't add consumers), buttonVariants, toggleVariants, CreationChoice, OverlayManagerProps, TurnModeIndicatorProps.
+    points: 3
+    priority: p2
+    status: done
+    repos: api,ui
+    workflow: trivial
+    depends_on: 28-9
+    completed: '2026-04-07'
+    review_findings: 'Half-wired: lore_mark.rs and merchant_transact.rs downgraded to private instead of deleted. Delete entire modules.'
+    review_verdict: approved
+completed: '2026-04-09'

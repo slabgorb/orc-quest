@@ -160,9 +160,10 @@ stories:
     title: Activate sealed-letter mode for multiplayer — flip barrier on, remove timeout
     points: 3
     priority: p0
-    status: in_progress
+    status: done
     repos: sidequest-api, sidequest-ui
     workflow: tdd
+    completed: '2026-04-09'
     branch: feat/13-11-sealed-letter-activate
     assignee: keith
   - id: 13-12

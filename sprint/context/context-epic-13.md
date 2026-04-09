@@ -1,171 +1,207 @@
-# Epic 13: Sealed Letter Turn System — Simultaneous Input Collection with Player Visibility
+# Epic 13: Sealed Letter Turn System — Simultaneous Blind Submission with Initiative Resolution
 
 ## Overview
 
-The current multiplayer turn system has the infrastructure (TurnBarrier, MultiplayerSession,
-TurnMode state machine from Epic 8) but the player experience is broken. Today's behavior:
-one player acts, everyone locks until the narrator responds, then it's a free-for-all race to
-type next. No visibility into what others did. No indication of who still needs to go.
+The current multiplayer turn system is fundamentally sequential: one player acts, everyone
+watches, then whoever types fastest goes next. This destroys three properties that make
+multiplayer RPGs work:
 
-The sealed letter pattern fixes this: all players submit actions blindly, the UI shows who
-has and hasn't submitted, actions are revealed together, and the narrator processes the full
-batch as a single turn. This is the core multiplayer mechanic — everything else is polish
-until this works.
+1. **Asymmetric information is impossible** — everyone sees every action and result in real time
+2. **Initiative is fake** — whoever types first drives the narrative, not stats or encounter context
+3. **One player dominates** — the fast typist is the de facto protagonist
+
+The sealed letter pattern fixes all three: all players compose actions simultaneously and
+blindly (no one sees what others chose), the server collects all actions, then submits them
+in a single narrator call. The AI narrator — which is the GM, there is no human GM —
+resolves initiative based on encounter type and relevant stats, and produces one synthesized
+scene. The perception rewriter (ADR-028, already working) splits per-player views if needed.
+
+**Target: playable by 2026-04-13 playtest.** Flaky edges acceptable; reboot-as-escape-hatch
+is fine. The core loop must work: blind submit → collect → one narrator call → synthesized scene.
+
+## Design Principles
+
+- **The AI is the GM.** There is no human DM. No DM override commands. No DM force-resolve.
+  The GM panel is a developer diagnostic tool (OTEL telemetry), not a gameplay role.
+- **One prompt per round, not one per player.** The AI DM gets asked one question at a time.
+  N player actions → one narrator call → one synthesized scene.
+- **Initiative is narrator-decided, stat-informed, encounter-dependent.** The narrator receives
+  all actions (unordered, no submission-time bias), the encounter type, and each player's
+  relevant stats. It decides resolution order. Different encounters weight different stats:
+  combat → DEX, chase → speed/agility, social → CHA, trials → genre-specific.
+- **No timeout.** The round waits for all connected players. If someone crashes, the developer
+  reboots the server. Disconnect detection and auto-resolve are deferred.
+- **Stats must mean something.** Initiative mapping is the first mechanical system where stats
+  have concrete gameplay impact beyond HP calculation.
 
 ## Background
 
-### What Already Exists (from Epic 8)
+### What Already Exists (from Epic 8 + stories 13-1 through 13-5, 13-8 through 13-10)
 
 | Component | Status | File |
 |-----------|--------|------|
-| **MultiplayerSession** | Working | `sidequest-game/src/multiplayer.rs` |
-| **TurnBarrier** | Working | `sidequest-game/src/barrier.rs` |
-| **TurnMode** (FreePlay/Structured/Cinematic) | Working | `sidequest-game/src/turn_mode.rs` |
-| **SharedGameSession** with broadcast channel | Working | `sidequest-server/src/shared_session.rs` |
-| **TURN_STATUS** message type | Defined | `sidequest-protocol/src/message.rs` |
-| **Party action composition** | Working | Epic 8, story 8-4 |
+| **MultiplayerSession** | Built, disabled | `sidequest-game/src/multiplayer.rs` |
+| **TurnBarrier** | Built, disabled | `sidequest-game/src/barrier.rs` |
+| **TurnMode** (FreePlay/Structured/Cinematic) | Built, disabled | `sidequest-game/src/turn_mode.rs` |
+| **ActionReveal** protocol message | Defined | `sidequest-protocol/src/message.rs` |
+| **TurnStatusPanel** UI | Built | `sidequest-ui/src/components/TurnStatusPanel.tsx` |
+| **TurnModeIndicator** UI | Built | `sidequest-ui/src/components/TurnModeIndicator.tsx` |
+| **SharedGameSession** with broadcast | Working | `sidequest-server/src/shared_session.rs` |
+| **Claim election** (atomic CAS) | Built | `barrier.rs` — one handler dispatches, others wait |
+| **Adaptive timeout** | Built, needs removal | `barrier.rs` — currently 3-5s, must be removed |
+| **Perception rewriter** (ADR-028) | **Working** | Verified session 8 playtest — per-player narration |
 
-The backend can already collect actions, wait for a barrier, and compose a batched prompt.
-What's missing:
+All infrastructure stories (13-1 through 13-5, 13-8 through 13-10) are "done" meaning code
+exists, but the barrier is disabled at runtime. `should_use_barrier()` returns false in
+FreePlay, and the FSM transition to Structured/Cinematic is commented out.
 
-1. **Actions are not held** — each PLAYER_ACTION currently triggers an independent orchestrator
-   call instead of being queued until the barrier resolves
-2. **No action reveal** — other players never see what action triggered a narration
-3. **No submission status UI** — players have no visibility into who's submitted
-4. **Timeout is silent** — auto-filled actions happen without notification
+### Playtest Evidence
 
-### Playtest Evidence (2026-03-29)
-
+**Session 8 (2026-03-29):**
 > "One player will take their turn. It will then lock for everybody until the narrator comes
 > back and then it's a free-for-all. Whoever wants to type in first gets the narrator again,
 > everybody else has to wait."
 
-> "Players have trouble figuring out what the other player is doing to elicit the prompt that
-> the other player got."
+**Session 9 (2026-04-09):**
+> Unlike a human DM, an AI DM gets asked one question at a time. So either we can ask one
+> question per player that the AI has to respond to, or we can ask one question per turn.
+
+> I find the mechanic of "player one has initiative, therefore player two gets to react to
+> what they're doing" — bullshit. In practice, one person is driving all the action.
 
 ### Python Reference
 
-sq-2's turn manager implemented the sealed letter pattern with:
-- `collect_actions()` — gathers from all connected clients
-- `compose_party_actions()` — formats as PARTY ACTIONS block
-- Action reveal via `TurnSummary` message type
-- Visual turn status in the React client
+sq-2's turn manager implemented sealed letter with `collect_actions()` → `compose_party_actions()`
+→ `TurnSummary` reveal → single narrator call. The Rust infrastructure mirrors this but never
+got activated.
 
 ## Technical Architecture
 
-### Message Flow (Target State)
+### The Sealed-Letter Turn Loop
 
 ```
-Player A submits action ───► Server holds in MultiplayerSession.actions
-                              │
-                              ├─ Broadcast TURN_STATUS {player: "A", status: "submitted"}
-                              │  (UI updates: A's indicator → ✓)
-                              │
-Player B submits action ───► Server holds in MultiplayerSession.actions
-                              │
-                              ├─ Broadcast TURN_STATUS {player: "B", status: "submitted"}
-                              │  (UI updates: B's indicator → ✓)
-                              │
-                              ├─ Barrier met (all players submitted)
-                              │
-                              ├─ Broadcast ACTION_REVEAL {
-                              │    actions: [
-                              │      {character: "Thane", action: "I search the merchant's cart"},
-                              │      {character: "Lyra", action: "I keep watch for guards"}
-                              │    ]
-                              │  }
-                              │
-                              ├─ Compose batched prompt → Orchestrator
-                              │
-                              └─ Orchestrator → Narrator → NARRATION broadcast
+1. Narrator presents the scene → broadcast to all players
+2. ALL players compose actions simultaneously (blind to each other)
+3. Player panel shows who's submitted (sealed indicator per player)
+4. Once ALL connected players submit → actions stashed server-side
+5. Server sends all actions + encounter type + stats to narrator (ONE call)
+6. Narrator resolves initiative order based on encounter + stats
+7. Narrator produces one synthesized scene
+8. Perception rewriter splits per-player views if needed (ADR-028)
+9. Scene broadcast → back to step 2
 ```
 
-### New Protocol Messages
+### Initiative Resolution
+
+The narrator receives:
+- All N player actions (unordered — no submission-order bias)
+- The current encounter type (combat, chase, social, trial, exploration, etc.)
+- Each player's relevant stats for that encounter type
+- Instruction: determine initiative order, resolve actions in that order
+
+The initiative mapping lives in the genre pack YAML:
+
+```yaml
+# genre_packs/<genre>/rules.yaml (or initiative.yaml)
+initiative_rules:
+  combat:
+    primary_stat: DEX
+    description: "Reflexes and speed determine who strikes first"
+  chase:
+    primary_stat: DEX
+    description: "Agility and footwork set the pace"
+  social:
+    primary_stat: CHA
+    description: "Force of personality controls the conversation"
+  trial:
+    primary_stat: WIS
+    description: "Judgment and perception guide the defense"
+  exploration:
+    primary_stat: WIS
+    description: "Awareness determines who notices things first"
+```
+
+Each genre defines its own encounter types and stat weights. The narrator uses these as
+guidance, not rigid formulas — it makes the final call.
+
+### Protocol Messages (existing, need activation)
 
 ```rust
-// Server → Client: reveal all submitted actions
+// Already defined — needs to be broadcast when barrier resolves
 ActionReveal {
     actions: Vec<PlayerActionEntry>,  // character_name + action_text
     turn_number: u64,
-    auto_resolved: Vec<String>,       // character names that timed out
-}
-
-// Server → Client: DM turn control acknowledgment
-DmTurnControl {
-    action: String,  // "force_resolve" | "extend_timeout"
-    detail: String,  // e.g., "extended by 30s"
+    auto_resolved: Vec<String>,       // empty for MVP (no timeout)
 }
 ```
 
+`DmTurnControl` message type is **deleted** — no human GM, no force-resolve.
+
 ### Key Changes to Existing Code
 
-**`dispatch_player_action()` in `lib.rs`:**
-- Current: immediately calls orchestrator with single action
-- Target: in Structured mode, call `session.submit_action()`, broadcast TURN_STATUS,
-  only call orchestrator when barrier resolves
+**`TurnBarrier` (barrier.rs):**
+- Remove adaptive timeout — `wait_for_turn()` waits indefinitely for barrier
+- On WebSocket disconnect, remove player from the round's expected set
 
-**`SharedGameSession`:**
-- Add `broadcast_action_reveal()` method
-- Add `pending_players()` → TURN_STATUS broadcast on each submission
+**`TurnMode` (turn_mode.rs):**
+- `should_use_barrier()` returns true when multiplayer (>1 connected player)
+- Or: always use Structured mode for multiplayer sessions
 
-**`MultiplayerSession`:**
-- `submit_action()` already returns `TurnStatus::Resolved` vs `TurnStatus::Pending`
-- Need to add `auto_resolved_players` tracking when timeout fires
+**`dispatch_player_action()` (dispatch/mod.rs):**
+- In barrier mode: submit action → broadcast TURN_STATUS → wait for barrier
+- When barrier resolves: compose batched prompt with all actions + initiative context
+- One narrator call with combined actions, not N separate calls
 
-### UI Components (sidequest-ui)
+**Prompt builder:**
+- New prompt section: "PARTY ACTIONS THIS ROUND" with all player actions
+- Initiative context: encounter type + per-player stats + genre initiative rules
+- Instruction: resolve in initiative order, produce one synthesized scene
 
-**TurnStatusPanel** (new component):
-- Shows each player's name + submission state (pending / submitted / auto-resolved)
-- Updates via TURN_STATUS WebSocket messages
-- Compact horizontal layout, always visible during Structured mode
+### UI Changes
 
-**ActionRevealBlock** (new component):
-- Renders above narrator response
-- Shows each character's action as a brief card
-- Auto-resolved actions shown with subtle "waited" indicator
+**Player panel (TurnStatusPanel):**
+- Visually prominent during sealed rounds — not a subtle indicator
+- Per-player sealed/submitted indicator (letter icon or similar)
+- Clear "all in" transition state before narrator resolves
 
-**Turn Mode Indicator** (new component):
-- Small badge showing current mode
-- Tooltip explains mode behavior
-- Animates on transition
+**Input area:**
+- After submitting: locked with "Sealed — waiting for other players"
+- Cannot see what others typed
 
 ## Story Dependency Graph
 
 ```
-Epic 8 (done)
+Existing infrastructure (13-1 through 13-10, all done/disabled)
  │
- ├──► 13-1 (turn collection UI — shows who submitted)
+ ├──► 13-11 (activate barrier, remove timeout)
  │     │
- │     └──► 13-2 (server holds actions until barrier)
+ │     └──► 13-12 (prompt architecture — one call, initiative context)
  │           │
- │           ├──► 13-3 (action reveal broadcast + UI)
- │           │     │
- │           │     └──► 13-7 (integration test)
- │           │
- │           ├──► 13-4 (timeout fallback + notification)
- │           │
- │           └──► 13-6 (DM force-resolve / extend)
+ │           └──► 13-7 (integration test — validates full loop)
  │
- └──► 13-5 (turn mode indicator — parallel)
+ ├──► 13-13 (initiative stat mapping in genre pack)
+ │     │
+ │     └──► 13-12 (prompt needs initiative data from genre pack)
+ │
+ └──► 13-14 (player panel prominence — UI)
 ```
 
 ## Deferred (Not in This Epic)
 
-- **Cinematic mode UX** — Narrator-paced prompts where players respond to specific questions.
-  The turn mode exists; the UX for it is a separate concern.
-- **Player-to-player private messaging** — Out of scope, players use voice chat.
-- **Action voting/reaction** — Other players reacting to submitted actions before narrator
-  processes. Interesting but unnecessary complexity.
-- **Split-party turns** — When players are in different locations, they could have independent
-  turn cycles. Deferred until party splitting is a designed mechanic.
+- **Disconnect detection** — heartbeat-based removal from round, auto-resolve for dropped players
+- **Mid-session join protocol** — how a new player enters a round already in progress
+- **Cinematic mode** — narrator-paced prompts distinct from Structured. Exists in FSM, needs UX.
+- **Per-genre initiative formulas** — genre packs beyond caverns_and_claudes
+- **Split-party turns** — independent turn cycles when players are in different locations
+- **Player-to-player private messaging** — out of scope, players use voice chat
 
 ## Success Criteria
 
 During a multiplayer session:
-1. All players see who has and hasn't submitted their action
-2. No player can "race" to submit — everyone submits once per turn
-3. After barrier resolves, all players see what each character did before narration begins
-4. Timeout auto-fills missing players and notifies the party who was auto-resolved
-5. DM can force-resolve or extend timeout at any time
-6. Turn mode indicator shows the current mode with explanation
-7. The narrator's response references all submitted actions, not just the fastest typist's
+1. All players compose actions simultaneously without seeing each other's input
+2. Player panel prominently shows who has and hasn't submitted
+3. No player can "race" to submit — the round collects from everyone
+4. One narrator call resolves all actions, referencing initiative order
+5. Initiative order reflects encounter type and relevant stats from genre pack
+6. Narrator produces one synthesized scene, not N independent responses
+7. Perception rewriter delivers per-player views where appropriate
