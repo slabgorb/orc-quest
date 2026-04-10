@@ -163,12 +163,6 @@ stories:
     review_findings: 'Closed out-of-scope finding from 35-13 Pass 3 Reviewer. Detection lives at sole production call site in MusicDirector::new (no new sidequest-genre dep). 3 new tests (detection, positive-case non-emission, wiring). 35-13 and 35-9 regressions verified. fmt break-even. Merged as slabgorb/sidequest-api#395 (commit 474c0f1).'
   - id: 35-15
     title: Wire LoRA path from visual_style.yaml through render pipeline to daemon
-    points: 2
-    priority: p1
-    status: backlog
-    repos: api,content
-    workflow: tdd
-    type: chore
     description: |
       Relocated from orphan backlog (was 28-14, from archived Epic 28).
       Thematically belongs in Epic 35 — classic unwired feature: daemon side
@@ -194,9 +188,20 @@ stories:
 
       OTEL: Add lora_path and trigger_word to render span attributes so the
       GM panel can verify the LoRA is actually applied (lie-detector pattern).
+    points: 2
+    priority: p1
+    status: done
+    assigned_to: slabgorb@gmail.com
+    started: '2026-04-10'
+    repos: api,content
+    workflow: tdd
     acceptance_criteria:
       - visual_style.yaml with lora field is parsed without error
       - render request to daemon includes lora_path when visual_style has lora
       - FluxMLXWorker loads LoRA and generates with it
       - OTEL span shows lora_path attribute on render
       - genres without LoRA continue to render normally (no regression)
+    completed: '2026-04-10'
+    type: chore
+    review_findings: 'Pass 3 APPROVED. Pass 2 rework closed all 8 findings (A/B/C/D/E/F/G/I): (A) reverted deny_unknown_fields on VisualStyle per pre-existing extensibility exemption test; (B) audio.rs path traversal now loud (tracing::error + WatcherEvent); (C) explicit (Some(lora), None) warn arm in audio.rs; (D) process-scoped mark_lora_warned debounce; (E) lora_active bool gates lora_abs so trigger-missing no longer fires contradictory lora_activated telemetry; (F) validate_lora_scale custom deserializer rejects non-finite/negative/>2.0; (G) canonicalize path traversal guard catches symlink escapes with 3 distinct action codes; (I) audio.rs applies visual_tag_overrides mirroring render.rs. Merged as slabgorb/sidequest-api#398 (commit 723b4f4). 92/92 story tests pass. 9 non-blocking Delivery Findings logged (audio.rs wiring test gaps, LoraScale newtype, cross-path debounce scope) for future stories.'
+    review_verdict: approved
