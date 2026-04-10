@@ -102,9 +102,12 @@ stories:
     title: Author ASCII grids for Grimvault — second C&C world, validate format across dungeon styles
     points: 3
     priority: p1
-    status: backlog
+    status: done
+    assigned_to: slabgorb@gmail.com
+    started: '2026-04-10'
     repos: content
     workflow: trivial
+    completed: '2026-04-08'
     review_verdict: approved
   - id: 29-10
     title: TacticalEntity model + token rendering — position, size, faction, SVG tokens on grid
