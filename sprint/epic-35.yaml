@@ -54,10 +54,14 @@ stories:
     title: Wire turn_reminder into barrier creation — spawn async reminder task
     points: 5
     priority: p1
-    status: backlog
+    status: done
+    assigned_to: slabgorb@gmail.com
+    started: '2026-04-10'
     repos: api
     workflow: tdd
+    completed: '2026-04-09'
     type: chore
+    branch: feat/35-5-wire-turn-reminder
   - id: 35-6
     title: Wire guest_npc permission gating into dispatch pipeline
     points: 5
@@ -139,9 +143,9 @@ stories:
     priority: p1
     status: done
     started: '2026-04-10'
-    completed: '2026-04-10'
     repos: api
     workflow: tdd
+    completed: '2026-04-10'
     type: chore
     branch: feat/35-14-otel-unknown-variation-type
     review_verdict: approved
