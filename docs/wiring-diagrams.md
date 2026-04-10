@@ -13,7 +13,7 @@
 1. [Core Turn Loop](#1-core-turn-loop) — Action → Narration → State Delta
 2. [Narrator Prompt Assembly](#2-narrator-prompt-assembly) — Attention Zones → Tiered Composition → Claude CLI
 3. [Image Generation](#3-image-generation) — Narration → Subject → Beat Filter → Daemon → IMAGE
-4. [TTS Voice Pipeline](#4-tts-voice-pipeline) — Narration → Segments → Kokoro → Audio Chunks
+4. [TTS Voice Pipeline (removed)](#4-tts-voice-pipeline-removed) — Retired in Epic 27 / ADR-076
 5. [Music & Audio](#5-music--audio) — Narration → Mood → Track Selection → AUDIO_CUE
 6. [Multiplayer Turn Barrier](#6-multiplayer-turn-barrier) — Sealed Letter Collection → Resolution
 7. [Combat Flow](#7-combat-flow) — State Override → Mutations → COMBAT_EVENT
@@ -243,49 +243,32 @@ flowchart TD
 
 ---
 
-## 4. TTS Voice Pipeline
+## 4. TTS Voice Pipeline (removed)
 
-Parallel to narration delivery — segments synthesized and streamed as audio chunks.
+The Kokoro TTS streaming pipeline was retired in **Epic 27 (MLX Image Renderer)**
+when the sidequest-daemon was narrowed to a single-purpose Flux image renderer.
+The follow-up protocol cleanup landed in **ADR-076 / story 27-9**, which removed
+the `GameMessage::NarrationChunk` variant and `NarrationChunkPayload` struct
+from the protocol crate, and the corresponding UI narration buffer that was
+designed to synchronize text reveal with incoming PCM voice frames.
 
-```mermaid
-flowchart TD
-    A["Narration text"] --> B["dispatch.rs:3334<br/>SentenceSegmenter::segment()<br/>(segmenter.rs:56)"]
-    B --> C["dispatch.rs:3345<br/>strip_markdown_for_tts()<br/>(narration.rs:205)"]
-    C --> D["VoiceRouter::route(speaker)<br/>(voice_router.rs:106)<br/>→ VoiceAssignment"]
+Current narration delivery is the simplified two-message flow shown in
+[Section 1 — Core Turn Loop](#1-core-turn-loop):
 
-    D --> E["dispatch.rs:3383<br/>tokio::spawn TTS task"]
-    E --> F["TtsMessage::Start<br/>→ AudioMixer::on_tts_start()<br/>→ duck music/ambience"]
-    F --> G["GameMessage::TtsStart<br/>{total_segments}"]
-
-    E --> H["Per segment loop"]
-    H --> I["dispatch.rs:3806<br/>DaemonSynthesizer::synthesize()"]
-    I --> J["daemon-client/client.rs:165<br/>DaemonClient::synthesize()<br/>Unix socket"]
-    J --> K["sidequest-daemon (Python)<br/>Kokoro TTS engine<br/>24kHz PCM s16le"]
-    K --> L["TtsResult<br/>{audio_bytes, duration_ms}"]
-
-    L --> M["dispatch.rs:3484<br/>GameMessage::NarrationChunk<br/>(text to acting player)"]
-    L --> N["dispatch.rs:3493<br/>Binary voice frame:<br/>[4B header len][JSON header][PCM bytes]"]
-    N --> O["broadcast_binary() to all clients"]
-
-    H --> P["After last segment"]
-    P --> Q["AudioMixer::on_tts_end()<br/>→ restore volumes"]
-    Q --> R["GameMessage::TtsEnd"]
-
-    style A fill:#6c5ce7,color:#fff
-    style G fill:#4a9eff,color:#fff
-    style M fill:#4a9eff,color:#fff
-    style O fill:#4a9eff,color:#fff
-    style R fill:#4a9eff,color:#fff
-    style K fill:#00b894,color:#fff
+```
+GameMessage::Narration { text, state_delta, footnotes }
+GameMessage::NarrationEnd { state_delta }
 ```
 
-**Audio ducking:** Music and ambience volumes reduced during speech (0.15 over 300ms), restored after TTS_END (500ms asymmetric ramp)
+The UI pairs `Narration` with its terminal `NarrationEnd` in a small buffer so
+any end-of-turn `state_delta` applies in the same React commit as the narration
+text. There is no longer any streaming-chunks leg, no binary voice frames, and
+no audio ducking around speech.
 
-**Frame format:** `[uint32 header_len][JSON: {type, segment_id, sample_rate, format}][raw PCM]`
-
-**Client playback (AudioEngine.ts):** Web Audio API graph — PCM s16le → float32 AudioBuffer → Voice gain node → Master gain → AudioContext.destination. Voice segments queued via Promise chain for sequential playback. Ducker ducks music/ambience on voice start, Crossfader handles smooth music transitions.
-
-**Voice routing (voice_router.rs):** narrator → configured voice; character → archetype lookup; creature → creature_voice_presets; unknown → narrator fallback. Engine inferred from voice_id prefix (en_male_*/en_female_* → Kokoro, else → Piper).
+If TTS is reintroduced later, it will almost certainly use a different
+streaming shape (e.g. a single `VoiceTrack` message with a URL reference, or
+post-narration audio job queued like images are). See ADR-076 Alternatives
+Considered for the rationale.
 
 ---
 
