@@ -155,3 +155,42 @@ stories:
     branch: feat/35-14-otel-unknown-variation-type
     review_verdict: approved
     review_findings: 'Closed out-of-scope finding from 35-13 Pass 3 Reviewer. Detection lives at sole production call site in MusicDirector::new (no new sidequest-genre dep). 3 new tests (detection, positive-case non-emission, wiring). 35-13 and 35-9 regressions verified. fmt break-even. Merged as slabgorb/sidequest-api#395 (commit 474c0f1).'
+  - id: 35-15
+    title: Wire LoRA path from visual_style.yaml through render pipeline to daemon
+    points: 2
+    priority: p1
+    status: backlog
+    repos: api,content
+    workflow: tdd
+    type: chore
+    description: |
+      Relocated from orphan backlog (was 28-14, from archived Epic 28).
+      Thematically belongs in Epic 35 — classic unwired feature: daemon side
+      fully built, Rust API side never passes the LoRA path through.
+
+      The daemon's FluxMLXWorker already supports lora_path and lora_scale in
+      render params (_build_lora_model exists). The gap is the Rust API side:
+
+      1. Add `lora` and `trigger_word` optional fields to VisualStyle struct
+         (sidequest-genre/src/models/character.rs:142)
+      2. Add `lora_path` field to RenderJob and enqueue() signature
+         (sidequest-game/src/render_queue.rs)
+      3. Read LoRA config from ctx.visual_style and pass to enqueue()
+         (sidequest-server/src/dispatch/render.rs:110)
+      4. Include lora_path in daemon client JSON request
+         (sidequest-daemon-client/src/client.rs)
+      5. Add lora + trigger_word to visual_style.yaml for trained genres
+         (sidequest-content: spaghetti_western, caverns_and_claudes)
+
+      LoRA files live in Draw Things models dir. The daemon reads them by
+      filename from that path. Trigger word gets prepended to the positive
+      prompt automatically.
+
+      OTEL: Add lora_path and trigger_word to render span attributes so the
+      GM panel can verify the LoRA is actually applied (lie-detector pattern).
+    acceptance_criteria:
+      - visual_style.yaml with lora field is parsed without error
+      - render request to daemon includes lora_path when visual_style has lora
+      - FluxMLXWorker loads LoRA and generates with it
+      - OTEL span shows lora_path attribute on render
+      - genres without LoRA continue to render normally (no regression)
