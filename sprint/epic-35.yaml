@@ -81,8 +81,8 @@ stories:
     status: done
     repos: api
     workflow: trivial
-    type: chore
     completed: '2026-04-10'
+    type: chore
   - id: 35-9
     title: OTEL watcher events for NPC subsystems — belief, disposition, actions, gossip
     points: 3
