@@ -104,13 +104,16 @@ stories:
     title: OTEL watcher events for consequence, combatant, party_reconciliation, progression
     points: 2
     priority: p1
-    status: in_progress
+    status: done
+    assigned_to: slabgorb@gmail.com
+    started: '2026-04-10'
     repos: api
     workflow: tdd
+    completed: '2026-04-10'
     type: chore
-    started: '2026-04-10'
-    assigned_to: slabgorb@gmail.com
     branch: feat/35-10-otel-consequence-combatant-party-progression
+    review_findings: 'rework #3 (Option A) approved — combatant.bloodied OTEL emission relocated from Combatant::hp_fraction() (pure accessor) to state::broadcast_state_changes() (called from dispatch/mod.rs:1737), gated on delta.characters_changed(). All HIGH findings from review #1/#2 closed. 19/19 OTEL tests + 487/487 lib tests GREEN. 6 subagents (3 disabled per settings) returned: rule-checker clean, type-design closed prior medium definitively, comment-analyzer confirmed architect''s stale-doc finding, test-analyzer flagged untested is_friendly filter. Two non-blocking improvements logged (stale doc + missing negative test) — to be picked up as small follow-up commit on this branch before SM merges.'
+    review_verdict: approved
   - id: 35-11
     title: Delete dead UI components — LayoutModeSelector, TurnModeIndicator
     points: 1
