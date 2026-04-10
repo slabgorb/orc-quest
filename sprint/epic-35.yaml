@@ -133,3 +133,16 @@ stories:
     branch: feat/35-13-otel-chargen-watcher-events
     review_findings: 'Pass 3 APPROVED. All 4 silent paths in select_variation() closed. Rule A1 (No Silent Fallbacks) FULLY SATISFIED per rule-checker. 14/14 tests. Zero blocking findings. One out-of-scope delivery finding for as_variation() in sidequest-genre.'
     review_verdict: approved
+  - id: 35-14
+    title: OTEL watcher event for unknown AudioVariation type — close sidequest-genre as_variation() silent fallback
+    points: 1
+    priority: p1
+    status: done
+    started: '2026-04-10'
+    completed: '2026-04-10'
+    repos: api
+    workflow: tdd
+    type: chore
+    branch: feat/35-14-otel-unknown-variation-type
+    review_verdict: approved
+    review_findings: 'Closed out-of-scope finding from 35-13 Pass 3 Reviewer. Detection lives at sole production call site in MusicDirector::new (no new sidequest-genre dep). 3 new tests (detection, positive-case non-emission, wiring). 35-13 and 35-9 regressions verified. fmt break-even. Merged as slabgorb/sidequest-api#395 (commit 474c0f1).'
