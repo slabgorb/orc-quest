@@ -66,9 +66,12 @@ stories:
     title: Wire guest_npc permission gating into dispatch pipeline
     points: 5
     priority: p1
-    status: backlog
+    status: done
+    assigned_to: keith.avery@1898andco.io
+    started: '2026-04-10'
     repos: api
     workflow: tdd
+    completed: '2026-04-10'
     type: chore
   - id: 35-7
     title: Wire tactical_grid through MapWidget to Automapper/TacticalGridRenderer

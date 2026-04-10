@@ -148,21 +148,21 @@ stories:
     title: Template library — 20 reusable ASCII room shapes for World Builder selection
     points: 3
     priority: p2
-    status: backlog
+    status: canceled
     repos: content
     workflow: trivial
   - id: 29-16
     title: World Builder tactical grid generation — template selection, customization, post-gen validation
     points: 3
     priority: p2
-    status: backlog
+    status: canceled
     repos: orchestrator
     workflow: trivial
   - id: 29-17
     title: Browser grid editor — tactical renderer in edit mode, click to toggle cells, read/write ASCII
     points: 5
     priority: p2
-    status: backlog
+    status: canceled
     repos: ui
     workflow: tdd
   - id: 29-18

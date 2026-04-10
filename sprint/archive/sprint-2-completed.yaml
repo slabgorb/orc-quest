@@ -1071,3 +1071,8 @@ completed_stories:
     title: Wire LoRA path from visual_style.yaml through render pipeline to daemon
     points: 2
     completed: '2026-04-10'
+  - id: 35-6
+    epic: ''
+    title: Wire guest_npc permission gating into dispatch pipeline
+    points: 5
+    completed: '2026-04-10'
