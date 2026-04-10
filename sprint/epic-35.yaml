@@ -112,11 +112,12 @@ stories:
     title: Delete dead UI components — LayoutModeSelector, TurnModeIndicator
     points: 1
     priority: p2
-    status: in_review
+    status: done
     assigned_to: slabgorb@gmail.com
     started: '2026-04-10'
     repos: ui
     workflow: trivial
+    completed: '2026-04-10'
     type: chore
     branch: feat/35-11-delete-dead-ui-components
     review_verdict: approved
