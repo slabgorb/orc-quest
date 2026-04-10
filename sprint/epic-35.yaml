@@ -1,49 +1,116 @@
 id: '35'
 type: epic
-title: Treasure XP Integration — Affinity-Based Gold Reward Wiring
+title: Wiring Remediation II — Unwired Modules, OTEL Blind Spots, Dead Code
 description: >-
-  treasure_xp.rs (story 19-9) implements affinity-based XP progression on gold acquisition.
-  This epic wires the fully-tested but currently unused treasure_xp module into production
-  state_mutations and ensures it emits proper OTEL observability events. All code paths
-  validated with integration tests verifying end-to-end consumers.
-priority: p1
-status: backlog
-repos: api
-jira:
+  Eight fully-implemented API modules with zero production consumers, 15+ subsystems
+  wired but invisible to GM panel (no OTEL), 4 dead UI components. Discovered in
+  2026-04-09 cross-repo wiring audit. Successor to Epic 26. Critical finding:
+  patch_legality (narrator state validation) fully built with OTEL but never called.
+priority: p0
+status: ready
+repos: api,ui,daemon
 stories:
   - id: 35-1
-    title: Extract current gold value from character inventory
-    description: |
-      Query function to get current gold amount from ctx.snapshot.character.inventory. Used as baseline for delta calculation during item acquisition.
-    points: 2
-    priority: p1
-    status: backlog
+    title: Wire patch_legality into turn validator cold path
+    points: 3
+    priority: p0
+    status: done
     repos: api
     workflow: tdd
+    completed: '2026-04-09'
+    type: bug
   - id: 35-2
-    title: Load TreasureXpConfig from genre pack or context
-    description: |
-      Build TreasureXpConfig from genre pack metadata or provide default config. Verify config has affinity names and XP multipliers.
-    points: 2
+    title: Wire entity_reference hot-path validation after NPC registry update
+    points: 3
     priority: p1
-    status: backlog
+    status: done
+    started: '2026-04-09'
     repos: api
     workflow: tdd
+    completed: '2026-04-09'
+    type: chore
   - id: 35-3
-    title: Add OTEL watcher event builder for treasure_xp transitions
-    description: |
-      WatcherEventBuilder for StateTransition events with applied boolean, gold_amount, affinity_name, and new_progress fields. Emitted after apply_treasure_xp() completes.
-    points: 2
+    title: Wire scenario_scoring into /accuse handler with questioned_npcs tracking
+    points: 5
     priority: p1
-    status: backlog
+    status: done
     repos: api
     workflow: tdd
+    completed: '2026-04-09'
+    type: chore
+    branch: feat/35-3-wire-scenario-scoring-accuse-handler
   - id: 35-4
     title: Wire treasure_xp into state_mutations after item acquisition
-    description: |
-      After item acquisition in state_mutations.rs (~line 287), compute gold delta from inventory changes. Build TreasureXpConfig from genre pack or ctx. Call apply_treasure_xp(&mut ctx.snapshot, gold_delta, &config, rooms). Emit WatcherEventBuilder("treasure_xp", StateTransition) with applied, gold_amount, affinity_name, new_progress. Integration test verifying treasure_xp has a non-test consumer in state_mutations.rs.
+    points: 3
+    priority: p1
+    status: done
+    repos: api
+    workflow: tdd
+    completed: '2026-04-09'
+    type: chore
+    branch: feat/35-4-wire-treasure-xp-state-mutations
+  - id: 35-5
+    title: Wire turn_reminder into barrier creation — spawn async reminder task
+    points: 5
+    priority: p1
+    status: backlog
+    repos: api
+    workflow: tdd
+    type: chore
+  - id: 35-6
+    title: Wire guest_npc permission gating into dispatch pipeline
+    points: 5
+    priority: p1
+    status: backlog
+    repos: api
+    workflow: tdd
+    type: chore
+  - id: 35-7
+    title: Wire tactical_grid through MapWidget to Automapper/TacticalGridRenderer
+    points: 3
+    priority: p0
+    status: done
+    repos: api,ui
+    workflow: tdd
+    completed: '2026-04-09'
+    type: chore
+  - id: 35-8
+    title: OTEL watcher events for beat_filter and scene_relevance
     points: 3
     priority: p1
     status: backlog
     repos: api
-    workflow: tdd
+    workflow: trivial
+    type: chore
+  - id: 35-9
+    title: OTEL watcher events for NPC subsystems — belief, disposition, actions, gossip
+    points: 3
+    priority: p1
+    status: backlog
+    repos: api
+    workflow: trivial
+    type: chore
+  - id: 35-10
+    title: OTEL watcher events for consequence, combatant, party_reconciliation, progression
+    points: 2
+    priority: p1
+    status: backlog
+    repos: api
+    workflow: trivial
+    type: chore
+  - id: 35-11
+    title: Delete dead UI components — LayoutModeSelector, TurnModeIndicator
+    points: 1
+    priority: p2
+    status: backlog
+    repos: ui
+    workflow: trivial
+    type: chore
+  - id: 35-12
+    title: Delete dead daemon export — is_discardable
+    points: 1
+    priority: p2
+    status: backlog
+    repos: daemon
+    workflow: trivial
+    type: chore
