@@ -99,7 +99,10 @@ stories:
     title: Collapse narration protocol — remove NarrationChunk, clean UI buffer (ADR-076)
     points: 3
     priority: p1
-    status: backlog
+    status: done
     repos: api,ui
     workflow: tdd
+    completed: '2026-04-10'
     type: refactor
+    branch: feat/27-9-collapse-narration-protocol
+    session: .session/27-9-session.md
