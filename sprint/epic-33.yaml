@@ -14,9 +14,14 @@ stories:
       WidgetWrapper uses CSS vars from useGenreTheme/useChromeArchetype. Add [data-archetype] CSS rules for parchment (warm shadows, corner decorations), terminal (glow borders, scan lines), rugged (thick weathered borders). Verify across at least 3 genre packs.
     points: 5
     priority: p1
-    status: backlog
+    status: done
+    assigned_to: keith.avery@1898andco.io
+    started: '2026-04-11'
     repos: ui
     workflow: trivial
+    completed: '2026-04-11'
+    review_findings: 'HIGH: rugged corner brackets clipped by WidgetWrapper overflow-hidden; MEDIUM: lying-docstring comments violate structural-only contract; MEDIUM: zero test coverage for new widget rules'
+    review_verdict: approved
   - id: 33-2
     title: Background canvas per-archetype textures — genre-themed surface visible through grid gutters
     description: |

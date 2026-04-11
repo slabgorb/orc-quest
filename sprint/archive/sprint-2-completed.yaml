@@ -1081,3 +1081,8 @@ completed_stories:
     title: Delete dead daemon export — is_discardable
     points: 1
     completed: '2026-04-11'
+  - id: 33-1
+    epic: ''
+    title: Genre-themed widget chrome — archetype-specific CSS for widget borders, headers, and backgrounds
+    points: 5
+    completed: '2026-04-11'
