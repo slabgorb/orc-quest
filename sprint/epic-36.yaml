@@ -1,0 +1,40 @@
+id: '36'
+type: epic
+title: Post-clippy-cleanup tech debt
+description: 'Follow-up stories from the chore/clippy-workspace-cleanup branch (2026-04-11). The clippy cleanup exposed several pre-existing issues that were either silenced with #[allow] or deferred to dedicated stories. This epic tracks those follow-ups.'
+priority: p2
+status: backlog
+repos: api
+stories:
+  - id: 36-1
+    title: Fix TurnBarrier second-turn advancement bug (barrier_story_8_2 multiple_turns_timeout_then_normal)
+    points: 3
+    priority: p1
+    status: backlog
+    repos: api
+    workflow: tdd
+    type: bug
+  - id: 36-2
+    title: Refactor dispatch functions with too many arguments into context structs
+    points: 5
+    priority: p2
+    status: backlog
+    repos: api
+    workflow: tdd
+    type: refactor
+  - id: 36-3
+    title: 'Decide Session actor fate: implement or delete server_story_2_2_tests.rs'
+    points: 2
+    priority: p2
+    status: backlog
+    repos: api
+    workflow: trivial
+    type: chore
+  - id: 36-4
+    title: Wire TroperAgent or remove from Orchestrator
+    points: 3
+    priority: p2
+    status: backlog
+    repos: api
+    workflow: tdd
+    type: refactor
