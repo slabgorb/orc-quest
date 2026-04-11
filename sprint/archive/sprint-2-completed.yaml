@@ -1112,3 +1112,8 @@ completed_stories:
     title: OTEL watcher event for unknown AudioVariation type — close sidequest-genre as_variation() silent fallback
     points: 1
     completed: '2026-04-10'
+  - id: 34-2
+    epic: ''
+    title: DiceRequest/DiceThrow/DiceResult protocol types + serde
+    points: 3
+    completed: '2026-04-11'
