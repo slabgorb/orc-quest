@@ -67,3 +67,203 @@ stories:
     status: backlog
     repos: ui
     workflow: tdd
+  - id: 33-7
+    title: Character panel header — portrait, level, archetype display
+    description: 'The character panel header is currently just a name and subtitle in plain text with no portrait slot, level display, or archetype tag. This story adds a proper header row: circular portrait placeholder (48px, filled by 33-2 portrait system when available), character name in accent color, archetype + genre as subtitle, and a compact level badge (Lv N). See mockup: .playwright-mcp/mockups/epic-33-panel-improvements.html#s33-7. Before state visible in playtest screenshot 011-turn1-result.png.'
+    points: 3
+    priority: p1
+    status: backlog
+    repos: sidequest-ui
+    workflow: trivial
+    acceptance_criteria:
+      - Header renders portrait circle (48px) using character portrait URL if available, placeholder glyph if not
+      - Character name displayed in accent color, 13px, semibold
+      - "Subtitle line: '{archetype} · {genre_pack}' in muted 10px text"
+      - Level badge shows 'Lv N' in accent-dim background, top-right of header
+      - Portrait border color transitions to danger color when HP < 25%
+      - Header slot renders in all sub-tabs (Stats, Abilities, Journal)
+  - id: 33-8
+    title: Context-aware stat highlighting — surface relevant stats based on game phase
+    description: 'The Stats sub-tab currently renders all stats at equal visual weight regardless of what the game is doing. When combat is active, Reflexes/Instinct/Toughness are what matter. When a Confrontation is live, Presence/Brains/Wits matter. This story reads the current game phase from Redux state (GamePhase enum: exploration, combat, confrontation, downtime) and dims irrelevant stats while adding a green dot and row highlight to relevant ones. A context banner below the header names the active phase. See mockup: .playwright-mcp/mockups/epic-33-panel-improvements.html#s33-8. Before/after visible in screenshots 011 (flat) vs 013 (Confrontation tab already doing this correctly — mirror that pattern into the Stats tab).'
+    points: 3
+    priority: p1
+    status: backlog
+    repos: sidequest-ui
+    workflow: tdd
+    acceptance_criteria:
+      - Reads GamePhase from Redux game state (not derived from narrative)
+      - Each GamePhase maps to a list of highlighted stat keys — mapping defined in a config object, not hardcoded per-render
+      - 'Highlighted stats: accent dot left of name, row background rgba(accent, 0.08), value in accent color'
+      - 'Dimmed stats: opacity 0.35, no dot'
+      - Context banner displays phase name (e.g. 'Combat — Attack phase') between header and stat list
+      - 'exploration phase: no dimming, no banner — all stats equal weight'
+      - 'Phase mapping is data-driven: exported constant that UX can extend without code changes'
+  - id: 33-9
+    title: Stat usage labels — one-word descriptor per stat for at-a-glance readability
+    description: 'Stat names (Brains, Reflexes, Presence, etc.) are opaque to new players — a number next to a word tells you nothing about when that stat applies. This story adds a one-line italic descriptor under each stat name in the Stats sub-tab. Descriptors are defined per-stat in a config file (not in genre pack YAML — these are system-level descriptions). See mockup: .playwright-mcp/mockups/epic-33-panel-improvements.html#s33-9.'
+    points: 2
+    priority: p2
+    status: backlog
+    repos: sidequest-ui
+    workflow: trivial
+    acceptance_criteria:
+      - 'Each stat row becomes two-line: stat name (11px) above descriptor (9px italic muted)'
+      - 'Descriptors defined in a static config (e.g. STAT_DESCRIPTORS: Record<string, string>) — not fetched, not dynamic'
+      - 'Config covers all stats present in current genre pack schema: Brains, Reflexes, Presence, Instinct, Wits, Toughness at minimum'
+      - If a stat key has no descriptor entry, renders name only — no empty line
+      - Descriptor text is max ~30 chars to fit in panel without wrapping
+  - id: 33-10
+    title: Conditions/wounds display — surface health and active effects in character tab header
+    description: 'There is no health or condition display anywhere in the Character tab. HP and Stress only appear in the OTEL dashboard. This story adds a conditions bar between the character header and the stat list: two slim track bars (HP and Stress with numeric labels), plus a chip row for any active conditions (Bleeding, Rattled, Bolstered, etc.). Portrait border and name color shift to warn/danger at threshold. See mockup: .playwright-mcp/mockups/epic-33-panel-improvements.html#s33-10. Condition data comes from game_state.character.conditions (already present in protocol).'
+    points: 3
+    priority: p1
+    status: backlog
+    repos: sidequest-ui
+    workflow: tdd
+    acceptance_criteria:
+      - "HP bar: label 'HP', filled track, '{current} / {max}' value — green when >50%, amber 25-50%, red+pulse <25%"
+      - 'Stress bar (if present in game_state): same layout, amber fill'
+      - 'Condition chips: rendered from game_state.character.conditions array; chip color by condition.severity (bad=red, good=green, neutral=amber)'
+      - Portrait border transitions to danger color when HP < 25%
+      - Character name color transitions to warn when HP < 50%, danger when HP < 25%
+      - Conditions bar renders only when game has started (not during character creation)
+      - If conditions array is empty, chip row does not render (no empty space)
+  - id: 33-11
+    title: Tab notification badges — indicate new content in Knowledge and Map tabs
+    description: "The tab bar (Character / Inventory / Map / Knowledge / Flashbacks / Gallery / Audio) gives no indication when a tab has received new content during the current turn. Players miss Knowledge entries and Gallery images because there's no signal to look. This story adds a small dot badge (5px, accent color) inline after the tab label when the tab's content was updated this turn. Badge clears when the tab is opened. See mockup: .playwright-mcp/mockups/epic-33-panel-improvements.html#s33-11. Knowledge and Gallery are the primary targets — Map and Inventory are secondary."
+    points: 2
+    priority: p2
+    status: in_progress
+    assigned_to: keith.avery@1898andco.io
+    started: '2026-04-11'
+    repos: sidequest-ui
+    workflow: tdd
+    acceptance_criteria:
+      - Dot badge renders inline after tab label text (not absolutely positioned — avoids clipping)
+      - Badge appears when tab content updated since last time that tab was active
+      - Badge clears immediately when user clicks that tab
+      - Badge state stored in component local state (not Redux — ephemeral per-session)
+      - 'Knowledge tab: badges on new world_learned entries received via WebSocket'
+      - 'Gallery tab: badges on new scene images received via WebSocket'
+      - 'Map, Inventory: badge when their content payload changes (lower priority, same implementation)'
+      - No badge on Character or Audio tabs
+  - id: 33-12
+    title: Party section — expandable party member status with portrait and condition at a glance
+    description: 'The current PARTY section at the bottom of the Character tab is a single non-interactive row: a tiny avatar, the character name, and a raw HP string. It does not show NPCs travelling with the player, does not show conditions, and cannot be expanded or collapsed. This story replaces it with an expandable panel listing all party members (PC + companion NPCs) with portrait, name, archetype, HP mini-track, and active condition chips. Collapsed by default, expands on click. See mockup: .playwright-mcp/mockups/epic-33-panel-improvements.html#s33-12. Party data comes from game_state.party array.'
+    points: 3
+    priority: p2
+    status: backlog
+    repos: sidequest-ui
+    workflow: trivial
+    acceptance_criteria:
+      - Party section is collapsible — collapsed by default, header shows member count
+      - 'Expanded: one row per party member from game_state.party'
+      - 'Each row: portrait (28px circle), name, archetype + role (Player/NPC), HP mini-track (3px bar, same color thresholds as 33-10), condition chips'
+      - Portrait border color reflects HP threshold (green/amber/red)
+      - NPC members distinguished by 'NPC' role tag in archetype subtitle
+      - Collapse state persisted in localStorage (survives tab switches)
+      - If party has only the player character, section header reads 'Solo' and is collapsed non-expandable
+  - id: 33-13
+    title: Inventory item actions — Use/Equip/Unequip affordances on item rows
+    description: 'The inventory panel has no interaction affordances. Items are read-only — there is no way to use a consumable, equip a weapon, or drop anything from this panel. This story adds inline action buttons to each item row: Use (consumables/tools), Equip/Unequip (weapons/armor), and Drop (all). Actions dispatch WebSocket messages to the server (use_item, equip_item, drop_item). See mockup: .playwright-mcp/mockups/epic-33-inventory-improvements.html#s33-13. Current state visible in provided playtest screenshot of Inventory tab.'
+    points: 3
+    priority: p1
+    status: backlog
+    repos: sidequest-ui
+    workflow: tdd
+    acceptance_criteria:
+      - Consumable/Tool items show 'Use' (accent) and 'Drop' (muted) buttons
+      - Weapon/Armor items show 'Equip' or 'Unequip' depending on equipped state, plus 'Drop'
+      - Action buttons are inline-right on the item row, not on hover — always visible
+      - Use dispatches use_item WebSocket message with item_id, decrements quantity in Redux optimistically
+      - Equip dispatches equip_item with item_id, Unequip dispatches unequip_item
+      - Drop dispatches drop_item — no confirmation dialog (items are recoverable in narrative)
+      - Buttons are disabled and muted when game is not in an actionable phase (e.g. during narrator turn)
+  - id: 33-14
+    title: Inventory quantity badges — consumable stack counts as discrete counter chip
+    description: "Consumable quantities are currently buried inside item names ('Rad Pills (3 doses)', 'Canteen (1 day)') rather than displayed as a discrete quantity field. This makes stacks hard to scan and ties quantity presentation to item naming conventions. This story moves quantity to a standalone chip (×3) displayed after the item name, and removes quantity text from item names. When a consumable reaches qty=1 the chip turns red to signal near-depletion. See mockup: .playwright-mcp/mockups/epic-33-inventory-improvements.html#s33-14-15."
+    points: 2
+    priority: p1
+    status: backlog
+    repos: sidequest-ui
+    workflow: trivial
+    acceptance_criteria:
+      - Quantity chip renders as '×N' (e.g. ×3) after item name for all items with quantity field
+      - Chip is neutral-styled (surface bg, border) when qty > 1
+      - Chip turns danger-red when qty === 1 (low stock signal)
+      - Item names are stripped of quantity suffixes like '(3 doses)', '(1 day)' — name field used as-is from game_state
+      - Items with no quantity field (unique items) render no chip
+      - Quantity updates reactively when use_item response arrives via WebSocket
+  - id: 33-15
+    title: Equipped item visual treatment — strong left-border + icon state for equipped slot
+    description: "The equipped state on weapons is indicated only by a tiny plain-text 'Equipped' string next to the item name — easy to miss, no visual weight. This story replaces it with a proper visual treatment: a 3px left border in equip-green, a subtle background tint, and a small badge chip with an icon. The visual treatment makes equipped state immediately legible when scanning the inventory. See mockup: .playwright-mcp/mockups/epic-33-inventory-improvements.html#s33-14-15."
+    points: 2
+    priority: p1
+    status: backlog
+    repos: sidequest-ui
+    workflow: trivial
+    acceptance_criteria:
+      - 'Equipped item row gets 3px left border in --equip color (var(--equip): #4a7a5a or equivalent)'
+      - 'Row background tint: rgba(equip, 0.06)'
+      - Item name color shifts to accent (same green family)
+      - "Equipped badge chip: small, inline after name, icon + 'Equipped' text, accent-bordered"
+      - Unequipped items in the same section have no border and no tint — clear contrast with equipped
+      - 'Treatment applies to all equippable categories: Weapon, Armor (when present)'
+  - id: 33-16
+    title: Inventory header bar — currency + load summary with slot usage
+    description: "The inventory header shows only '15 gold' as plain text. There is no load/weight display, no item count, and currency has no visual hierarchy. This story replaces the plain gold string with a summary bar below the tab header: currency block (icon + value + label), a load track bar (current/max with amber/red thresholds), and an item count. If load system is not present in game_state, the load track is omitted and only currency + item count render. See mockup: .playwright-mcp/mockups/epic-33-inventory-improvements.html#s33-16."
+    points: 2
+    priority: p2
+    status: backlog
+    repos: sidequest-ui
+    workflow: trivial
+    acceptance_criteria:
+      - "Currency block: coin icon, numeric value in warn-amber (13px bold), 'Gold' label (9px muted)"
+      - "Load track: 3px bar, green <70%, amber 70-99%, red+label 'Overencumbered' at 100%+"
+      - Load track only renders if game_state.inventory.load_max is present and > 0
+      - "Item count: integer count of items in inventory, labeled 'Items'"
+      - Bar renders in var(--surface) background, 8px vertical padding, dividers between blocks
+      - Currency updates reactively from game_state.character.gold via WebSocket
+  - id: 33-17
+    title: Gallery image metadata — turn badge + scene legend per image
+    description: 'The Gallery tab is a flat image grid with zero context — clicking into it during the playtest shows bare thumbnails with no turn attribution, no scene name, no caption, no world facts, no NPCs. Defined in pingpong.md [DESIGN] entry 2026-04-11: reshape Gallery from ''image library'' into a diegetic Scrapbook — an in-world record of the adventure that connects each image to the lore, narrative beats, NPC encounters, world facts, and turn history that produced it. It should read like something the character themselves would keep: a travelogue of snapshots, field notes, and overheard conversations. See mockup: .playwright-mcp/mockups/epic-33-gallery-improvements.html. Server already emits all required data (turn_id, scene_name, scene_type, world_facts per turn, NPC registry, narration text) — see 33-18 for the payload bundling work.'
+    points: 8
+    priority: p1
+    status: backlog
+    repos: sidequest-ui
+    workflow: tdd
+    acceptance_criteria:
+      - Each image card shows a turn badge ('Turn N') overlaid top-left on the image
+      - 'Legend bar below each image: scene title (bold 10px) + caption (muted 9px, 2-line clamp)'
+      - Scene title sourced from the scene_name field on the GalleryImage payload — narrator already emits this
+      - Caption sourced from the narrative_beat field (first sentence of the turn narration that triggered generation)
+      - "Gallery header shows scene count: 'N scenes'"
+      - 'Grid/list view toggle: grid (2-col with legend below), list (thumbnail left + full caption right)'
+      - "At 6+ images, grid switches to 3-col compact: badge condenses to 'T1', caption hidden, visible on hover/expand"
+      - 'GalleryImage WebSocket payload must include: turn_number, scene_name, narrative_beat — verify server emits these before implementing UI'
+      - Gallery tab renamed 'Scrapbook' in the tab bar
+      - Images grouped by chapter/location with chapter-break dividers, sorted chronologically — not by recency
+      - 'Two views: List (thumbnail left + full metadata right) and Grid (2-col with compact legend below)'
+      - "Each entry: turn badge ('Turn N' in list, 'TN' in grid), scene title, location, narration excerpt (2-line italic quote from the turn), world facts as chips, NPC name tags with dot indicator"
+      - Scene type badge on image (establishing / encounter / portrait / mood / handout) from server scene_type field
+      - 'NPC chips colored by role: hostile=danger-red, friendly=accent-green, neutral=muted'
+      - 'Depends on 33-18: Scrapbook entry data arrives as a single bundled WS message — do not wire until 33-18 ships'
+      - 'Grid compact mode for 6+ images: 3-col, title only, caption hidden, full detail on click/expand'
+      - "Empty state: 'No scenes yet — the world will fill these pages.' — not a blank panel"
+  - id: 33-18
+    title: Scrapbook payload — bundle image + world_facts + NPCs + excerpt into single WS message
+    description: The Gallery widget needs turn attribution, world facts, NPC presence, narration excerpts, and scene classification per image. All of this data exists server-side but arrives via separate streams — images via GalleryImage message, world facts via WorldFact events, NPCs via npc_registry, narration via NarrationComplete. This story creates a new ScrapbookEntry WebSocket message type that bundles all of these into a single payload keyed by turn_id. Server assembles the entry after narration completes (when world_facts and npc_registry for that turn are settled). See render_integration.rs for image tagging, ADR-076 for world_facts broadcast, and npc_registry for NPC data. Depended on by 33-17.
+    points: 3
+    priority: p1
+    status: backlog
+    repos: sidequest-api
+    workflow: tdd
+    acceptance_criteria:
+      - 'New WS message type: ScrapbookEntry { turn_id, scene_title, scene_type, location, image_url, narrative_excerpt, world_facts: Vec<String>, npcs_present: Vec<NpcRef { name, role, disposition } > }'
+      - Server emits ScrapbookEntry after NarrationComplete for that turn — not before (world_facts must be settled)
+      - 'narrative_excerpt: first complete sentence of the narration text for that turn (server extracts, not client)'
+      - 'scene_title: from render_integration scene_name field (already tagged on image generation)'
+      - 'scene_type: from render_integration tier/scene_type (already tagged)'
+      - 'world_facts: all world_facts broadcast during this turn, as plain strings'
+      - 'npcs_present: all NPCs appearing in npc_registry updates during this turn'
+      - Protocol type added to sidequest-protocol crate, server emission in sidequest-server, client handler in Redux store
