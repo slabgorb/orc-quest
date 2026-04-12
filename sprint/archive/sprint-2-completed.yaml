@@ -1132,3 +1132,8 @@ completed_stories:
     title: Dispatch integration — beat selection emits DiceRequest, awaits DiceThrow
     points: 5
     completed: '2026-04-12'
+  - id: 34-5
+    epic: ''
+    title: Three.js + Rapier dice overlay — lazy-loaded React component
+    points: 5
+    completed: '2026-04-12'
