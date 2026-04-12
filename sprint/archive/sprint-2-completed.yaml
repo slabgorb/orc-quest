@@ -1167,3 +1167,8 @@ completed_stories:
     title: ResolutionMode enum and resolution_mode field on ConfrontationDef — additive enum with BeatSelection default, zero runtime impact on existing confrontations
     points: 2
     completed: '2026-04-12'
+  - id: 34-9
+    epic: ''
+    title: Narrator outcome injection — RollOutcome shapes narration tone
+    points: 3
+    completed: '2026-04-12'
