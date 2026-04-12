@@ -1171,4 +1171,8 @@ completed_stories:
     epic: ''
     title: Narrator outcome injection — RollOutcome shapes narration tone
     points: 3
+  - id: 38-2
+    epic: ''
+    title: per_actor_state on EncounterActor — HashMap<String, Value> for per-pilot scene descriptors, serde round-trip tests, save/load preservation
+    points: 2
     completed: '2026-04-12'
