@@ -1162,3 +1162,8 @@ completed_stories:
     title: Multiplayer dice broadcast — DiceRequest/DiceResult via SharedGameSession
     points: 3
     completed: '2026-04-12'
+  - id: 38-1
+    epic: ''
+    title: ResolutionMode enum and resolution_mode field on ConfrontationDef — additive enum with BeatSelection default, zero runtime impact on existing confrontations
+    points: 2
+    completed: '2026-04-12'
