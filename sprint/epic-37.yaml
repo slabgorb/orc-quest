@@ -10,9 +10,10 @@ stories:
     title: Session-scoped resume markers — scope catch-up logic by game session ID to prevent cross-game state leakage on shared server
     points: 2
     priority: p0
-    status: in-progress
+    status: done
     repos: api
     workflow: trivial
+    completed: '2026-04-12'
     type: bug
     branch: feat/37-1-session-scoped-resume-markers
   - id: 37-2

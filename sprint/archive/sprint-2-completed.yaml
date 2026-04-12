@@ -1142,3 +1142,13 @@ completed_stories:
     title: Drag-and-throw interaction — gesture capture to ThrowParams
     points: 3
     completed: '2026-04-12'
+  - id: 37-1
+    epic: ''
+    title: Session-scoped resume markers — scope catch-up logic by game session ID to prevent cross-game state leakage on shared server
+    points: 2
+    completed: '2026-04-12'
+  - id: 37-2
+    epic: ''
+    title: Session-scoped image routing — discriminate renderer responses by session ID so players receive only their own generated images
+    points: 2
+    completed: '2026-04-12'
