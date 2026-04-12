@@ -10,10 +10,11 @@ stories:
     title: Session-scoped resume markers — scope catch-up logic by game session ID to prevent cross-game state leakage on shared server
     points: 2
     priority: p0
-    status: backlog
+    status: in-progress
     repos: api
     workflow: trivial
     type: bug
+    branch: feat/37-1-session-scoped-resume-markers
   - id: 37-2
     title: Session-scoped image routing — discriminate renderer responses by session ID so players receive only their own generated images
     points: 2
