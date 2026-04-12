@@ -1157,3 +1157,8 @@ completed_stories:
     title: World materialization fails for dust_and_lead — null history chapters in spaghetti_western world YAML
     points: 1
     completed: '2026-04-12'
+  - id: 34-8
+    epic: ''
+    title: Multiplayer dice broadcast — DiceRequest/DiceResult via SharedGameSession
+    points: 3
+    completed: '2026-04-12'

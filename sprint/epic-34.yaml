@@ -79,9 +79,12 @@ stories:
     title: Multiplayer dice broadcast — DiceRequest/DiceResult via SharedGameSession
     points: 3
     priority: p1
-    status: backlog
-    repos: api
+    status: done
+    assigned_to: keith.avery@1898andco.io
+    started: '2026-04-12'
+    repos: api,ui
     workflow: tdd
+    completed: '2026-04-12'
   - id: 34-9
     title: Narrator outcome injection — RollOutcome shapes narration tone
     points: 3
