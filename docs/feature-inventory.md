@@ -1,8 +1,8 @@
 # SideQuest Feature Inventory
 
-**Last updated:** 2026-04-06
+**Last updated:** 2026-04-13
 **Sprint 1:** Bootstrap Rust workspace (completed)
-**Sprint 2:** Multiplayer Works For Real (active — 975/1095 points, 272/307 stories)
+**Sprint 2:** Multiplayer Works For Real (active — 1537/1797 points)
 
 ## Legend
 
@@ -28,10 +28,10 @@ These features work from player input through to rendered output.
 | Session lifecycle | Session actor | ConnectScreen → GameLayout | — | Connect → Create → Play |
 | Character creation | CharacterBuilder state machine | CharacterCreation component | — | Multi-scene, genre-driven |
 | Orchestrator turn loop | Intent → Agent → Patch → Broadcast | NarrativeView | — | Full turn cycle |
-| Intent classification | Two-tier (Haiku + Narrator) | — | — | ADR-032 |
-| Agent dispatch | 7 agents (Narrator, WorldBuilder, CreatureSmith, Ensemble, Dialectician, IntentRouter, Troper) | — | — | Claude CLI subprocess |
+| Intent classification | State-override (ADR-067) | — | — | in_combat/in_chase/default |
+| Agent dispatch | Unified narrator + auxiliary (Resonator, Troper, WorldBuilder) | — | — | Claude CLI subprocess |
 | State patching | JSON delta patches | useStateMirror | — | Combat/chase/world |
-| Narration streaming | NARRATION_CHUNK messages | NarrativeView (markdown) | — | DOMPurify sanitized |
+| Narration delivery | NARRATION + NARRATION_END (ADR-076) | NarrativeView (markdown) | — | DOMPurify sanitized |
 | SQLite persistence | Save/load GameSnapshot | — | — | Session recovery |
 | Trope engine | Tick progression, beat injection | — | — | World + genre tropes |
 | Genre pack loading | sidequest-genre crate | ThemeProvider (CSS vars) | — | 11 packs, validated |
@@ -105,7 +105,7 @@ These features work from player input through to rendered output.
 | Quiet turn detection | 5-6 | Escalation beat injection |
 | Pacing wired to orchestrator | 5-7 | drama_weight flows through turn pipeline |
 | Genre-tunable thresholds | 5-8 | Per-pack drama breakpoints |
-| Two-tier intent classification | 5-9 | Haiku + Narrator ambiguity resolution |
+| Intent classification | 5-9 | State-override routing (ADR-067 superseded two-tier) |
 | Prompt framework wiring | 5-10 | ContextBuilder replaces format! concat |
 
 ### Active World (Epic 6, complete)
@@ -122,7 +122,7 @@ These features work from player input through to rendered output.
 | Faction agendas (elemental_harmony) | 6-8 | Genre pack content |
 | Wire scene directives to orchestrator | 6-9 | Per-turn injection |
 
-### Character Depth (Epic 9, 12/13 complete)
+### Character Depth (Epic 9, complete)
 
 | Feature | Story | Status | Notes |
 |---------|-------|--------|-------|
@@ -138,7 +138,7 @@ These features work from player input through to rendered output.
 | Wire to React client | 9-10 | Done | CHARACTER_SHEET message |
 | Structured footnote output | 9-11 | Done | NarrationPayload with footnotes[] |
 | Footnote rendering | 9-12 | Done | Superscript markers, discovery/callback styling |
-| Journal browse view | 9-13 | In Progress | KnownFacts by category with genre voice |
+| Journal browse view | 9-13 | Done | KnownFacts by category with genre voice |
 
 ### NPC Personality (Epic 10, complete)
 
@@ -232,7 +232,7 @@ Server-side pre-generation pipeline.
 | Epic 6: Active World | 10/10 | 10 | 100% |
 | Epic 7: Scenario System | 7/10 | 10 | 70% |
 | Epic 8: Multiplayer | 10/10 | 10 | 100% |
-| Epic 9: Character Depth | 14/14 | 14 | 100% |
+| Epic 9: Character Depth | 13/13 | 13 | 100% |
 | Epic 10: OCEAN Personality | 9/9 | 9 | 100% |
 | Epic 11: Lore & Language | 11/11 | 11 | 100% |
 | Epic 12: Cinematic Audio | 4/4 | 4 | 100% |
@@ -254,7 +254,7 @@ Server-side pre-generation pipeline.
 
 ### What's Playtest-Ready Today
 
-The full game loop is wired end-to-end: connect → create character → play → narrate → render images → synthesize voice → play music. Multiplayer works with turn barriers, adaptive batching, and party action composition across all three turn modes. The GM watcher dashboard is live with granular OTEL instrumentation. All 11 genre packs load with OCEAN personality profiles, confrontation engines, and resource tracking.
+The full game loop is wired end-to-end: connect → create character → play → narrate → render images → play music. Multiplayer works with turn barriers, adaptive batching, and party action composition across all three turn modes. The GM watcher dashboard is live with granular OTEL instrumentation. All 11 genre packs load with OCEAN personality profiles, confrontation engines, and resource tracking.
 
 Narrator crunch separation is complete — mechanical state changes (items, quests, mood, SFX, resource deltas) are handled by sidecar tools during narration, not extracted from prose. The UI has been redesigned with new character panels, layout modes, and chrome.
 

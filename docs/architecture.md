@@ -1,7 +1,7 @@
 # SideQuest API — Architecture
 
 > System design for the Rust port of the SideQuest AI Narrator engine.
-> 12-crate workspace, ~70 game modules, narrator-primary agent model, 3 turn modes.
+> 12-crate workspace, 70 game modules, narrator-primary agent model, 3 turn modes.
 >
 > **Last updated:** 2026-04-11
 
@@ -99,7 +99,7 @@ sidequest-server
 
 ### ADR-001 / ADR-067: Claude CLI Only, Unified Narrator
 
-All LLM calls use `claude -p` subprocess via `tokio::process::Command`. No Anthropic SDK. Claude Max subscription handles billing. The agent layer wraps this with timeout, stdout parsing, and error recovery. Per **ADR-067** (Unified Narrator Agent), the narrator is the primary agent — it handles exploration, dialogue, combat narration, and chase narration through a persistent Opus session. Auxiliary agents (`world_builder`, `troper`, `resonator`) run for specialist tasks outside the per-turn critical path. The original multi-agent dispatch (ADR-010: creature_smith, dialectician, ensemble) is superseded; those agent files have been removed. `intent_router` remains in-crate as a lightweight fallback during the ADR-067 migration.
+All LLM calls use `claude -p` subprocess via `tokio::process::Command`. No Anthropic SDK. Claude Max subscription handles billing. The agent layer wraps this with timeout, stdout parsing, and error recovery. Per **ADR-067** (Unified Narrator Agent), the narrator is the primary agent — it handles exploration, dialogue, combat narration, and chase narration through a persistent Opus session. Auxiliary agents (`world_builder`, `troper`, `resonator`) run for specialist tasks outside the per-turn critical path. The original multi-agent dispatch (ADR-010: creature_smith, dialectician, ensemble) is superseded; those agent files were removed but their names persist in routing code (`exercise_tracker`, `orchestrator` AgentKind enum, prompt framework agent lists). `intent_router` remains as state-override classification (in_combat → Combat, in_chase → Chase, default → Exploration).
 
 ### ADR-002: Typed Protocol
 
@@ -128,7 +128,7 @@ Python ML sidecar communicates via Unix domain socket (`/tmp/sidequest-renderer.
 SharedGameSession keyed by `genre:world` holds world state; PlayerState holds per-player data. Sync-to-locals pattern checks out state for dispatch, preserving the single-player code path unchanged. TurnBarrier with adaptive timeout and claim-election prevents duplicate narrator calls.
 
 ### ADR-038: WebSocket Transport
-Reader/writer task split per connection. Broadcast channels: JSON `GameMessage` for global state and session-scoped `TargetedMessage` for per-player narration. ProcessingGuard prevents concurrent dispatch per player. *(Note: ADR-038 still references a binary-PCM audio channel from the TTS era — pending ADR update to match post-TTS reality.)*
+Reader/writer task split per connection. Broadcast channels: JSON `GameMessage` for global state and session-scoped `TargetedMessage` for per-player narration. ProcessingGuard prevents concurrent dispatch per player. *(ADR-038 updated 2026-04-11 to mark TTS binary channel as historical; see ADR-076.)*
 
 ### ADR-039/057: Narrator Output & Sidecar Tools
 The narrator outputs prose only — no JSON blocks. Mechanical state changes (mood, intent,
@@ -151,7 +151,7 @@ consistently ignores `--allowedTools` instructions.
 ### ADR-047: Input Sanitization
 All player text passes through `sanitize_player_text()` at the protocol layer — strips injection attempts before routing.
 
-## Game Systems (sidequest-game, 71 modules)
+## Game Systems (sidequest-game, 70 modules)
 
 ### Core State
 - **GameState:** Central state composition — characters, NPCs, world, combat, chase

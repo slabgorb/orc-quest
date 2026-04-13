@@ -58,7 +58,7 @@ graph TB
 
     class SERVER,AGENTS,GAME,GENRE,PROTO,DCLIENT rust
     class UI ts
-    class FLUX,KOKORO,ACE,MIXER py
+    class FLUX,MIXER py
     class PACKS yaml
     class ORC orch
 ```
@@ -90,12 +90,11 @@ sequenceDiagram
     S->>O: dispatch(action)
 
     O->>I: classify(action)
-    I->>A: claude -p (Haiku classifier)
-    A-->>I: intent + confidence
-    Note over I: Two-tier: Haiku first,<br/>Narrator resolves ambiguity
+    Note over I: State-override (ADR-067):<br/>in_combat → Combat,<br/>in_chase → Chase,<br/>default → Exploration
+    I-->>O: intent (no LLM call)
 
-    O->>A: claude -p (Narrator/WorldBuilder/etc.)
-    A-->>O: narration + JSON patch
+    O->>A: claude -p (Narrator/Resonator/etc.)
+    A-->>O: narration (sidecar tools handle patches)
 
     O->>G: apply_patch(delta)
     G-->>O: updated GameSnapshot

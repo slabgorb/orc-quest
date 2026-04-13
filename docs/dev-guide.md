@@ -173,9 +173,9 @@ These are the `#[instrument]` spans you'll see in logs and traces:
 
 | Span | Crate | What It Captures |
 |------|-------|-----------------|
-| `intent_router.classify` | sidequest-game | Player input → classified intent → routed agent |
+| `intent_router.classify` | sidequest-agents | Player input → state-override classification → agent routing |
 | `agent.invoke` | sidequest-agents | Token counts, duration, raw response length |
-| `json_extractor.extract` | sidequest-agents | Extraction tier (1/2/3), target type, success (ADR-039) |
+| `tools.assemble_turn` | sidequest-agents | Sidecar tool results merged with narration (ADR-057) |
 | `state.apply_patch` | sidequest-game | Patch type (world/combat/chase), fields changed |
 | `trope_engine.tick` | sidequest-game | Tropes advanced, beats fired, thresholds crossed |
 | `context_builder.compose` | sidequest-agents | Section count, total tokens, zone distribution |
@@ -248,7 +248,7 @@ This installs Rust toolchain components, npm dependencies, and Python dev depend
 
 ## Architecture Decision Records
 
-54 ADRs document the key architectural decisions. See [docs/adr/README.md](adr/README.md).
+78 ADRs document the key architectural decisions. See [docs/adr/README.md](adr/README.md).
 
 Key ADRs for debugging and development:
 - **ADR-031:** Semantic telemetry — the three-layer observability model

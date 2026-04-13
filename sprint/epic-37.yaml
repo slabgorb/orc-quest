@@ -45,9 +45,10 @@ stories:
     title: Daemon embed endpoint broken — /embed returns Unknown error, RAG semantic search degraded entire playtest session
     points: 2
     priority: p0
-    status: in_progress
+    status: done
     repos: daemon,api
     workflow: tdd
+    completed: '2026-04-13'
     type: bug
     branch: feat/37-5-daemon-embed-endpoint
   - id: 37-6

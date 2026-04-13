@@ -1176,3 +1176,8 @@ completed_stories:
     title: per_actor_state on EncounterActor — HashMap<String, Value> for per-pilot scene descriptors, serde round-trip tests, save/load preservation
     points: 2
     completed: '2026-04-12'
+  - id: 37-5
+    epic: ''
+    title: Daemon embed endpoint broken — /embed returns Unknown error, RAG semantic search degraded entire playtest session
+    points: 2
+    completed: '2026-04-13'
