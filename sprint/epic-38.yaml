@@ -41,11 +41,12 @@ stories:
     title: Interaction table loader and _from file pattern — genre pack loader sources confrontation sub-files from adjacent YAML, unit tests on space_opera dogfight fixtures
     points: 3
     priority: p2
-    status: in_progress
+    status: done
     assigned_to: keith.avery@1898andco.io
     started: '2026-04-13'
     repos: api,content
     workflow: tdd
+    completed: '2026-04-13'
   - id: 38-5
     title: SealedLetterLookup resolution handler — new match arm in confrontation dispatch, gather actor commits via TurnBarrier, lookup interaction cell, apply per-actor deltas, OTEL spans
     points: 5

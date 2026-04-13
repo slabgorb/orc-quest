@@ -1216,3 +1216,8 @@ completed_stories:
     title: Jaquayed layout — cycle detection, ring placement, loop closure validation, overlap detection
     points: 5
     completed: '2026-04-13'
+  - id: 38-4
+    epic: ''
+    title: Interaction table loader and _from file pattern — genre pack loader sources confrontation sub-files from adjacent YAML, unit tests on space_opera dogfight fixtures
+    points: 3
+    completed: '2026-04-13'
