@@ -126,9 +126,13 @@ stories:
     title: Narrator tactical_place tool — Claude places entities on grid via tool call, compact grid summary in prompt
     points: 3
     priority: p0
-    status: backlog
-    repos: api
+    status: in_progress
+    assigned_to: keithavery
+    started: '2026-04-13'
+    repos: api,ui
     workflow: tdd
+    branch: feat/29-11-narrator-tactical-place
+    session_file: .session/29-11-session.md
   - id: 29-12
     title: Click-to-move + server-side A* pathfinding — TACTICAL_ACTION Move, path preview, terrain cost
     points: 5
