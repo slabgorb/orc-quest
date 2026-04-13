@@ -10,9 +10,10 @@ stories:
     title: ResolutionMode enum and resolution_mode field on ConfrontationDef — additive enum with BeatSelection default, zero runtime impact on existing confrontations
     points: 2
     priority: p2
-    status: backlog
+    status: done
     repos: api
     workflow: tdd
+    completed: '2026-04-12'
     review_verdict: approved
   - id: 38-2
     title: per_actor_state on EncounterActor — HashMap<String, Value> for per-pilot scene descriptors, serde round-trip tests, save/load preservation
