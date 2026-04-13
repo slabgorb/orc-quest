@@ -1181,3 +1181,8 @@ completed_stories:
     title: Daemon embed endpoint broken — /embed returns Unknown error, RAG semantic search degraded entire playtest session
     points: 2
     completed: '2026-04-13'
+  - id: 34-11
+    epic: ''
+    title: OTEL dice spans — request_sent, throw_received, result_broadcast
+    points: 2
+    completed: '2026-04-13'
