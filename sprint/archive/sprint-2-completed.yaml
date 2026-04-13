@@ -1186,3 +1186,8 @@ completed_stories:
     title: OTEL dice spans — request_sent, throw_received, result_broadcast
     points: 2
     completed: '2026-04-13'
+  - id: 34-7
+    epic: ''
+    title: Deterministic physics replay — seed-based Rapier simulation on all clients
+    points: 3
+    completed: '2026-04-13'
