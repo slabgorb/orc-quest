@@ -72,9 +72,12 @@ stories:
     title: Deterministic physics replay — seed-based Rapier simulation on all clients
     points: 3
     priority: p1
-    status: backlog
+    status: done
+    assigned_to: keith.avery@1898andco.io
+    started: '2026-04-13'
     repos: ui
     workflow: tdd
+    completed: '2026-04-13'
   - id: 34-8
     title: Multiplayer dice broadcast — DiceRequest/DiceResult via SharedGameSession
     points: 3
@@ -110,9 +113,12 @@ stories:
     title: OTEL dice spans — request_sent, throw_received, result_broadcast
     points: 2
     priority: p1
-    status: backlog
+    status: done
+    assigned_to: keith.avery@1898andco.io
+    started: '2026-04-13'
     repos: api
     workflow: tdd
+    completed: '2026-04-13'
     type: chore
   - id: 34-12
     title: Playtest validation — end-to-end dice rolling in multiplayer session

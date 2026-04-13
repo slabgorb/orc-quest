@@ -1211,3 +1211,8 @@ completed_stories:
     title: TurnBarrier confrontation-scope investigation — verify barrier can run commit-reveal cycles at confrontation scope without breaking session-level turn accounting
     points: 3
     completed: '2026-04-13'
+  - id: 29-7
+    epic: ''
+    title: Jaquayed layout — cycle detection, ring placement, loop closure validation, overlap detection
+    points: 5
+    completed: '2026-04-13'

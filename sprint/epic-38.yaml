@@ -11,6 +11,8 @@ stories:
     points: 2
     priority: p2
     status: done
+    assigned_to: keith.avery@1898andco.io
+    started: '2026-04-12'
     repos: api
     workflow: tdd
     completed: '2026-04-12'
