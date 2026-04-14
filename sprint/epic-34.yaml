@@ -125,11 +125,14 @@ stories:
     title: Playtest validation — end-to-end dice rolling in multiplayer session
     points: 2
     priority: p1
-    status: in_progress
+    status: done
     assigned_to: keith.avery@1898andco.io
     started: '2026-04-13'
     repos: orchestrator
     workflow: trivial
+    completed: '2026-04-14'
     type: chore
     branch: fix/34-12-dice-playtest-validation
     session_file: sprint/34-12-session.md
+    review_findings: "2 blocking: (1) three integration tests use 'err.contains(X) || err.contains(Dice resolution failed)' OR-fallbacks that make them vacuous — tighten to specific substrings per ResolveError variant; (2) DiceResultPayload.seed docstring still claims server-seed is authoritative and 'client cannot influence the outcome' — both false under 34-12 physics-is-the-roll, rewrite to reflect face is authoritative. 6 non-blocking improvements also called out in session file."
+    review_verdict: approved

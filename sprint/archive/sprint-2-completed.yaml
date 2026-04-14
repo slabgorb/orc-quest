@@ -1216,3 +1216,8 @@ completed_stories:
     title: Jaquayed layout — cycle detection, ring placement, loop closure validation, overlap detection
     points: 5
     completed: '2026-04-13'
+  - id: 34-12
+    epic: ''
+    title: Playtest validation — end-to-end dice rolling in multiplayer session
+    points: 2
+    completed: '2026-04-14'
