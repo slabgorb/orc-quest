@@ -84,7 +84,6 @@ Eleven narrative worlds, each with its own rules, tropes, character creation, au
 | **road_warrior** | Vehicular post-apocalypse |
 | **space_opera** | Sci-fi space adventure |
 | **spaghetti_western** | Dusty frontier / outlaw west |
-| **star_chamber** | Renaissance court intrigue |
 | **victoria** | Gaslamp Victorian |
 
 Genre packs live in `sidequest-content/` and are loaded by path reference.
