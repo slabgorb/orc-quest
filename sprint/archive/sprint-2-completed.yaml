@@ -1221,3 +1221,8 @@ completed_stories:
     title: Interaction table loader and _from file pattern — genre pack loader sources confrontation sub-files from adjacent YAML, unit tests on space_opera dogfight fixtures
     points: 3
     completed: '2026-04-13'
+  - id: 34-12
+    epic: ''
+    title: Playtest validation — end-to-end dice rolling in multiplayer session
+    points: 2
+    completed: '2026-04-14'
