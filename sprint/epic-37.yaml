@@ -115,10 +115,11 @@ stories:
     title: Encounter creation gate silently drops new confrontation type when an unresolved encounter is active — dispatch/mod.rs:1768-1814 only creates when is_none or resolved, no else-branch, no OTEL warning, no transition path (silent fallback violation)
     points: 2
     priority: p0
-    status: in_review
+    status: done
     started: '2026-04-14'
     repos: api
     workflow: tdd
+    completed: '2026-04-14'
     type: bug
     branch: feat/37-13-encounter-gate-silent-drop
     review_findings: '3 HIGH: non_exhaustive doc lies about intra-crate enforcement, Case B missing source assertion, _gate_outcome aspirational comment. Plus 2 MEDIUM test coverage gaps.'
