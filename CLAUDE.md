@@ -6,6 +6,36 @@ This is the orchestrator repo for the SideQuest RPG Runner/Editor It coordinates
 - **sidequest-daemon** — Python media services (image gen, audio)
 - **sidequest-content** — Genre packs (YAML configs, audio, images, world data)
 
+## Who This Is For
+
+SideQuest is built for a specific, real-world gaming group — not abstract personas. Design decisions should be weighed against these actual humans.
+
+### Primary audience: Keith's playgroup
+
+This is the group the game is *actually for*. Features must serve this group. If a decision trades playgroup quality for household reach, the playgroup wins.
+
+- **Keith** — The builder, and the *forever-GM who finally wants to play*. Tarn-from-Dwarf-Fortress model: ~60% for himself, 40% for others. Senior architect, 40 years of tabletop, almost all of it behind the screen. Hits every axis — narrative *and* mechanical, high reading tolerance, fully bought in. **This is the single most load-bearing fact about the project:** SideQuest exists because Keith has been running games for four decades and wants the experience of being a player without losing the depth, agency, and surprise that a good human DM provides. Every design decision should ask "does this deliver a real player experience to someone who knows exactly what a good DM does?" The narrator must be *good enough to fool a career GM* — not just entertaining, but genuinely responsive, genre-true, and capable of surprising him. If the system can satisfy Keith-as-player, it can satisfy anyone.
+- **James** (27, Keith's son) — Long-time playgroup member. Strong reader, narrative-first roleplayer. Played "Rux" in the Sunday caverns_and_claudes session — that save file is reference data for how he engages.
+- **Alex** (playgroup) — Slower reader and typist; sometimes freezes when asked to roleplay under time pressure. Loves the game when paced inclusively. **Design implication:** sealed-letter turns, no fast-typist monopolies, generous response windows.
+- **Sebastien** (Keith's nephew, ~James's age) — Plays on and off. The only **mechanics-first** player in the group — wants to know the rules, the numbers, how the system works. **Design implication:** the GM panel, OTEL visibility, and rule transparency aren't debug tools, they're a *feature* for Sebastien.
+
+### Aspirational audience: the household
+
+Nice-to-have, not load-bearing. If they never play, SideQuest is still a success. Don't bend primary-audience features to chase these users.
+
+- **Sonia** (Keith's partner, lives with Keith) — The `victoria` genre pack is a love letter to her, not a feature gate. Has a nerd-force-field from years of living with nerds. Keith will live if she never plays.
+- **Antonio & Pedro** (Sonia's sons, late 20s, share the household with Keith and Sonia as adults — Keith is not a parental figure to them) — Low reading tolerance, Pedro especially. Antonio is AI-skeptical and has his own playgroup; one of them is an artist. If visual/voice features happen to land for them, great — but don't compromise playgroup pacing or narrative depth to court them.
+
+### Player-style axes
+
+- *Narrative vs mechanical:* James/Alex narrative-first; Sebastien mechanical-first; Keith both.
+- *Reading tolerance:* Keith/James high; Sebastien/Alex medium; household low.
+- *RPG buy-in:* Keith/James/Sebastien/Alex committed; household ranges from skeptical to resistant.
+
+### Using this rubric
+
+When evaluating a feature, ask *which of these people it serves and which it loses.* Default to the playgroup. "Would Alex feel rushed by this?" and "Does Sebastien have enough mechanical visibility here?" are sharper design questions than "is this good UX?" Don't let aspirational users drag primary-audience decisions.
+
 ## Repository Structure
 
 ```
