@@ -143,15 +143,6 @@ stories:
     workflow: trivial
     depends_on: 32-2
     type: chore
-  - id: 32-17
-    title: Decompose star_chamber — political_intrigue system + renaissance milieu
-    points: 2
-    priority: p2
-    status: backlog
-    repos: content
-    workflow: trivial
-    depends_on: 32-2
-    type: chore
   - id: 32-18
     title: Remove legacy loader fallback — all packs must use system/milieu refs
     points: 2
@@ -159,7 +150,7 @@ stories:
     status: backlog
     repos: api
     workflow: trivial
-    depends_on: 32-17
+    depends_on: 32-2
     type: chore
   - id: 32-19
     title: Strip world-level tropes, archetypes, and visual_style from all 16 worlds

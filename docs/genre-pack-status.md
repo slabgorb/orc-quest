@@ -15,7 +15,6 @@
 | road_warrior | 1 | 14/16 | 147 | 0 | 12 | 16 | 1 |
 | space_opera | 2 | 14/16 | 60 | 0 | 8 | 0 | 2 |
 | spaghetti_western | 1 | 16/16 | 18+ | 1 | 5 | 0 | 2 |
-| star_chamber | 1 | 20/16+ | 0 | 0 | 0 | 0 | 3 |
 | victoria | 1 | 16/16 | 33 (PD) | 1 | 10 | 13 | 1 |
 
 ### Tiers
@@ -62,7 +61,6 @@ archetypes, tropes, visual_style, legends.
 | space_opera/aureate_span | + | + | + | — | — | — | + |
 | space_opera/coyote_reach | + | + | + | — | — | — | + |
 | spaghetti_western/dust_and_lead | + | + | + | — | — | — | + |
-| star_chamber/pyre_of_vanities | + | — | + | — | — | + | — |
 | victoria/blackthorn_moor | + | + | + | + | + | + | + |
 
 **Fully complete worlds (all optional files):**
@@ -111,7 +109,6 @@ resource pools are documented below.
 | road_warrior | negotiation | fuel |
 | space_opera | negotiation, ship_combat | — |
 | spaghetti_western | standoff, negotiation, poker | luck |
-| star_chamber | negotiation | — |
 | victoria | negotiation, trial, auction | standing |
 
 **Validation:** `cargo test -p sidequest-game --test content_audit_story_16_16_tests`

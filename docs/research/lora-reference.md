@@ -73,7 +73,6 @@ All Flux.1 D base. One LoRA loaded per session.
 | aureate_span | space_opera | Baroque Space Opera | `Sci-Fi Baroque Couture Pulp` | [1778358](https://civitai.com/models/1778358/baroque-space-opera) | Boucher + Chris Foss + Mugler. Gilded rococo in space |
 | coyote_reach | space_opera | Retro Ad Flux | `m1dc3ntury` | [827395](https://civitai.com/models/827395/retro-ad-flux) | 50s pulp frontier, retro-futurist mining outpost |
 | dust_and_lead | spaghetti_western | Kodachrome Realism | `kdchrm` | [1318345](https://civitai.com/models/1318345/kodachrome-realism) | Leone Technicolor. Same LoRA as the_circuit, prompting diverges |
-| pyre_of_vanities | star_chamber | Renaissance Style | `renaissance style painting` | [1077483](https://civitai.com/models/1077483/renaissance-style-flux1d) | Florence 1497, Botticelli, tempera/fresco |
 | blackthorn_moor | victoria | Victorian Gothic Horror | `vicgoth` | [785197](https://civitai.com/models/785197/victorian-gothic-horror) | Sepia-toned, fog, decaying mansions. 1k downloads, 121 positive reviews |
 | mawdeep | caverns_and_claudes | Retro Dark Fantasy | `dndllstr` | [1763256](https://civitai.com/models/1763256/retro-dark-fantasy) | Crosshatched dungeon ink (lineart mode). Painting mode: `dndpntng` |
 | burning_peace | elemental_harmony | Ukiyo-e / Hokusai | `Ukiyo-e style by Katsushika Hokusai` | [1078711](https://civitai.com/models/1078711/flux-ukiyo-e-by-katushika-hokusai) | Edo-period woodblock, scanned originals. Strength 0.6 |

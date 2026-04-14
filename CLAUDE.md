@@ -31,7 +31,6 @@ sidequest-content/            # Genre packs — single source of truth (subrepo)
 │   ├── road_warrior/
 │   ├── space_opera/
 │   ├── spaghetti_western/
-│   ├── star_chamber/
 │   ├── victoria/
 │   └── <genre>/worlds/<world>/
 └── CLAUDE.md

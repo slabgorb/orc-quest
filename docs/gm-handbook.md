@@ -254,7 +254,6 @@ A **Kicker** (from *Sorcerer*) is player-authored Situation built into character
 - **road_warrior**: "Your rig's engine is dying. There's one mechanic left who can fix it, and he hates you."
 - **elemental_harmony**: "Your master's final teaching was a question you refused to answer. He died before you could."
 - **neon_dystopia**: "The corp knows you exist now. You have 48 hours before they come."
-- **star_chamber**: "The book in your bag was not in your bag yesterday."
 
 Every Kicker should be a Bang-in-waiting. Every Kicker should demand a stance within the first scene.
 
