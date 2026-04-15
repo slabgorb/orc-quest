@@ -3,6 +3,20 @@
 root := justfile_directory()
 content := root / "sidequest-content" / "genre_packs"
 
+# Disable sccache for every cargo invocation run through `just`.
+#
+# Why: sccache daemon contention between the OQ-1 and OQ-2 clones on this
+# machine causes rustc to hang indefinitely — a cargo check that should take
+# 30s has been observed sitting at 0% CPU for 19+ minutes while waiting on a
+# sccache lock held by a zombie cargo test worker in the other clone. Setting
+# RUSTC_WRAPPER="" bypasses sccache entirely and the build runs at normal
+# speed (~3-4 min cold, seconds warm). This only applies to `just` recipes —
+# raw shell `cargo ...` invocations still pick up sccache from the user env
+# if they want it.
+#
+# Discovered during scene-harness work on 2026-04-15.
+export RUSTC_WRAPPER := ""
+
 import '.pennyfarthing/justfile.pf'
 
 # API (Rust backend)
