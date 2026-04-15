@@ -6,7 +6,7 @@ description: |
 priority: p1
 status: backlog
 repos: ui
-jira:
+jira: MSSCI-33001
 stories:
   - id: 33-1
     title: Genre-themed widget chrome — archetype-specific CSS for widget borders, headers, and backgrounds
@@ -75,9 +75,12 @@ stories:
     description: 'The character panel header is currently just a name and subtitle in plain text with no portrait slot, level display, or archetype tag. This story adds a proper header row: circular portrait placeholder (48px, filled by 33-2 portrait system when available), character name in accent color, archetype + genre as subtitle, and a compact level badge (Lv N). See mockup: .playwright-mcp/mockups/epic-33-panel-improvements.html#s33-7. Before state visible in playtest screenshot 011-turn1-result.png.'
     points: 3
     priority: p1
-    status: backlog
+    status: in_progress
     repos: sidequest-ui
     workflow: trivial
+    jira: MSSCI-33007
+    assigned_to: keith.avery@1898andco.io
+    started: '2026-04-15'
     acceptance_criteria:
       - Header renders portrait circle (48px) using character portrait URL if available, placeholder glyph if not
       - Character name displayed in accent color, 13px, semibold
