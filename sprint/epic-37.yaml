@@ -131,10 +131,13 @@ stories:
     title: Beat dispatch silently no-ops when beat_id is not in active encounter beat library — narrator emitted 2-3 beat_selections per turn for 20 minutes, zero encounter.beat_applied events fired, no OTEL span marks the drop (lie-detector gap)
     points: 2
     priority: p0
-    status: backlog
+    status: in-progress
+    assigned_to: keith.avery@1898andco.io
+    started: '2026-04-15'
     repos: api
     workflow: tdd
     type: bug
+    branch: feat/37-14-beat-dispatch-silent-drop
   - id: 37-15
     title: Trope completion has no handshake with encounter lifecycle — the_standoff.progression reached 1.0 while poker encounter stayed resolved=false; trope engine knows the arc ended but encounter engine does not; narrator gets no prompt hint to declare the confrontation over
     points: 3
