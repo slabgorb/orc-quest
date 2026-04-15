@@ -31,6 +31,50 @@ api-check:
 prompt-preview *flags:
     cd sidequest-api && cargo run -p sidequest-promptpreview -- {{flags}}
 
+# ---------------------------------------------------------------------------
+# Scene Harness — drop directly into an encounter for fast iteration.
+# Requires the UI dev server running on :5173 and nothing on :8765.
+# ---------------------------------------------------------------------------
+
+# Boot the API with DEV_SCENES=1, stage the named fixture save, open the UI.
+scene name:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    pkill -f 'sidequest-server' 2>/dev/null || true
+    sleep 1
+    cd sidequest-api
+    DEV_SCENES=1 SIDEQUEST_FIXTURES={{root}}/scenarios/fixtures \
+        cargo run -p sidequest-server -- \
+        --genre-packs-path {{content}} &
+    SERVER_PID=$!
+    trap "kill $SERVER_PID 2>/dev/null || true" EXIT
+    # Wait for /api/genres to answer — the server is ready when this returns 200
+    for i in $(seq 1 60); do
+        if curl -sf http://localhost:8765/api/genres >/dev/null 2>&1; then
+            break
+        fi
+        sleep 0.5
+    done
+    echo "Staging fixture '{{name}}'…"
+    curl -sSf -X POST http://localhost:8765/dev/scene/{{name}}
+    echo
+    echo "Open http://localhost:5173?scene={{name}} in your browser."
+    wait $SERVER_PID
+
+# List available scene fixtures.
+scene-list:
+    @ls {{root}}/scenarios/fixtures/*.yaml 2>/dev/null \
+        | xargs -n1 basename \
+        | sed 's/\.yaml$//' \
+        || echo "no fixtures"
+
+# Stage a fixture save WITHOUT booting the server (uses the CLI binary).
+scene-stage name:
+    cd sidequest-api && cargo run -p sidequest-fixture -- \
+        --content-root {{root}}/sidequest-content \
+        --fixtures-root {{root}}/scenarios/fixtures \
+        load {{name}}
+
 # UI (React frontend)
 ui-dev:
     cd sidequest-ui && npm run dev
