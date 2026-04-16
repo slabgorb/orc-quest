@@ -1,0 +1,67 @@
+# Combat fixture — drops directly into a Wasteland Brawl encounter.
+# Usage: http://localhost:5173/?scene=combat_test (requires DEV_SCENES=1)
+
+name: Combat Test
+genre: mutant_wasteland
+world: flickering_reach
+player_name: Fixture-Skar
+location: The Collapsed Overpass
+
+turn: 3
+
+character:
+  name: Skar
+  description: A scarred vault dweller with mismatched eyes and a third arm
+  personality: Cautious but curious
+  level: 1
+  hp: 20
+  max_hp: 20
+  ac: 10
+  inventory:
+    items:
+      - id: sharpened-rebar
+        name: Sharpened Rebar
+        description: A length of rebar ground to a wicked point
+        category: weapon
+        value: 5
+        weight: 3.0
+        rarity: common
+        narrative_weight: 0.6
+        tags: [melee, piercing]
+        equipped: true
+        quantity: 1
+      - id: mystery-compass
+        name: Mystery Compass
+        description: A compass that does not point north
+        category: tool
+        value: 0
+        weight: 0.5
+        rarity: rare
+        narrative_weight: 0.5
+        tags: [artifact]
+        equipped: false
+        quantity: 1
+    gold: 2
+  statuses: []
+  backstory: Emerged from a sealed vault with gaps in memory
+  narrative_state: Exploring the wasteland
+  hooks:
+    - The compass points at something unknown
+  char_class: Beastkin
+  race: Uplifted Animal
+  pronouns: he/him
+  stats:
+    Brawn: 13
+    Instinct: 12
+    Presence: 12
+    Reflexes: 13
+    Toughness: 13
+    Wits: 12
+
+npcs:
+  - name: Rust Jaw
+    role: hostile
+    disposition: -15
+
+encounter:
+  type: combat
