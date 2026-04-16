@@ -146,21 +146,21 @@ stories:
     priority: p1
     status: backlog
     repos: api,ui
-    workflow: tdd
+    workflow: wire-first
   - id: 29-13
     title: EffectZone overlays — circle/cone/line/rect shapes, semi-transparent SVG, narrator tactical_hazard tool
     points: 3
     priority: p1
     status: backlog
     repos: api,ui
-    workflow: tdd
+    workflow: wire-first
   - id: 29-14
     title: StructuredEncounter grid binding — EncounterActor gains GridPos, spatial beat targeting
     points: 5
     priority: p1
     status: backlog
     repos: api
-    workflow: tdd
+    workflow: wire-first
   - id: 29-15
     title: Template library — 20 reusable ASCII room shapes for World Builder selection
     points: 3
@@ -188,7 +188,7 @@ stories:
     priority: p1
     status: backlog
     repos: api
-    workflow: tdd
+    workflow: wire-first
   - id: 29-19
     title: Wire tactical grid into MAP_UPDATE — populate ExploredLocation.tactical_grid from RoomDef, parse in useAutomapperData
     points: 3

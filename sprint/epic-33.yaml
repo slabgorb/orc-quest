@@ -68,7 +68,7 @@ stories:
     priority: p2
     status: backlog
     repos: ui
-    workflow: tdd
+    workflow: wire-first
   - id: 33-7
     title: Character panel header — portrait, level, archetype display
     description: 'The character panel header is currently just a name and subtitle in plain text with no portrait slot, level display, or archetype tag. This story adds a proper header row: circular portrait placeholder (48px, filled by 33-2 portrait system when available), character name in accent color, archetype + genre as subtitle, and a compact level badge (Lv N). See mockup: .playwright-mcp/mockups/epic-33-panel-improvements.html#s33-7. Before state visible in playtest screenshot 011-turn1-result.png.'
@@ -94,7 +94,7 @@ stories:
     priority: p1
     status: backlog
     repos: sidequest-ui
-    workflow: tdd
+    workflow: wire-first
     acceptance_criteria:
       - Reads GamePhase from Redux game state (not derived from narrative)
       - Each GamePhase maps to a list of highlighted stat keys — mapping defined in a config object, not hardcoded per-render
@@ -124,7 +124,7 @@ stories:
     priority: p1
     status: backlog
     repos: sidequest-ui
-    workflow: tdd
+    workflow: wire-first
     acceptance_criteria:
       - "HP bar: label 'HP', filled track, '{current} / {max}' value — green when >50%, amber 25-50%, red+pulse <25%"
       - 'Stress bar (if present in game_state): same layout, amber fill'
@@ -177,7 +177,7 @@ stories:
     priority: p1
     status: backlog
     repos: sidequest-ui
-    workflow: tdd
+    workflow: wire-first
     acceptance_criteria:
       - Consumable/Tool items show 'Use' (accent) and 'Drop' (muted) buttons
       - Weapon/Armor items show 'Equip' or 'Unequip' depending on equipped state, plus 'Drop'
@@ -290,7 +290,7 @@ stories:
     priority: p2
     status: backlog
     repos: api,ui,content
-    workflow: tdd
+    workflow: wire-first
     acceptance_criteria:
       - 'PackMeta struct in sidequest-api/crates/sidequest-genre/src/models/pack.rs deserializes lobby_blurb (Option<String>) and recommended_players (Option<RecommendedPlayers{min,max,sweet_spot: u8}>) from pack.yaml without error for all 11 genre packs'
       - GenreResponse in sidequest-server/src/lib.rs exposes lobby_blurb and recommended_players; /api/genres returns them in the JSON payload (verify with curl + example)
@@ -306,7 +306,7 @@ stories:
     priority: p2
     status: backlog
     repos: sidequest-ui
-    workflow: tdd
+    workflow: wire-first
     acceptance_criteria:
       - Genre rows show genre name + one-line vibe subtitle (from core_vibe or emotional_tone in pack.yaml metadata)
       - Color swatch dot or left-border color derived from genre theme.yaml primary color

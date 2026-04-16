@@ -151,13 +151,16 @@ stories:
     title: Trope completion has no handshake with encounter lifecycle — the_standoff.progression reached 1.0 while poker encounter stayed resolved=false; trope engine knows the arc ended but encounter engine does not; narrator gets no prompt hint to declare the confrontation over
     points: 3
     priority: p1
-    status: in_progress
+    status: done
     assigned_to: keith.avery@1898andco.io
     started: '2026-04-16'
     repos: api
     workflow: wire-first
+    completed: '2026-04-16'
     type: bug
     branch: feat/37-15-trope-encounter-handshake
+    review_findings: 'Half-wired: resolve_from_trope has zero non-test callers, dispatch/tropes.rs unmodified, auto-resolve missing OTEL WatcherEvent'
+    review_verdict: approved
   - id: 37-16
     title: session.reconnect mints a new player UUID — rolling_player identity changed mid-session across a reconnect (cfa15925… → 234acfc0…) in single-player game; reconnect should restore prior player identity, not generate a fresh one
     description: Closed as false alarm 2026-04-15. Player identity is keyed by player_name in SQLite, which is stable across reconnect. The rolling_player UUID in logs was a per-connection session ID, not a persistent player identifier. Audit confirmed no downstream consumer relies on UUID stability. Barrier state reconnect fixes (5cab02a, 9ee06f8) already handle the real reconnect concerns.

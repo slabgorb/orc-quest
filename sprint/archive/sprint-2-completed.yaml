@@ -1288,3 +1288,8 @@ completed_stories:
     title: Dice accessibility — aria-live, prefers-reduced-motion, keyboard throw
     points: 2
     completed: '2026-04-16'
+  - id: 37-15
+    epic: ''
+    title: Trope completion has no handshake with encounter lifecycle — the_standoff.progression reached 1.0 while poker encounter stayed resolved=false; trope engine knows the arc ended but encounter engine does not; narrator gets no prompt hint to declare the confrontation over
+    points: 3
+    completed: '2026-04-16'
