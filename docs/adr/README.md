@@ -49,6 +49,7 @@
 | [Pacing Detection](025-pacing-detection.md) | Accepted | Quiet turn counting + trope-aware escalation hints |
 | [Dice Resolution Protocol](074-dice-resolution-protocol.md) | Proposed | Server-authoritative dice rolls via WebSocket with sealed-letter integration |
 | [Dogfight Subsystem](077-dogfight-subsystem.md) | Proposed | StructuredEncounter extension for sealed-letter fighter duels (per-actor descriptors + cross-product lookup table) |
+| [Edge / Composure + Mechanical Advancement + Push-Currency Rituals](078-edge-composure-advancement-rituals.md) | Proposed | Replace phantom HP with first-class `EdgePool` on `CreatureCore`; first hard link from ADR-021 progression to engine state; extend `pact_working` beats with `resource_deltas` for push-currency spellcraft |
 
 ## Frontend / Protocol
 
