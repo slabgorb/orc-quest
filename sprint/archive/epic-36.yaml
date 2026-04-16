@@ -3,7 +3,7 @@ type: epic
 title: Post-clippy-cleanup tech debt
 description: 'Follow-up stories from the chore/clippy-workspace-cleanup branch (2026-04-11). The clippy cleanup exposed several pre-existing issues that were either silenced with #[allow] or deferred to dedicated stories. This epic tracks those follow-ups.'
 priority: p2
-status: backlog
+status: done
 repos: api
 stories:
   - id: 36-1
@@ -20,11 +20,13 @@ stories:
     title: Refactor dispatch functions with too many arguments into context structs
     points: 5
     priority: p2
-    status: in_progress
+    status: done
     repos: api
-    workflow: tdd
+    workflow: wire-first
+    completed: '2026-04-16'
     type: refactor
     branch: feat/36-2-refactor-dispatch-context-structs
+    review_verdict: approved
   - id: 36-3
     title: 'Decide Session actor fate: implement or delete server_story_2_2_tests.rs'
     description: Session actor is implemented and live — session.rs FSM wired at dispatch/connect.rs:73 (pre-develop commit 5d12361). server_story_2_2_tests.rs was never a real stub. Closed via audit 2026-04-15.
@@ -45,3 +47,4 @@ stories:
     workflow: tdd
     completed: '2026-04-15'
     type: refactor
+completed: '2026-04-16'

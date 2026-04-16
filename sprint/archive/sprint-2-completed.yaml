@@ -26,6 +26,7 @@ completed_epics:
   - '13'
   - '27'
   - '35'
+  - '36'
 completed_stories:
   - id: 13-8
     epic: ''
@@ -1254,5 +1255,25 @@ completed_stories:
   - id: 33-7
     epic: ''
     title: Character panel header — portrait, level, archetype display
+    points: 3
+    completed: '2026-04-15'
+  - id: 36-2
+    epic: ''
+    title: Refactor dispatch functions with too many arguments into context structs
+    points: 5
+    completed: '2026-04-16'
+  - id: 36-1
+    epic: '36'
+    title: Fix TurnBarrier second-turn advancement bug (barrier_story_8_2 multiple_turns_timeout_then_normal)
+    points: 3
+    completed: '2026-04-15'
+  - id: 36-3
+    epic: '36'
+    title: 'Decide Session actor fate: implement or delete server_story_2_2_tests.rs'
+    points: 2
+    completed: '2026-04-15'
+  - id: 36-4
+    epic: '36'
+    title: Wire TroperAgent or remove from Orchestrator
     points: 3
     completed: '2026-04-15'
