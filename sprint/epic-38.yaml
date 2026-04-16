@@ -64,9 +64,12 @@ stories:
     title: Narrator cockpit-POV prompt extension — teach unified narrator to render per-actor views from per_actor_state, strictly forbid geometry not in descriptor, integration test with duel_01 scenario
     points: 3
     priority: p2
-    status: backlog
+    status: done
+    assigned_to: Keith
+    started: '2026-04-16'
     repos: api,content
     workflow: wire-first
+    completed: '2026-04-16'
   - id: 38-7
     title: Hit severity column in interactions_mvp.yaml — extend all 16 cells with graze/clean/devastating classification, define hull damage increments per severity
     points: 1

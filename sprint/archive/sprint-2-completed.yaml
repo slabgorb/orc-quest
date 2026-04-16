@@ -1303,3 +1303,8 @@ completed_stories:
     title: SealedLetterLookup resolution handler — new match arm in confrontation dispatch, gather actor commits via TurnBarrier, lookup interaction cell, apply per-actor deltas, OTEL spans
     points: 5
     completed: '2026-04-16'
+  - id: 38-6
+    epic: ''
+    title: Narrator cockpit-POV prompt extension — teach unified narrator to render per-actor views from per_actor_state, strictly forbid geometry not in descriptor, integration test with duel_01 scenario
+    points: 3
+    completed: '2026-04-16'
