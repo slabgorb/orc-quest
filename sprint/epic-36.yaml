@@ -20,10 +20,11 @@ stories:
     title: Refactor dispatch functions with too many arguments into context structs
     points: 5
     priority: p2
-    status: backlog
+    status: in_progress
     repos: api
     workflow: tdd
     type: refactor
+    branch: feat/36-2-refactor-dispatch-context-structs
   - id: 36-3
     title: 'Decide Session actor fate: implement or delete server_story_2_2_tests.rs'
     description: Session actor is implemented and live — session.rs FSM wired at dispatch/connect.rs:73 (pre-develop commit 5d12361). server_story_2_2_tests.rs was never a real stub. Closed via audit 2026-04-15.
