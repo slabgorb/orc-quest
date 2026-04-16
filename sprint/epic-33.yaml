@@ -6,7 +6,6 @@ description: |
 priority: p1
 status: backlog
 repos: ui
-jira:
 stories:
   - id: 33-1
     title: Genre-themed widget chrome — archetype-specific CSS for widget borders, headers, and backgrounds
@@ -75,7 +74,9 @@ stories:
     description: 'The character panel header is currently just a name and subtitle in plain text with no portrait slot, level display, or archetype tag. This story adds a proper header row: circular portrait placeholder (48px, filled by 33-2 portrait system when available), character name in accent color, archetype + genre as subtitle, and a compact level badge (Lv N). See mockup: .playwright-mcp/mockups/epic-33-panel-improvements.html#s33-7. Before state visible in playtest screenshot 011-turn1-result.png.'
     points: 3
     priority: p1
-    status: backlog
+    status: done
+    assigned_to: keith.avery@1898andco.io
+    started: '2026-04-15'
     repos: sidequest-ui
     workflow: trivial
     acceptance_criteria:
@@ -85,6 +86,7 @@ stories:
       - Level badge shows 'Lv N' in accent-dim background, top-right of header
       - Portrait border color transitions to danger color when HP < 25%
       - Header slot renders in all sub-tabs (Stats, Abilities, Journal)
+    completed: '2026-04-15'
   - id: 33-8
     title: Context-aware stat highlighting — surface relevant stats based on game phase
     description: 'The Stats sub-tab currently renders all stats at equal visual weight regardless of what the game is doing. When combat is active, Reflexes/Instinct/Toughness are what matter. When a Confrontation is live, Presence/Brains/Wits matter. This story reads the current game phase from Redux state (GamePhase enum: exploration, combat, confrontation, downtime) and dims irrelevant stats while adding a green dot and row highlight to relevant ones. A context banner below the header names the active phase. See mockup: .playwright-mcp/mockups/epic-33-panel-improvements.html#s33-8. Before/after visible in screenshots 011 (flat) vs 013 (Confrontation tab already doing this correctly — mirror that pattern into the Stats tab).'
@@ -234,7 +236,9 @@ stories:
     description: 'The Gallery tab is a flat image grid with zero context — clicking into it during the playtest shows bare thumbnails with no turn attribution, no scene name, no caption, no world facts, no NPCs. Defined in pingpong.md [DESIGN] entry 2026-04-11: reshape Gallery from ''image library'' into a diegetic Scrapbook — an in-world record of the adventure that connects each image to the lore, narrative beats, NPC encounters, world facts, and turn history that produced it. It should read like something the character themselves would keep: a travelogue of snapshots, field notes, and overheard conversations. See mockup: .playwright-mcp/mockups/epic-33-gallery-improvements.html. Server already emits all required data (turn_id, scene_name, scene_type, world_facts per turn, NPC registry, narration text) — see 33-18 for the payload bundling work.'
     points: 8
     priority: p1
-    status: backlog
+    status: done
+    assigned_to: keith.avery@1898andco.io
+    started: '2026-04-15'
     repos: sidequest-ui
     workflow: tdd
     acceptance_criteria:
@@ -255,12 +259,17 @@ stories:
       - 'Depends on 33-18: Scrapbook entry data arrives as a single bundled WS message — do not wire until 33-18 ships'
       - 'Grid compact mode for 6+ images: 3-col, title only, caption hidden, full detail on click/expand'
       - "Empty state: 'No scenes yet — the world will fill these pages.' — not a blank panel"
+    completed: '2026-04-15'
+    review_findings: Two rule-#6 key={index} violations on inner maps, one rule-#1/#4 ineffective null guard on isHandout, plus the key-stability test itself is vacuous (regex only checks one key expression). RED rework to expand test coverage and fix three production lines.
+    review_verdict: approved
   - id: 33-18
     title: Scrapbook payload — bundle image + world_facts + NPCs + excerpt into single WS message
     description: The Gallery widget needs turn attribution, world facts, NPC presence, narration excerpts, and scene classification per image. All of this data exists server-side but arrives via separate streams — images via GalleryImage message, world facts via WorldFact events, NPCs via npc_registry, narration via NarrationComplete. This story creates a new ScrapbookEntry WebSocket message type that bundles all of these into a single payload keyed by turn_id. Server assembles the entry after narration completes (when world_facts and npc_registry for that turn are settled). See render_integration.rs for image tagging, ADR-076 for world_facts broadcast, and npc_registry for NPC data. Depended on by 33-17.
     points: 3
     priority: p1
-    status: backlog
+    status: done
+    assigned_to: keith.avery@1898andco.io
+    started: '2026-04-15'
     repos: sidequest-api
     workflow: tdd
     acceptance_criteria:
@@ -272,6 +281,24 @@ stories:
       - 'world_facts: all world_facts broadcast during this turn, as plain strings'
       - 'npcs_present: all NPCs appearing in npc_registry updates during this turn'
       - Protocol type added to sidequest-protocol crate, server emission in sidequest-server, client handler in Redux store
+    completed: '2026-04-15'
+    branch: feat/33-18-scrapbook-payload
+  - id: 33-19
+    title: Lobby genre metadata — player count + blurb in ConnectScreen
+    description: 'Add player-count recommendation and lobby blurb to every genre pack and surface them in the ConnectScreen lobby. GM has already authored lobby_blurb and recommended_players {min,max,sweet_spot} fields in all 11 sidequest-content/genre_packs/*/pack.yaml files. This story wires those fields through the stack: Rust PackMeta → GenreResponse → /api/genres → TypeScript GenreMeta → ConnectScreen OptionList hint/annotation slots. The OptionList component already exposes unused hint and annotation fields — no new UI components needed. Cosmetic UI only, no OTEL required per CLAUDE.md exclusion.'
+    points: 5
+    priority: p2
+    status: backlog
+    repos: api,ui,content
+    workflow: tdd
+    acceptance_criteria:
+      - 'PackMeta struct in sidequest-api/crates/sidequest-genre/src/models/pack.rs deserializes lobby_blurb (Option<String>) and recommended_players (Option<RecommendedPlayers{min,max,sweet_spot: u8}>) from pack.yaml without error for all 11 genre packs'
+      - GenreResponse in sidequest-server/src/lib.rs exposes lobby_blurb and recommended_players; /api/genres returns them in the JSON payload (verify with curl + example)
+      - GenreMeta TypeScript type in sidequest-ui/src/types/genres.ts mirrors the Rust response shape exactly
+      - ConnectScreen renders lobby_blurb in OptionList hint slot and renders recommended_players as annotation (format coordinated with Alex Kamal — e.g., 'Best with 3 · 1–4 players')
+      - Wiring integration test proves ConnectScreen → OptionList → real GenreMeta payload (not mocked) is reachable from production code paths; new RecommendedPlayers struct has non-test consumer
+      - 'Visual verification in browser: all 11 genres show blurb and player-count in the lobby; no layout regression on existing connect flow'
+      - 'No scope creep: do not redesign OptionList, add filtering/sorting by player count, or restructure the lobby layout'
   - id: 33-20
     title: Rich genre picker — genre card thumbnails and mood metadata in lobby
     description: "The lobby genre picker (OptionList in ConnectScreen) renders genres as a plain text list with left-border selection. The API's /api/genres endpoint already returns per-genre metadata (description, core_vibe, emotional_tone, inspirations) but the picker doesn't consume any of it. This story enriches the genre rows with: a mood/vibe subtitle from pack.yaml metadata, a color swatch derived from the genre's theme.yaml primary color, and optionally a small thumbnail if a genre-level cover image exists in the content repo. The world picker already shows rich previews — the genre picker should match that density."
