@@ -252,7 +252,8 @@ async def render_batch(
                 failed += 1
                 continue
 
-            rendered_path = Path(result["result"]["image_path"])
+            render_result = result["result"]
+            rendered_path = Path(render_result.get("image_path") or render_result["image_url"])
             shutil.copy2(rendered_path, out_path)
             elapsed = result["result"].get("elapsed_ms", 0)
             log.info("  OK (%.1fs) → %s", elapsed / 1000, out_path)
