@@ -101,6 +101,8 @@ stories:
     repos: api
     workflow: wire-first
     type: bug
+    review_findings: 'CRITICAL: UTF-8 byte-slice panic at raw_response preview. HIGH: ExtractionOutcome missing non_exhaustive.'
+    review_verdict: rejected
   - id: 37-11
     title: action_rewrite and action_flags wiring — narrator emits these fields inconsistently (absent 99/~120 turns), prompt needs firmer contract
     points: 2
