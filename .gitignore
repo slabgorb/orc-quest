@@ -63,9 +63,6 @@ worktrees/
 # Personal scratch workspace
 scratch/
 
-# Sprint archives
-sprint/archive/*.md
-
 # Python virtual environment
 .venv/
 
