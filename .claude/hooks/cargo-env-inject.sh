@@ -1,29 +1,42 @@
 #!/usr/bin/env bash
-# PreToolUse(Bash) hook for cargo commands on this clone.
+# PreToolUse(Bash) hook for cargo / just commands on this clone.
 #
 # Three jobs:
 #
-#   1. Inject env vars — every cargo invocation gets
+#   1. Inject env vars — every cargo/just invocation gets
 #      `RUSTC_WRAPPER="" CARGO_HOME=<this-clone>/.cargo` prepended so this
 #      clone has its own cargo registry and bypasses sccache (avoiding
 #      cross-clone contention with other checkouts of the same project).
+#      These env vars are harmless for just recipes that never touch
+#      cargo and critical for recipes that do.
 #
-#   2. Deny `cargo nextest` — nextest's parallel --list test-discovery
-#      deadlocks under macOS code-signing verification (amfid/syspolicyd
-#      serialize parallel binary-verification XPC calls). `cargo test` is
-#      the only safe runner on this workspace. See memory:
-#      feedback_use_nextest.md. Hook returns a permissionDecision=deny so
-#      the agent cannot bypass it and sees the reason.
+#   2. Deny `cargo nextest` (and bare `nextest`) — nextest's parallel
+#      --list test-discovery deadlocks under macOS XProtectService's
+#      single-threaded malware scanner (35+ freshly-linked test binaries
+#      queue behind XProtect, never complete). `cargo test` is the only
+#      safe runner on this workspace. See memory: feedback_use_nextest.md.
+#      Hook returns a permissionDecision=deny so the agent cannot bypass
+#      it and sees the reason.
 #
-#   3. Wrap all other cargo commands through cargo-guard.sh, which
-#      adds a flock (serializes cargo invocations, so two concurrent
+#   3. Wrap all other cargo/just commands through cargo-guard.sh, which
+#      adds an mkdir-based lock (serializes invocations so two concurrent
 #      `cargo test` calls queue instead of racing), a 30s heartbeat to
 #      defeat the 2-minute stream auto-background, and pipefail so
 #      `cargo test | tail` can't mask cargo's real exit code.
 #
+# Why match `just` as well as `cargo`:
+#   Most just recipes in this workspace invoke cargo as a subprocess
+#   (api-build, api-test, api-check, api-run, api-lint, api-fmt). The
+#   Claude Code PreToolUse hook only sees the top-level Bash tool_input;
+#   children of `just` are invisible. Matching only `cargo` meant
+#   `just api-build` bypassed the guard entirely — same deadlock risk as
+#   raw cargo. Matching `just` closes that hole. Non-cargo recipes pay a
+#   negligible serialization cost (frontend/daemon builds rarely overlap
+#   in practice and the lock is cheap when uncontested).
+#
 # Reads the PreToolUse JSON payload from stdin. Emits a hookSpecificOutput
 # JSON: permissionDecision=deny for nextest, updatedInput.command for
-# other cargo commands, or `{}` (no-op) when not a cargo command.
+# guarded commands, or `{}` (no-op) otherwise.
 #
 # Relocatable: CARGO_HOME is <project-root>/.cargo where <project-root> is
 # two levels up from this script (.claude/hooks/ → root). Drop this script
@@ -36,18 +49,21 @@ PROJECT_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 CARGO_HOME_PATH="$PROJECT_ROOT/.cargo"
 GUARD_SCRIPT="$PROJECT_ROOT/.claude/hooks/cargo-guard.sh"
 
-# Word-boundary cargo match: must start the command or follow a shell
-# separator, and be followed by whitespace or end-of-string. Won't match
-# `Cargo.toml` or `cargo-related-tool`.
-CARGO_RE='(^|[;&|[:space:]])cargo([[:space:]]|$)'
-# Explicit nextest detection: `cargo nextest ...` in any shell-separator
-# position. Matches `cargo nextest run` and `cargo nextest list` alike.
-NEXTEST_RE='(^|[;&|[:space:]])cargo[[:space:]]+nextest([[:space:]]|$)'
+# Word-boundary match for commands that must be guarded: `cargo` or `just`,
+# starting the command or following a shell separator, followed by
+# whitespace or end-of-string. Won't match `Cargo.toml`, `cargo-*`,
+# `justfile`, or `adjust`.
+GUARDED_RE='(^|[;&|[:space:]])(cargo|just)([[:space:]]|$)'
+# Nextest detection: matches `cargo nextest ...` and bare `nextest ...`
+# in any shell-separator position. Banned regardless of entry point
+# because the XProtect deadlock is architectural, not a cargo subcommand
+# problem — running `nextest` directly would deadlock identically.
+NEXTEST_RE='(^|[;&|[:space:]])(cargo[[:space:]]+)?nextest([[:space:]]|$)'
 
 jq -c \
   --arg cargo_home "$CARGO_HOME_PATH" \
   --arg guard "$GUARD_SCRIPT" \
-  --arg cargo_re "$CARGO_RE" \
+  --arg cargo_re "$GUARDED_RE" \
   --arg nextest_re "$NEXTEST_RE" '
   (.tool_input.command // "") as $cmd
   | if ($cmd | test($nextest_re)) then
