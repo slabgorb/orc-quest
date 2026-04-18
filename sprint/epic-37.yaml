@@ -235,9 +235,10 @@ stories:
     title: POI manifest wiring — bind generated POI landscape images across 5 genre packs so world lobby stops showing 'the page is faded' placeholder and WARN cover_poi_missing stops spamming
     points: 2
     priority: p1
-    status: backlog
+    status: done
     repos: content
     workflow: trivial
+    completed: '2026-04-18'
     type: bug
   - id: 37-23
     title: Split daemon render_lock into render_lock + embed_lock — Flux renders serialize 10ms embeds behind 5-60s image gens, 30+ms contention tax on embed path
