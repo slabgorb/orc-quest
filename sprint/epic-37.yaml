@@ -100,12 +100,13 @@ stories:
     title: Inventory extraction failures — extractor crashed on 5 turns during playtest
     points: 2
     priority: p1
-    status: backlog
+    status: done
     repos: api
     workflow: wire-first
+    completed: '2026-04-18'
     type: bug
-    review_findings: 'CRITICAL: UTF-8 byte-slice panic at raw_response preview. HIGH: ExtractionOutcome missing non_exhaustive.'
-    review_verdict: rejected
+    review_findings: 'Both blocking issues fixed in commit 9c554386 and merged via sidequest-api PR #475.'
+    review_verdict: approved
   - id: 37-11
     title: action_rewrite and action_flags wiring — narrator emits these fields inconsistently (absent 99/~120 turns), prompt needs firmer contract
     points: 2

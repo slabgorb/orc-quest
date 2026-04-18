@@ -24,6 +24,15 @@
 - **Just execute.** Don't deprioritize or editorialize by task type ("this is a feature gap," "this needs X fixed first"). Route tasks for execution without commentary.
 - **No "pre-existing" excuse.** Never dismiss broken tests as pre-existing and move on. If the suite isn't fully green at handoff, I failed. Don't check "does develop have the same bug" as a way to excuse not fixing it.
 - **No baseline as insight.** "Most bugs are wiring bugs" is the central thesis of sq-wire-it, CLAUDE.md, and nine feedback memories — it's the assumed operating environment, not a discovery. Don't write retrospective bullets that restate documented fundamentals. Save insight slots for things that are actually surprising *given* the baseline.
+- **Fix what you see, don't defer to downstream stories.** Every real design-time finding is a fix item for the current story — not a catalog entry. Keith has no team to hand debt to.
+- **No dressed-up scope shields.** If an architectural review is about to say "out of scope for this branch," "incremental retirement," "honest green via ignore," "separate workstream," STOP. That's the scope-shield pattern in engineering clothes. Keith has rejected it explicitly (2026-04-14 incident: 39 ignored tests called "honest green").
+- **Keith decides process scope, not Architect.** Trivial fixes <5min get done; everything else is full workflow. Never pitch "I lean X but your call" as a closing — that abdicates the decision after making it. Either just execute (trivial) or follow the full workflow (everything else). Don't narrate the choice.
+
+### No weasel words in design rationales
+- **"Cleanest / simplest / proper approach" are weasel words.** State WHAT the design is and WHY it's correct (cite the constraint or principle) OR admit it's a workaround and name what the real fix would change. Keith has interrupted mid-design multiple times on "cleanest approach" framings.
+
+### Trust Keith's instincts
+- **When Keith questions a design's timing/behavior/feel, he is right.** 30 years of instinct. Investigate first, explain second. Dismissing his reads is gaslighting.
 
 ### Git gotchas
 - **Never use `git stash`.** Ever. Pop causes conflicts, leaves orphans, loses visibility. Use temp branches for context switches, or re-apply manually.

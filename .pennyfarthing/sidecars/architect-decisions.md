@@ -43,6 +43,17 @@
 - **Rust for everything non-LLM.** Game engine (`sidequest-game`), protocol (`sidequest-protocol`), server (`sidequest-server`), genre loader (`sidequest-genre`), Claude orchestration (`sidequest-agents`), daemon client (`sidequest-daemon-client`), CLI tools (namegen, encountergen, loadoutgen, validate).
 - **Python daemon for ML inference only:** Flux.1 (images), *previously* Kokoro (TTS, stripped story 27-1), *previously* ACE-Step (music, stripped story 27-2 — music gen now runs standalone from `~/Projects/ACE-Step/`). The daemon is an image-only sidecar now.
 - **Claude calls always go through Rust subprocess.** Never import the Claude SDK into Python.
+- **LoRA pipeline is operational as of 2026-04-07.** Genre-specific Flux LoRAs train to `.safetensors` successfully. Remaining work is loading/verification and render-pipeline integration.
+
+### Prompt architecture rules
+- **Monster Manual NPCs inject into `<game_state>` only.** Format: `"- Name (role, faction) — brief personality, speech quirk"`. Proven across 6+ iterations — game_state is read as world truth; meta-instructions (XML casting calls, `available_characters` sections, tool workflow instructions) are read only as style inspiration, so Claude invents names instead of selecting. Never add XML casting sections or Primacy/Recency-zoned "HARD RULE" constraints for NPC selection — all failed.
+- **Three-layer content inheritance (base → genre → world)** is the architectural invariant for archetypes, NPCs, locations, archetypes, most structured content. Base = shape, genre = tone, world = lore. Resolution is prototype-chain / Python-MRO. This is the mental model for every new content system — never flatten layers.
+
+### Anti-pattern rules to enforce architecturally
+- **No keyword / pattern matching for intent classification** (ADR-010, ADR-032). The Zork Problem. Natural language defeats finite verb sets every time. Intent is always an LLM call (preferably folded into the narrator's Opus response for zero additional latency). Reject any subsystem design that adds keyword heuristics to intent routing, dispatch, or narrator-output interpretation.
+- **No text-synthesis dispatch for structured UI actions.** UI button clicks must send dedicated protocol messages (`BEAT_SELECTION`, `TACTICAL_ACTION`, `JOURNAL_REQUEST`, `CHARACTER_CREATION`). Never synthesize natural-language `PLAYER_ACTION` strings from structured UI state. Reference: the 2026-04-11 `05a3dfb` incident where beat-button clicks were fuzzy-matched against narrator label text.
+- **No AI judging AI.** Second-LLM validators for narrator output, consistency checks, or game-decision verification are the "God lifting rocks" problem. The first call is already the most semantic reader available.
+- **No live LLM calls in test suites.** `cargo test` must mock `ClaudeClient`. Live-LLM suites live in `--ignored`.
 
 ### Process decisions for SideQuest specifically
 - **Skip architect gates and spec checks.** Personal learning project, not a work repo. TDD runs RED → GREEN → VERIFY → REVIEW → FINISH. No architect spec validation, no spec-check/spec-reconcile, no epic/story context docs required.

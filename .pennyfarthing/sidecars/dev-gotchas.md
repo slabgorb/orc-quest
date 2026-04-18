@@ -24,6 +24,15 @@
 - **Just execute.** Don't deprioritize or editorialize by task type ("this is a feature gap," "this needs X fixed first"). Route tasks for execution without commentary.
 - **No "pre-existing" excuse.** Never dismiss broken tests as pre-existing and move on. If the suite isn't fully green at handoff, I failed. Don't check "does develop have the same bug" as a way to excuse not fixing it.
 - **No baseline as insight.** "Most bugs are wiring bugs" is the central thesis of sq-wire-it, CLAUDE.md, and nine feedback memories — it's the assumed operating environment, not a discovery. Don't write retrospective bullets that restate documented fundamentals. Save insight slots for things that are actually surprising *given* the baseline.
+- **Fix what you see, don't defer to downstream stories.** When implementing and I spot a real problem — failing test, broken type contract, vacuous assertion, stringly-typed field that should be an enum — fix it NOW, in this story. Every "defer to 34-3 / next story / follow-up" is debt compounding on Keith, the only dev. No cross-team coordination cost to expanding scope; he wants debt fixed while the context is loaded, not catalogued.
+- **No dressed-up scope shields — the 2026-04-14 incident.** Forbidden phrases: "out of this branch's scope," "days of forensic rewrite work," "honest green via #[ignore]," "real fix is X but for now Y," "separate workstream," "incremental retirement path," "tracking comment," "future work." If any are about to appear in my response, STOP — that's the scope-shield pattern in engineering clothes. Incident: I marked 39 broken integration tests `#[ignore = "tech-debt"]` and called it "honest green." Keith caught it instantly — ignored tests are still failing tests with prettier framing. At 20× velocity, 39 mechanical fixes is wall-time *minutes*, not days. Two-step check before ignoring anything: (a) grep for the assertion substring — if it exists anywhere in source, the fix is a one-path-update; (b) if it exists nowhere, the choice is implement-or-delete, never ignore.
+- **Wiring tests are mandatory** (CLAUDE.md). `#[ignore]`, `it.skip`, comment-out — all are rule violations. Disabling a wiring test disables the wiring detector for every subsystem it covers.
+
+### No weasel words
+- **"Cleanest / simplest / proper approach" are weasel words.** They mask whether a choice is correct or a hack. State (1) WHAT the decision is, (2) WHY it's correct (cite the constraint or principle), OR admit it's a workaround and name what the real fix would change. Keith had to interrupt multiple times on this exact pattern during 35-13.
+
+### Trust Keith's instincts
+- **When Keith says something's wrong, he's right.** Timing concerns, performance intuition, behavior that feels off — 30 years of calibrated instinct. Don't rationalize or explain away. "You're right, let me check" — not "well it's probably because X." Dismissing his reads then discovering he was right is gaslighting.
 
 ### Git gotchas
 - **Never use `git stash`.** Ever. Pop causes conflicts, leaves orphans, loses visibility. Use temp branches for context switches, or re-apply manually.
@@ -34,11 +43,15 @@
 - **"Actually simpler" means you're about to improvise.** Stop. That phrase is the warning sign that I'm about to reach for a destructive shortcut.
 - **When git is messy, one command at a time.** State the command, state what it does, wait. Don't chain recoveries.
 - **If I fucked up, STOP.** Don't reach for more commands to fix it. State what happened and ask Keith what to do.
+- **Use `git worktree add` for dirty-tree branch operations.** When creating a new branch in a repo with uncommitted work, `git worktree add /tmp/name <base-branch>` + write/commit/push from the worktree + `git worktree remove /tmp/name`. Never `git stash` under any framing. Stash caused conflicts and nearly-lost work during doc-branch creation on `fix/playtest-2026-04-05`.
 
 ### Build / test gotchas
 - **Build verification happens on OQ-2, not OQ-1.** All edits live in OQ-1/sidequest-api; after merge, pull on OQ-2 and `cargo build -p sidequest-server` there. The workspace-root build is a placeholder.
 - **Test compile cascade:** Never spawn two cargo processes on the same workspace at once. Cargo's build lock queues them and a 2-minute timeout + new spawn creates zombie-compile cascades (4 competing cargos, 10+ minutes, zero results). Use `timeout: 300000` (5 min), `cargo build` first, `cargo test` second.
+- **No duplicate test runs via Bash while a testing-runner subagent is active.** Every `cargo test` / `cargo build` triggers a full recompile — minutes of compilation that fights the first process for the build lock. After spawning testing-runner, STOP. Don't "also check this other test file" — that's another full build. Read docs, write session notes, or edit files in a different repo while waiting; never touch cargo on the same workspace.
+- **Don't rerun the full test suite repeatedly during playtest bugfixes.** A clean `cargo build` is sufficient confidence for pushing during playtest. Full `cargo test` takes 90-300+ seconds; run it ONCE before the final commit if needed, never on every loop tick. Targeted `cargo test -p <crate> -- <filter>` is fine when touching test-adjacent code.
 - **0.02s cargo build means nothing changed.** If the build is suspiciously fast, your fix isn't in the binary. Look for "Compiling sidequest-server" in the output as proof the change landed.
+- **No live LLM calls in the default test suite.** Any test that hits `claude -p` (real Claude CLI subprocess) burns tokens and takes 90+ seconds. Mock `ClaudeClient`. Live-LLM integration tests belong in `--ignored` suites.
 - **Server logs exist and are informative.** Check `/tmp/sq-api.log` before speculating about causes.
 
 ### Playtest gotchas

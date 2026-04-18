@@ -24,6 +24,15 @@
 - **Just execute.** Don't deprioritize or editorialize by task type ("this is a feature gap," "this needs X fixed first"). Route tasks for execution without commentary.
 - **No "pre-existing" excuse.** Never dismiss broken tests as pre-existing and move on. If the suite isn't fully green at handoff, I failed. Don't check "does develop have the same bug" as a way to excuse not fixing it.
 - **No baseline as insight.** "Most bugs are wiring bugs" is the central thesis of sq-wire-it, CLAUDE.md, and nine feedback memories — it's the assumed operating environment, not a discovery. Don't write retrospective bullets that restate documented fundamentals. Save insight slots for things that are actually surprising *given* the baseline.
+- **Fix what you see, in this story.** If I find a test that lies about what it covers, a vacuous assertion, or a missing edge case in code I'm writing tests for — fix it NOW. Every "defer to follow-up" is debt compounding on Keith. Don't catalog problems; fix them.
+- **No dressed-up scope shields — the 2026-04-14 incident.** Forbidden phrases: "out of this branch's scope," "days of forensic rewrite work," "honest green via #[ignore]," "real fix is X but for now Y," "incremental retirement path," "future work." Marking 39 broken integration tests `#[ignore = "tech-debt"]` is not an "honest green" — it's silencing failures with prettier framing. Disabling a wiring test disables the wiring detector for every subsystem it covered.
+- **Two-step check before any `#[ignore]`:** (a) grep for the assertion substring — if it exists in current source, the fix is a one-path update, not "days of work"; (b) if it exists nowhere, the choice is implement-or-delete, never ignore.
+
+### No weasel words in test design
+- **"Cleanest / simplest / proper test approach" are weasel words.** State (1) WHAT the test covers, (2) WHY this shape is correct (cite the behavior or boundary). A test that "checks the happy path cleanly" isn't justified — specify exactly what the assertion proves.
+
+### Trust Keith's instincts on timing
+- **When Keith says a test is slow or a suite is misbehaving, he's right.** Investigate first, explain second. Dismissing his reads is gaslighting.
 
 ### Git gotchas
 - **Never use `git stash`.** Ever. Pop causes conflicts, leaves orphans, loses visibility. Use temp branches for context switches, or re-apply manually.
@@ -38,6 +47,9 @@
 ### Build / test gotchas
 - **Build verification happens on OQ-2, not OQ-1.** All edits live in OQ-1/sidequest-api; after merge, pull on OQ-2 and `cargo build -p sidequest-server` there. The workspace-root build is a placeholder.
 - **Test compile cascade:** Never spawn two cargo processes on the same workspace at once. Cargo's build lock queues them and a 2-minute timeout + new spawn creates zombie-compile cascades (4 competing cargos, 10+ minutes, zero results). Use `timeout: 300000` (5 min), `cargo build` first, `cargo test` second.
+- **No duplicate test runs while testing-runner is active.** After spawning testing-runner, do not touch cargo on the same workspace with any build/test command. "Let me also check this other test file" = another full recompile. Wait for completion.
+- **Don't rerun full test suites on every loop tick.** Full `cargo test` takes 90-300+ seconds. For playtest bugfix branches, `cargo build` is the gate; full test runs once at the end. Targeted `cargo test -p <crate> -- <filter>` for anything touching test-adjacent code.
+- **No live LLM calls in the default suite.** Tests in sidequest-agents that call real `claude -p` burn tokens and cost 90+ seconds per run. Mock `ClaudeClient`. Live-LLM integration tests belong in `--ignored`.
 - **0.02s cargo build means nothing changed.** If the build is suspiciously fast, your fix isn't in the binary. Look for "Compiling sidequest-server" in the output as proof the change landed.
 - **Server logs exist and are informative.** Check `/tmp/sq-api.log` before speculating about causes.
 
