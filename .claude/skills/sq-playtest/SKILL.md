@@ -169,9 +169,9 @@ Open a headed browser to the UI:
 mcp__playwright__browser_navigate(url="http://localhost:5173")
 ```
 
-Take an initial screenshot to confirm the UI loaded:
+Take an initial screenshot to confirm the UI loaded. **Always pass `filename` with an absolute path to the shared screenshots dir — never let Playwright drop into cwd:**
 ```
-mcp__playwright__browser_take_screenshot()
+mcp__playwright__browser_take_screenshot(filename="/Users/keithavery/Projects/sq-playtest-screenshots/000-initial-load.png")
 ```
 
 If the page shows an error (connection refused, blank page), check `pf tmux read ui-dev` for errors.
@@ -283,15 +283,13 @@ Describe what you're doing before each action ("Clicking 'New Game' button").
 
 ### 3b. Observe
 
-Take a screenshot and save it:
+Take a screenshot directly into the shared screenshots directory. **Always pass `filename` with an absolute path — if you omit it, Playwright drops the PNG into the current working directory (the oq-1 or oq-2 repo root), which pollutes git status and leaks the file out of the playtest session.**
+
 ```
-mcp__playwright__browser_take_screenshot()
+mcp__playwright__browser_take_screenshot(filename="/Users/keithavery/Projects/sq-playtest-screenshots/{NNN}-{slug}.png")
 ```
 
-Also save to the shared screenshots directory with a sequential number:
-```bash
-cp /path/to/screenshot /Users/keithavery/Projects/sq-playtest-screenshots/NNN.png
-```
+Use a 3-digit sequential `NNN` and a short kebab slug describing the moment (`005-post-begin`, `022-attack`). Multiplayer naming is covered in the multiplayer section below.
 
 ### 3c. Evaluate with UX Designer
 
@@ -517,7 +515,14 @@ Test these scenarios:
 
 ### Screenshots
 
-Take screenshots from both tabs for each significant moment. Use naming convention:
+Take screenshots from both tabs for each significant moment. **Always pass `filename` with the absolute shared-dir path** — never let Playwright drop into cwd:
+
+```
+mcp__playwright__browser_take_screenshot(filename="/Users/keithavery/Projects/sq-playtest-screenshots/{NNN}-p1.png")
+mcp__playwright__browser_take_screenshot(filename="/Users/keithavery/Projects/sq-playtest-screenshots/{NNN}-p2.png")
+```
+
+Naming convention:
 - `NNN-p1.png` — Player 1's view
 - `NNN-p2.png` — Player 2's view
 
