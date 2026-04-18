@@ -1339,3 +1339,8 @@ completed_stories:
     title: sidequest-test-support crate — SpanCaptureLayer, MockClaudeClient, ClaudeLike trait, canonical recipe README (the source of truth)
     points: 5
     completed: '2026-04-17'
+  - id: 37-21
+    epic: ''
+    title: Template placeholder leak in Space Opera chargen-confirm — {name}/{class}/{race} render literally; template engine mismatch or missing context keys
+    points: 1
+    completed: '2026-04-18'

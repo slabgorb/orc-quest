@@ -217,10 +217,15 @@ stories:
     title: Template placeholder leak in Space Opera chargen-confirm — {name}/{class}/{race} render literally; template engine mismatch or missing context keys
     points: 1
     priority: p0
-    status: backlog
+    status: done
+    assigned_to: keith.avery@1898andco.io
+    started: '2026-04-18'
     repos: content,api
     workflow: trivial
+    completed: '2026-04-18'
     type: bug
+    review_findings: "Round 3 APPROVED. Round-2 HIGH (multi-token silent drop, OR-disjunct test, drain sleep) all closed. Round-3 findings (vacuous severity loop when warns empty, pub(crate) visibility too wide, 2 misleading comments, missing negative test, filename convention) are quality refinements — flagged as delivery findings, not blockers. Tests 7/7 green, clippy + fmt clean, Rule 14/17/18 PASS."
+    review_verdict: approved
   - id: 37-22
     title: POI manifest wiring — bind generated POI landscape images across 5 genre packs so world lobby stops showing 'the page is faded' placeholder and WARN cover_poi_missing stops spamming
     points: 2
