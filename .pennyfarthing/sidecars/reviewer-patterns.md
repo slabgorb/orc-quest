@@ -1,6 +1,36 @@
 ## Reviewer Patterns
 
-- **Wiring verification checklist.** For every story that adds new types/methods: (1) new exports have non-test consumers, (2) new UI components are rendered in the app tree, (3) new hooks are called in production code, (4) new backend subsystems emit OTEL spans.
-- **Full pipeline trace.** Trace every hop: emission → channel → writer task → WebSocket → client handler. For protocol changes, verify serde JSON wire format matches what the client parses.
-- **No silent fallbacks anywhere.** If the review introduces `unwrap_or_default()`, `Option::None` degradation, or `if not exists: try_other_thing` patterns, reject it.
-- **Wiring gaps require action, not acknowledgment.** When finding a gap: log it in sq-wire-it, check for siblings, verify.
+### How to work with Keith
+- **Senior architect, 30-year dev, deep Python/React/Rust, learning Rust via the SideQuest port.** Talk at the architectural abstraction level — pattern names, trade-offs, system decomposition. Don't over-explain general programming concepts to him.
+- **Procedural-generation lineage:** 30+ years from MUSHcode through populinator, lango, gotown, townomatic, to SideQuest. Never frame content systems (conlang, NPC registry, trope engine, POI) as novel experiments. They're mature patterns.
+- **Trust Keith's instincts on timing and behavior.** When he says something is taking too long, something seems wrong, or performance is off — he is right. Don't rationalize or explain away. "You're right, let me check" — not "well it's probably because X."
+- **Velocity calibration: ~20× human dev speed, sustained since Nov 2025.** At this pace, "days of rewrite work" is wall-time minutes for parallelizable work. Resist the temptation to size a fix by human-dev intuition — that's how scope-shield rationalizations get manufactured.
+- **Dictation artifacts expected** ("axiom" → "axum", "SERG" → "serde", "playlist" → "playtest"). Parse for intent before correcting.
+
+### Core review patterns
+- **Wiring verification checklist.** For every story that adds new types/methods: (1) new exports have non-test consumers, (2) new UI components are rendered in the app tree, (3) new hooks are called in production code, (4) new backend subsystems emit OTEL watcher events with state content the GM panel can use as a lie detector.
+- **Full pipeline trace.** Trace every hop: emission → channel → writer task → WebSocket → client handler → DOM. For protocol changes, verify serde JSON wire format matches what the client parses. Reference trace: `IntentRouter → Orchestrator → lib.rs → Protocol → UI CombatOverlay` is the template for any intent-to-UI verification.
+- **Source-level wiring guard tests are acceptable** when runtime integration is impractical (dispatch_connect has 55 params, dockview needs real DOM sizing). Reference implementations: `map_telemetry_wiring_tests.rs` in sidequest-server, `gameboard-wiring.test.tsx` in sidequest-ui. These catch refactor regressions at `cargo test` / `vitest run` time.
+- **No silent fallbacks anywhere.** If the review introduces `unwrap_or_default()`, `Option::None` degradation, `.ok()`, or `if not exists: try_other_thing` patterns, reject it.
+- **Wiring gaps require action, not acknowledgment.** Log in sq-wire-it, check for siblings (if one compute-then-ignore exists, grep for the pattern), verify OTEL, then approve.
+
+### Adversarial review patterns
+- **Devil's Advocate section is mandatory, not decorative.** Your job is to find the case for rejection. Write it even when the diff looks clean — that's where you discover the subtle issues. The 37-10 UTF-8 panic was found this way (the crash-fix introduced a crash on any response containing multi-byte UTF-8 at byte 200).
+- **Rule compliance table.** Walk every applicable rule (silent errors, non_exhaustive, placeholders, tracing, constructors, test quality, unsafe casts, deserialize bypass, public fields, tenant context, workspace deps, dev-deps, validated constructors, fix regressions, unbounded input). Mark each Compliant / Violation / N/A with the entity checked. Inconsistency between sibling entities (e.g., `MutationAction` got `#[non_exhaustive]` but `ExtractionOutcome` didn't) is a violation — call it out.
+- **Check regressions specifically.** A diff that fixes bug A while introducing bug B has NOT fixed bug A — it's a net neutral with higher test burden. Blocker for the PR, never a delivery finding.
+
+### Architectural anti-pattern recognition
+- **Zork Problem / regex fallback.** When interpretation of meaning is the problem, keyword matching is a category error. If the diff adds keyword heuristics to intent routing, text-matching to dispatch, or regex classification of LLM output — reject. The model that understands semantics is already in the loop; use it. Zawinski's quote applies: "Some people, when confronted with a problem, think 'I know, I'll use regular expressions.' Now they have two problems."
+- **Deferral Cascade pattern (sq-wire-it pattern 2).** Every "we'll wire it in the follow-up story" framing is the same pattern that shipped story 16-1 unwired through nine agents. Reject it at first sight.
+- **God lifting rocks.** Claude judging Claude's game decisions. Reject any design where a second LLM call validates the first — the first call is already the most semantic reader available.
+
+### Git / branch patterns
+- **Gitflow on every subrepo.** Subrepos (sidequest-api, sidequest-ui, sidequest-content, sidequest-daemon) target `develop`. Only the orchestrator targets `main`. Verify PR base branch against `repos.yaml` before approving.
+- **Additive git ops are fine** (commit, push non-force, pull --ff-only, checkout existing, checkout -b, fetch, add). **Destructive git ops always require explicit permission** (reset, clean, force-push, branch -D, rebase -i, stash — banned outright). Use `git worktree add` for dirty-tree branch operations.
+
+### Playtest patterns
+- **Pingpong file is the active backlog during playtests.** `/Users/keithavery/Projects/sq-playtest-pingpong.md` — read every 2-3 minutes. UX/system bugs filed from the OQ-1 side come through this channel.
+- **Playtest mode is debugging, not redesign.** When Keith is mid-playtest, route bug fixes — don't propose new design directions.
+
+### Context discipline
+- **Thoroughness over speed.** Context pressure is not your problem. Don't rush an assessment or skip subagent results to save tokens. Cutting corners costs more context than doing it right.
