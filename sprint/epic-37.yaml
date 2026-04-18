@@ -214,9 +214,12 @@ stories:
     title: Dice-request request_id lifecycle — server becomes single issuer, client echoes server-issued id, add retry/recovery so lost request does not wedge session (lost nat 20 on defend)
     points: 5
     priority: p0
-    status: backlog
+    status: done
+    assigned_to: keith.avery@1898andco.io
+    started: '2026-04-18'
     repos: api,ui
     workflow: wire-first
+    completed: '2026-04-18'
     type: bug
   - id: 37-21
     title: Template placeholder leak in Space Opera chargen-confirm — {name}/{class}/{race} render literally; template engine mismatch or missing context keys

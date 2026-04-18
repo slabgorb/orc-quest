@@ -1349,3 +1349,8 @@ completed_stories:
     title: Phantom-player dedup on resume — duplicate party entry drives player_count to 2, structured-mode auto-promotion creates barrier that deadlocks waiting on ghost; dedup at resume boundary
     points: 3
     completed: '2026-04-18'
+  - id: 37-20
+    epic: ''
+    title: Dice-request request_id lifecycle — server becomes single issuer, client echoes server-issued id, add retry/recovery so lost request does not wedge session (lost nat 20 on defend)
+    points: 5
+    completed: '2026-04-18'
