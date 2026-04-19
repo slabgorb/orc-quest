@@ -1389,3 +1389,8 @@ completed_stories:
     title: Delete HP from CreatureCore — remove hp/max_hp/ac fields, delete sidequest-game/src/hp.rs, fix Combatant trait (lose hp/max_hp/ac, gain edge/max_edge/is_broken), cascade compile errors workspace-wide, synthesize edge in constructors with placeholder values
     points: 8
     completed: '2026-04-19'
+  - id: 37-28
+    epic: ''
+    title: Scrapbook image persistence across session resume — image bytes lost on reload while metadata survives; persist to stable path and rehydrate manifest on resume
+    points: 3
+    completed: '2026-04-19'

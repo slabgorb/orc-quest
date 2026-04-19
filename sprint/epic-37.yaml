@@ -312,10 +312,14 @@ stories:
     title: Scrapbook image persistence across session resume — image bytes lost on reload while metadata survives; persist to stable path and rehydrate manifest on resume
     points: 3
     priority: p1
-    status: backlog
+    status: done
+    started: '2026-04-19'
     repos: api
     workflow: wire-first
+    completed: '2026-04-19'
     type: bug
+    branch: feat/37-28-scrapbook-image-persistence
+    review_verdict: approved
   - id: 37-29
     title: Chargen standard-kit narration-vs-state mismatch — narrator references a parchment inventory list the UI never renders; align narration to actual emitted payload or emit the loadout
     points: 2
