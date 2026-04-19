@@ -41,11 +41,12 @@ stories:
     title: BeatDef.edge_delta + target_edge_delta + beat dispatch wiring — extend BeatDef with edge_delta/target_edge_delta/resource_deltas; implement self-debit and target-debit blocks in handle_applied_side_effects (parallel to gold_delta at beat.rs:319-337); auto-resolve on Edge<=0; OTEL creature.edge_delta + encounter.composure_break events; hard-coded advancement stub (Fighter +2 edge_max) for smoke playtest gate at end of story
     points: 8
     priority: p2
-    status: in_progress
+    status: done
     assigned_to: keith.avery@1898andco.io
     started: '2026-04-19'
     repos: api
     workflow: wire-first
+    completed: '2026-04-19'
   - id: 39-5
     title: Authored advancement effects + resolved_beat_for — add AdvancementEffect enum (EdgeMaxBonus/EdgeRecovery/BeatDiscount with resource_mod/LeverageBonus/LoreRevealBonus); RecoveryTrigger with while_strained:bool (current<=max/4); CreatureCore.acquired_advancements; resolved_beat_for view function in sidequest-game/src/advancement.rs; per-genre audit for effects-host location (progression.yaml affinity tiers vs new advancements.yaml); milestone-grant path. Story 5 of ADR-078
     points: 8

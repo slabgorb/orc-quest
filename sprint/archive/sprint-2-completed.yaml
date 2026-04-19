@@ -1399,3 +1399,8 @@ completed_stories:
     title: Scrapbook image persistence across session resume — image bytes lost on reload while metadata survives; persist to stable path and rehydrate manifest on resume
     points: 3
     completed: '2026-04-19'
+  - id: 39-4
+    epic: ''
+    title: BeatDef.edge_delta + target_edge_delta + beat dispatch wiring — extend BeatDef with edge_delta/target_edge_delta/resource_deltas; implement self-debit and target-debit blocks in handle_applied_side_effects (parallel to gold_delta at beat.rs:319-337); auto-resolve on Edge<=0; OTEL creature.edge_delta + encounter.composure_break events; hard-coded advancement stub (Fighter +2 edge_max) for smoke playtest gate at end of story
+    points: 8
+    completed: '2026-04-19'
