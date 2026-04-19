@@ -300,10 +300,13 @@ stories:
     title: Character snapshot on scene-enter — cross-genre blank Character tab until turn 1; emit character state on session-start/scene-enter not just turn-update
     points: 2
     priority: p1
-    status: backlog
+    status: in_progress
+    assigned_to: keith.avery@1898andco.io
+    started: '2026-04-19'
     repos: api
     workflow: trivial
     type: bug
+    branch: feat/37-27-character-snapshot-scene-enter
   - id: 37-28
     title: Scrapbook image persistence across session resume — image bytes lost on reload while metadata survives; persist to stable path and rehydrate manifest on resume
     points: 3
