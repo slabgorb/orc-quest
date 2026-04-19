@@ -1379,3 +1379,8 @@ completed_stories:
     title: WebSocket auto-reconnect on navigation — add backoff + visible reconnect banner in useWebSocket.ts, gate input-disabled on explicit WS status
     points: 3
     completed: '2026-04-19'
+  - id: 39-1
+    epic: ''
+    title: Extract threshold helper + EdgePool type — refactor mint_threshold_lore/detect_crossings to shared sidequest-game/src/thresholds.rs; define EdgePool struct (current/max/base_max/recovery_triggers/thresholds); unit tests; no wiring
+    points: 5
+    completed: '2026-04-19'
