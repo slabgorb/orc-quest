@@ -300,8 +300,9 @@ stories:
     title: Character snapshot on scene-enter — cross-genre blank Character tab until turn 1; emit character state on session-start/scene-enter not just turn-update
     points: 2
     priority: p1
-    status: in_progress
+    status: done
     assigned_to: keith.avery@1898andco.io
+    completed: '2026-04-19'
     started: '2026-04-19'
     repos: api
     workflow: trivial
