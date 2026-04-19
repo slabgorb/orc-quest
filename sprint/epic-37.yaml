@@ -428,3 +428,11 @@ stories:
     repos: sidequest-api
     workflow: tdd
     type: bug
+  - id: 37-42
+    title: "Turn barrier counts lobby connections not active-turn-takers — playtest 3 2026-04-19 evropi session: 4 saves created within 41 seconds (pumblestone_sweedlewit 16:30:36, rux 16:30:46, hant 16:31:04, prot_thokk 16:31:17) indicating a 4-player lobby. Only Rux actually played (advanced to round=9 over 8 minutes). The other 3 test-account clients logged in but never advanced past chargen (hant/prot_thokk stuck at round=0; pumblestone stuck at round=1). Every save individually has turn_manager.player_count=1 — the per-save field reflects characters-in-that-save, not lobby-participants. But the server's in-memory lobby state counted all 4 connected clients, and the structured-mode turn barrier waited for all 4 to submit turns on every Rux turn. Result from the table: 'turn blockers fired which was very confusing' — Rux kept hitting barriers mid-solo-session because phantom lobby peers never took their turns. Related 37-19 (phantom-player dedup on resume) which targeted the resume boundary; this is the lobby-join variant. Fix directions to evaluate: (a) drop barrier slots for players who haven't submitted a turn within N seconds, (b) only count players whose characters have advanced past round 0, (c) lobby gates 'joined' vs 'playing' states explicitly, (d) chargen-abandonment cancels the player's lobby slot. OTEL must emit lobby_participant_count vs active_turn_count on every barrier wait so GM panel shows which count is driving the block. Evidence in saves: 4 sessions clustered at 16:30-16:31 UTC with all non-Rux saves frozen at round 0-1 while Rux progressed normally but reported barrier-wait confusion."
+    points: 3
+    priority: p1
+    status: backlog
+    repos: sidequest-api
+    workflow: tdd
+    type: bug
