@@ -1369,3 +1369,8 @@ completed_stories:
     title: Stat name casing drift in DiceRequest — narrator dispatch emits stat as CamelCase (Influence) in one session and UPPERCASE (NERVE, CUNNING) in another; canonicalize stat naming on the request path before it hits any case-sensitive lookup
     points: 1
     completed: '2026-04-18'
+  - id: 37-24
+    epic: ''
+    title: NPC mechanical turn + stealth/trope check — narrator currently weaves enemy/stealth outcomes with zero OTEL; emit npc.turn and trope handshake spans, surface minimal UI cue, close Illusionism gap
+    points: 5
+    completed: '2026-04-18'
