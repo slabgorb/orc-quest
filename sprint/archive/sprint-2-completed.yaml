@@ -29,6 +29,8 @@ completed_epics:
   - '36'
   - '34'
   - '38'
+  - '29'
+  - '33'
 completed_stories:
   - id: 13-8
     epic: ''
@@ -1403,4 +1405,119 @@ completed_stories:
     epic: ''
     title: BeatDef.edge_delta + target_edge_delta + beat dispatch wiring — extend BeatDef with edge_delta/target_edge_delta/resource_deltas; implement self-debit and target-debit blocks in handle_applied_side_effects (parallel to gold_delta at beat.rs:319-337); auto-resolve on Edge<=0; OTEL creature.edge_delta + encounter.composure_break events; hard-coded advancement stub (Fighter +2 edge_max) for smoke playtest gate at end of story
     points: 8
+    completed: '2026-04-19'
+  - id: 39-5
+    epic: ''
+    title: Authored advancement effects + resolved_beat_for — add AdvancementEffect enum (EdgeMaxBonus/EdgeRecovery/BeatDiscount with resource_mod/LeverageBonus/LoreRevealBonus); RecoveryTrigger with while_strained:bool (current<=max/4); CreatureCore.acquired_advancements; resolved_beat_for view function in sidequest-game/src/advancement.rs; per-genre audit for effects-host location (progression.yaml affinity tiers vs new advancements.yaml); milestone-grant path. Story 5 of ADR-078
+    points: 8
+    completed: '2026-04-19'
+  - id: 29-12
+    epic:
+    title: Click-to-move + server-side A* pathfinding — TACTICAL_ACTION Move, path preview, terrain cost
+    points: 5
+    completed: '2026-04-19'
+  - id: 29-13
+    epic:
+    title: EffectZone overlays — circle/cone/line/rect shapes, semi-transparent SVG, narrator tactical_hazard tool
+    points: 3
+    completed: '2026-04-19'
+  - id: 29-14
+    epic:
+    title: StructuredEncounter grid binding — EncounterActor gains GridPos, spatial beat targeting
+    points: 5
+    completed: '2026-04-19'
+  - id: 29-15
+    epic:
+    title: Template library — 20 reusable ASCII room shapes for World Builder selection
+    points: 3
+    completed: '2026-04-19'
+  - id: 29-16
+    epic:
+    title: World Builder tactical grid generation — template selection, customization, post-gen validation
+    points: 3
+    completed: '2026-04-19'
+  - id: 29-17
+    epic:
+    title: Browser grid editor — tactical renderer in edit mode, click to toggle cells, read/write ASCII
+    points: 5
+    completed: '2026-04-19'
+  - id: 29-18
+    epic:
+    title: OTEL for tactical system — state_sent, entity_placed, move_validated, zone_created spans
+    points: 2
+    completed: '2026-04-19'
+  - id: 29-20
+    epic:
+    title: 'Rework 29-11: wire tactical_place end-to-end (grid summary, parse_tool_results, placement consumption)'
+    points: 2
+    completed: '2026-04-19'
+  - id: 33-3
+    epic: '33'
+    title: Preset layout tuning — adjust grid coordinates with real component sizes during playtest
+    points: 3
+    completed: '2026-04-19'
+  - id: 33-4
+    epic: '33'
+    title: Mobile tab view polish — swipe gestures, tab badges, smooth transitions
+    points: 3
+    completed: '2026-04-19'
+  - id: 33-5
+    epic: '33'
+    title: Edit mode UX — visual cues, first-run tooltip, reset-to-default button
+    points: 3
+    completed: '2026-04-19'
+  - id: 33-6
+    epic: '33'
+    title: Widget add/remove menu — dropdown to toggle widget visibility from header bar
+    points: 3
+    completed: '2026-04-19'
+  - id: 33-8
+    epic: '33'
+    title: Context-aware stat highlighting — surface relevant stats based on game phase
+    points: 3
+    completed: '2026-04-19'
+  - id: 33-9
+    epic: '33'
+    title: Stat usage labels — one-word descriptor per stat for at-a-glance readability
+    points: 2
+    completed: '2026-04-19'
+  - id: 33-10
+    epic: '33'
+    title: Conditions/wounds display — surface health and active effects in character tab header
+    points: 3
+    completed: '2026-04-19'
+  - id: 33-12
+    epic: '33'
+    title: Party section — expandable party member status with portrait and condition at a glance
+    points: 3
+    completed: '2026-04-19'
+  - id: 33-13
+    epic: '33'
+    title: Inventory item actions — Use/Equip/Unequip affordances on item rows
+    points: 3
+    completed: '2026-04-19'
+  - id: 33-14
+    epic: '33'
+    title: Inventory quantity badges — consumable stack counts as discrete counter chip
+    points: 2
+    completed: '2026-04-19'
+  - id: 33-15
+    epic: '33'
+    title: Equipped item visual treatment — strong left-border + icon state for equipped slot
+    points: 2
+    completed: '2026-04-19'
+  - id: 33-16
+    epic: '33'
+    title: Inventory header bar — currency + load summary with slot usage
+    points: 2
+    completed: '2026-04-19'
+  - id: 33-19
+    epic: '33'
+    title: Lobby genre metadata — player count + blurb in ConnectScreen
+    points: 5
+    completed: '2026-04-19'
+  - id: 33-20
+    epic: '33'
+    title: Rich genre picker — genre card thumbnails and mood metadata in lobby
+    points: 3
     completed: '2026-04-19'
