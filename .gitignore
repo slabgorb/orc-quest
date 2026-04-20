@@ -24,6 +24,7 @@ Thumbs.db
 # Playtest artifacts
 playtest-*.png
 sq-playtest-screenshots/
+.playtest-screenshots
 .playwright-mcp/
 
 # Pennyfarthing runtime
