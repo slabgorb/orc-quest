@@ -81,3 +81,25 @@ repos:
       scene interpreter, subject extractor, beat filter.
       Communicates with sidequest-api via Unix socket / HTTP.
       Shares genre_packs/ with the Rust API for asset access.
+      Out of scope for ADR-082 — serves uses beyond SideQuest.
+
+  server:
+    path: sidequest-server
+    type: api
+    description: SideQuest Python API server — port target of sidequest-api (Rust)
+    language: python
+    framework: fastapi
+    test_command: pytest
+    build_command: "true"
+    lint_command: ruff check .
+    dev_command: uvicorn sidequest.server.app:app --reload
+    branch_strategy: trunk-based
+    default_branch: develop
+    notes: |
+      Python FastAPI port of sidequest-api per ADR-082.
+      Gitignored inline subrepo — checked out next to sidequest-api
+      but not tracked by the orchestrator.
+      1:1 crate-to-package mapping preserved during the port to allow
+      feature/span/test comparison across trees by path.
+      See docs/adr/082-port-api-rust-to-python.md for rationale,
+      port strategy, and cut-over plan.
