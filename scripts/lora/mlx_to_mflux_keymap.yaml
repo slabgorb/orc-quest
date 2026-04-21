@@ -1,0 +1,182 @@
+# MLX-examples Flux LoRA key → Kohya-convention (mflux-consumable) key mapping
+#
+# Source conventions observed in Phase 0:
+#   docs/superpowers/notes/2026-04-20-mlx-examples-flux-notes.md
+#
+# Every rule has `transpose: true` because MLX stores weights as
+#   lora_a: (input_dim, rank)      lora_b: (rank, output_dim)
+# while Kohya/mflux expect
+#   lora_down.weight: (rank, input_dim)     lora_up.weight: (output_dim, rank)
+# — the reverse of both axes.
+#
+# Key-name translation: MLX uses dotted paths (`double_blocks.0.img_attn.proj`);
+# Kohya uses underscore-joined paths prefixed with `lora_unet_`
+# (`lora_unet_double_blocks_0_img_attn_proj`). For mlp sublayers, MLX uses
+# `.layers.N.` while Kohya flattens to just `_N`.
+#
+# Bump `version` when any structural change lands. The remapper stamps
+# this version into a safetensors metadata header for future auditability.
+#
+# `replicate: N` field — fused-QKV / Q+K+V+MLP convention bridge:
+#   mlx-examples trains fused layers (img_attn.qkv, txt_attn.qkv,
+#   single_blocks.linear1) with a SHARED down matrix at base rank r,
+#   while mflux's BFL loader (mflux/.../lora_transforms.py) assumes the
+#   down matrix is pre-stacked at rank N×r so it can be sliced into N
+#   per-projection chunks (Q/K/V or Q/K/V/MLP). To bridge: replicate the
+#   transposed `lora_down` N times along axis 0 (the rank axis). Each
+#   slice mflux extracts is then identical to the original shared D —
+#   mathematically equivalent to the fused mlx delta `(x @ D) @ U`,
+#   because (x @ D) @ U_split == split[(x @ D) @ U] for axis-0 slicing
+#   of U. The corresponding `lora_up` is split per-projection by mflux
+#   along the output axis using the natural per-component dims; no
+#   replication needed on the up side. Discovered Task 1.5; non-fused
+#   layers (proj, mod, mlp_0/2, linear2, modulation_lin) keep replicate=1.
+
+version: 2
+
+rules:
+  # ── Double blocks: image attention projection ─────────────────────
+  - name: double_img_attn_proj_down
+    mlx_pattern: '^double_blocks\.(?P<block>\d+)\.img_attn\.proj\.lora_a$'
+    kohya_pattern: 'lora_unet_double_blocks_{block}_img_attn_proj.lora_down.weight'
+    transpose: true
+
+  - name: double_img_attn_proj_up
+    mlx_pattern: '^double_blocks\.(?P<block>\d+)\.img_attn\.proj\.lora_b$'
+    kohya_pattern: 'lora_unet_double_blocks_{block}_img_attn_proj.lora_up.weight'
+    transpose: true
+
+  # ── Double blocks: image attention fused QKV ──────────────────────
+  - name: double_img_attn_qkv_down
+    mlx_pattern: '^double_blocks\.(?P<block>\d+)\.img_attn\.qkv\.lora_a$'
+    kohya_pattern: 'lora_unet_double_blocks_{block}_img_attn_qkv.lora_down.weight'
+    transpose: true
+    replicate: 3   # mflux splits down rank-axis into Q/K/V; replicate shared D ×3
+
+  - name: double_img_attn_qkv_up
+    mlx_pattern: '^double_blocks\.(?P<block>\d+)\.img_attn\.qkv\.lora_b$'
+    kohya_pattern: 'lora_unet_double_blocks_{block}_img_attn_qkv.lora_up.weight'
+    transpose: true
+
+  # ── Double blocks: image MLP layer 0 (input projection) ───────────
+  - name: double_img_mlp_0_down
+    mlx_pattern: '^double_blocks\.(?P<block>\d+)\.img_mlp\.layers\.0\.lora_a$'
+    kohya_pattern: 'lora_unet_double_blocks_{block}_img_mlp_0.lora_down.weight'
+    transpose: true
+
+  - name: double_img_mlp_0_up
+    mlx_pattern: '^double_blocks\.(?P<block>\d+)\.img_mlp\.layers\.0\.lora_b$'
+    kohya_pattern: 'lora_unet_double_blocks_{block}_img_mlp_0.lora_up.weight'
+    transpose: true
+
+  # ── Double blocks: image MLP layer 2 (output projection) ──────────
+  - name: double_img_mlp_2_down
+    mlx_pattern: '^double_blocks\.(?P<block>\d+)\.img_mlp\.layers\.2\.lora_a$'
+    kohya_pattern: 'lora_unet_double_blocks_{block}_img_mlp_2.lora_down.weight'
+    transpose: true
+
+  - name: double_img_mlp_2_up
+    mlx_pattern: '^double_blocks\.(?P<block>\d+)\.img_mlp\.layers\.2\.lora_b$'
+    kohya_pattern: 'lora_unet_double_blocks_{block}_img_mlp_2.lora_up.weight'
+    transpose: true
+
+  # ── Double blocks: image modulation ──────────────────────────────
+  - name: double_img_mod_lin_down
+    mlx_pattern: '^double_blocks\.(?P<block>\d+)\.img_mod\.lin\.lora_a$'
+    kohya_pattern: 'lora_unet_double_blocks_{block}_img_mod_lin.lora_down.weight'
+    transpose: true
+
+  - name: double_img_mod_lin_up
+    mlx_pattern: '^double_blocks\.(?P<block>\d+)\.img_mod\.lin\.lora_b$'
+    kohya_pattern: 'lora_unet_double_blocks_{block}_img_mod_lin.lora_up.weight'
+    transpose: true
+
+  # ── Double blocks: text attention projection ─────────────────────
+  - name: double_txt_attn_proj_down
+    mlx_pattern: '^double_blocks\.(?P<block>\d+)\.txt_attn\.proj\.lora_a$'
+    kohya_pattern: 'lora_unet_double_blocks_{block}_txt_attn_proj.lora_down.weight'
+    transpose: true
+
+  - name: double_txt_attn_proj_up
+    mlx_pattern: '^double_blocks\.(?P<block>\d+)\.txt_attn\.proj\.lora_b$'
+    kohya_pattern: 'lora_unet_double_blocks_{block}_txt_attn_proj.lora_up.weight'
+    transpose: true
+
+  # ── Double blocks: text attention fused QKV ──────────────────────
+  - name: double_txt_attn_qkv_down
+    mlx_pattern: '^double_blocks\.(?P<block>\d+)\.txt_attn\.qkv\.lora_a$'
+    kohya_pattern: 'lora_unet_double_blocks_{block}_txt_attn_qkv.lora_down.weight'
+    transpose: true
+    replicate: 3   # mflux splits down rank-axis into Q/K/V; replicate shared D ×3
+
+  - name: double_txt_attn_qkv_up
+    mlx_pattern: '^double_blocks\.(?P<block>\d+)\.txt_attn\.qkv\.lora_b$'
+    kohya_pattern: 'lora_unet_double_blocks_{block}_txt_attn_qkv.lora_up.weight'
+    transpose: true
+
+  # ── Double blocks: text MLP layer 0 ──────────────────────────────
+  - name: double_txt_mlp_0_down
+    mlx_pattern: '^double_blocks\.(?P<block>\d+)\.txt_mlp\.layers\.0\.lora_a$'
+    kohya_pattern: 'lora_unet_double_blocks_{block}_txt_mlp_0.lora_down.weight'
+    transpose: true
+
+  - name: double_txt_mlp_0_up
+    mlx_pattern: '^double_blocks\.(?P<block>\d+)\.txt_mlp\.layers\.0\.lora_b$'
+    kohya_pattern: 'lora_unet_double_blocks_{block}_txt_mlp_0.lora_up.weight'
+    transpose: true
+
+  # ── Double blocks: text MLP layer 2 ──────────────────────────────
+  - name: double_txt_mlp_2_down
+    mlx_pattern: '^double_blocks\.(?P<block>\d+)\.txt_mlp\.layers\.2\.lora_a$'
+    kohya_pattern: 'lora_unet_double_blocks_{block}_txt_mlp_2.lora_down.weight'
+    transpose: true
+
+  - name: double_txt_mlp_2_up
+    mlx_pattern: '^double_blocks\.(?P<block>\d+)\.txt_mlp\.layers\.2\.lora_b$'
+    kohya_pattern: 'lora_unet_double_blocks_{block}_txt_mlp_2.lora_up.weight'
+    transpose: true
+
+  # ── Double blocks: text modulation ───────────────────────────────
+  - name: double_txt_mod_lin_down
+    mlx_pattern: '^double_blocks\.(?P<block>\d+)\.txt_mod\.lin\.lora_a$'
+    kohya_pattern: 'lora_unet_double_blocks_{block}_txt_mod_lin.lora_down.weight'
+    transpose: true
+
+  - name: double_txt_mod_lin_up
+    mlx_pattern: '^double_blocks\.(?P<block>\d+)\.txt_mod\.lin\.lora_b$'
+    kohya_pattern: 'lora_unet_double_blocks_{block}_txt_mod_lin.lora_up.weight'
+    transpose: true
+
+  # ── Single blocks: linear1 (input projection) ─────────────────────
+  - name: single_linear1_down
+    mlx_pattern: '^single_blocks\.(?P<block>\d+)\.linear1\.lora_a$'
+    kohya_pattern: 'lora_unet_single_blocks_{block}_linear1.lora_down.weight'
+    transpose: true
+    replicate: 4   # mflux splits down rank-axis into Q/K/V/MLP; replicate shared D ×4
+
+  - name: single_linear1_up
+    mlx_pattern: '^single_blocks\.(?P<block>\d+)\.linear1\.lora_b$'
+    kohya_pattern: 'lora_unet_single_blocks_{block}_linear1.lora_up.weight'
+    transpose: true
+
+  # ── Single blocks: linear2 (output projection) ────────────────────
+  - name: single_linear2_down
+    mlx_pattern: '^single_blocks\.(?P<block>\d+)\.linear2\.lora_a$'
+    kohya_pattern: 'lora_unet_single_blocks_{block}_linear2.lora_down.weight'
+    transpose: true
+
+  - name: single_linear2_up
+    mlx_pattern: '^single_blocks\.(?P<block>\d+)\.linear2\.lora_b$'
+    kohya_pattern: 'lora_unet_single_blocks_{block}_linear2.lora_up.weight'
+    transpose: true
+
+  # ── Single blocks: modulation ────────────────────────────────────
+  - name: single_modulation_lin_down
+    mlx_pattern: '^single_blocks\.(?P<block>\d+)\.modulation\.lin\.lora_a$'
+    kohya_pattern: 'lora_unet_single_blocks_{block}_modulation_lin.lora_down.weight'
+    transpose: true
+
+  - name: single_modulation_lin_up
+    mlx_pattern: '^single_blocks\.(?P<block>\d+)\.modulation\.lin\.lora_b$'
+    kohya_pattern: 'lora_unet_single_blocks_{block}_modulation_lin.lora_up.weight'
+    transpose: true

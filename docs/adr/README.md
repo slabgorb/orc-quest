@@ -109,6 +109,7 @@
 | [Image Pacing Throttle](050-image-pacing-throttle.md) | Accepted | Configurable cooldown with DM force-override, separate from BeatFilter |
 | [Lore RAG Store](048-lore-rag-store.md) | Accepted | Cross-process embedding pipeline with budget-aware context selection |
 | [MLX Image Renderer](070-mlx-image-renderer.md) | Accepted | Replace PyTorch/diffusers Flux worker with Apple MLX runtime |
+| [Multi-LoRA Stacking and Verification Pipeline](083-multi-lora-stacking-and-verification.md) | Proposed | Hybrid genre + world LoRA stack with extend/exclude/add merge; MLX-native training + custom remapper; SSIM pre-promotion gate + runtime `matched_key_count` OTEL |
 
 ## Turn Management
 

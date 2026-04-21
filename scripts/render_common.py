@@ -42,27 +42,182 @@ def load_yaml(path: Path) -> dict:
         return yaml.safe_load(f) or {}
 
 
-def load_visual_style(genre_dir: Path, world: str = "") -> dict:
+def load_visual_style(
+    genre_dir: Path,
+    world: str = "",
+    *,
+    tier: str | None = None,
+) -> dict:
     """Load visual_style.yaml — genre-level base, world-level overrides on top.
 
     Genre-level provides the base style (positive_suffix, negative_prompt,
     preferred_model, LoRA config). World-level can override or extend with
     world-specific fields (style_prompt, color_palette, etc.). The merge
     ensures world overrides don't lose genre-level rendering fields.
+
+    When `tier` is provided (Task 4.4 wiring), also resolves the LoRA stack
+    via compose_lora_stack and exposes it as `merged["resolved_loras"]`.
+    The `loras:` key is intentionally skipped during the field-by-field
+    world overlay because the world form is a dict `{exclude, add}` not a
+    list — a naive overlay would silently clobber inherited genre entries.
+    Callers who pass `tier=...` should read `resolved_loras`; callers that
+    don't are still on the legacy `lora:` / `lora_scale:` flat path until
+    Task 4.6 migrates the YAML files.
     """
     genre_vs_path = genre_dir / "visual_style.yaml"
-    base = load_yaml(genre_vs_path) if genre_vs_path.exists() else {}
+    genre_style = load_yaml(genre_vs_path) if genre_vs_path.exists() else {}
 
+    world_style: dict = {}
     if world:
         world_vs = genre_dir / "worlds" / world / "visual_style.yaml"
         if world_vs.exists():
-            world_data = load_yaml(world_vs)
             log.debug("Merging world visual_style: %s", world_vs)
-            # World overrides genre, but genre fields not in world are preserved
-            merged = {**base, **world_data}
-            return merged
+            world_style = load_yaml(world_vs)
 
-    return base
+    merged = dict(genre_style)
+    for key, value in world_style.items():
+        if key == "loras":
+            continue
+        merged[key] = value
+
+    if tier is not None:
+        merged["resolved_loras"] = compose_lora_stack(
+            genre_style, world_style, tier=tier
+        )
+
+    return merged
+
+
+# ── Multi-LoRA stack composition (Phase 4 Task 4.3) ───────────────────
+#
+# Per ADR-083 Decision 4 + Architect correction #5: lives in render_common
+# rather than a dedicated scripts/lora/compose.py module. Pure function;
+# no I/O beyond the YAML-parsed dicts the caller hands in.
+
+
+class ComposeError(RuntimeError):
+    """Raised when genre+world LoRA composition violates schema rules."""
+
+
+_LORA_REQUIRED_FIELDS = ("name", "file", "scale", "applies_to")
+
+
+def _validate_lora_entry(entry: dict, source: str) -> None:
+    """Validate a single LoRA entry against the visual_style.yaml schema.
+
+    `source` is "genre" or "world" — surfaces the right context in errors so
+    the user knows which file to fix when validation trips.
+    """
+    for field in _LORA_REQUIRED_FIELDS:
+        if field not in entry:
+            raise ComposeError(
+                f"{source}: LoRA entry missing required field {field!r} "
+                f"(name={entry.get('name', '?')!r})"
+            )
+    applies_to = entry["applies_to"]
+    if not isinstance(applies_to, list) or not applies_to:
+        raise ComposeError(
+            f"{source}: LoRA {entry.get('name', '?')!r} has empty applies_to — "
+            f"misconfiguration (an entry that applies to no tier never fires)."
+        )
+
+
+def compose_lora_stack(
+    genre_style: dict,
+    world_style: dict,
+    tier: str,
+) -> list[dict]:
+    """Resolve the effective LoRA stack for a single render at the given tier.
+
+    Inputs are the YAML-parsed `visual_style.yaml` dicts for genre and
+    (optionally) world. Returns a flat list of LoRA entries that pass the
+    `applies_to` tier filter, in order: genre entries first, then any
+    world `add:` entries appended.
+
+    World schema (the new form, post-Task 4.6):
+        loras:
+          exclude: [name, ...]   # genre entries to drop before adding
+          add:                   # extra entries unique to this world
+            - name: ...
+              file: ...
+              ...
+
+    Hard fails on:
+      - missing required fields on any entry
+      - empty `applies_to` (never-fires entry is always misconfiguration)
+      - world.loras given as a list (legacy v1 schema — must be migrated
+        to the dict form before composition will accept it)
+      - world.add reusing a name still inherited from genre (use exclude
+        first to drop it, so the operator's intent is explicit)
+    """
+    base: list[dict] = list(genre_style.get("loras") or [])
+    for entry in base:
+        _validate_lora_entry(entry, source="genre")
+
+    world_loras = world_style.get("loras") or {}
+    if isinstance(world_loras, list):
+        raise ComposeError(
+            "world visual_style.yaml has legacy list-form `loras:`; "
+            "expected `{exclude: [...], add: [...]}` schema. Migrate the "
+            "world file or move its entries up to the genre level."
+        )
+
+    excluded = set(world_loras.get("exclude") or [])
+    base = [e for e in base if e["name"] not in excluded]
+
+    added: list[dict] = list(world_loras.get("add") or [])
+    for entry in added:
+        _validate_lora_entry(entry, source="world")
+
+    existing_names = {e["name"] for e in base}
+    for add_entry in added:
+        if add_entry["name"] in existing_names:
+            raise ComposeError(
+                f"world.loras.add declares duplicate name {add_entry['name']!r}; "
+                f"use world.loras.exclude first to drop the inherited entry."
+            )
+
+    composed = base + added
+    return [e for e in composed if tier in e["applies_to"]]
+
+
+def resolve_lora_args(visual_style: dict) -> tuple[list[str] | None, list[float] | None]:
+    """Pick lora_paths/lora_scales for send_render based on schema state.
+
+    Three valid input shapes:
+      1. `resolved_loras` present (set by load_visual_style when tier= was
+         passed) — preferred path; ship those entries' file+scale.
+      2. Legacy flat `lora:` + optional `lora_scale:` — promoted to a
+         single-entry array. Transitional; comes off when all
+         visual_style.yaml files migrate to the loras: schema.
+      3. Neither — return (None, None) for an un-LoRA'd render.
+
+    Hard-fails on the cross-schema case (`lora:` AND non-empty
+    `resolved_loras` both present): no silent precedence rule should
+    paper over a misconfigured YAML mid-migration.
+    """
+    has_legacy = bool(visual_style.get("lora"))
+    resolved = visual_style.get("resolved_loras") or []
+
+    if has_legacy and resolved:
+        raise ValueError(
+            "visual_style has both legacy `lora:` and resolved `loras:` — "
+            "pick one schema; the merged dict cannot represent both."
+        )
+
+    if resolved:
+        return (
+            [entry["file"] for entry in resolved],
+            [float(entry["scale"]) for entry in resolved],
+        )
+
+    if has_legacy:
+        return (
+            [visual_style["lora"]],
+            [float(visual_style.get("lora_scale", 1.0))],
+        )
+
+    return (None, None)
 
 
 def slugify(text: str) -> str:
@@ -99,8 +254,8 @@ async def send_render(
     *,
     art_style: str = "",
     visual_tag_overrides: dict | None = None,
-    lora_path: str = "",
-    lora_scale: float = 1.0,
+    lora_paths: list[str] | None = None,
+    lora_scales: list[float] | None = None,
     variant: str = "",
 ) -> dict:
     """Send a render request to the daemon and return the result.
@@ -128,9 +283,13 @@ async def send_render(
         params["positive_prompt"] = positive
         params["clip_prompt"] = clip
 
-    if lora_path:
-        params["lora_path"] = lora_path
-        params["lora_scale"] = lora_scale
+    if lora_paths:
+        if lora_scales is None or len(lora_scales) != len(lora_paths):
+            raise ValueError(
+                "lora_scales must be provided with the same length as lora_paths"
+            )
+        params["lora_paths"] = list(lora_paths)
+        params["lora_scales"] = list(lora_scales)
     if variant:
         params["variant"] = variant
 
@@ -249,12 +408,13 @@ async def render_batch(
             continue
 
         try:
+            lora_paths, lora_scales = resolve_lora_args(visual_style)
             result = await send_render(
                 tier, positive, clip, negative, seed, steps,
                 art_style=visual_style.get("positive_suffix", ""),
                 visual_tag_overrides=visual_style.get("visual_tag_overrides"),
-                lora_path=visual_style.get("lora", ""),
-                lora_scale=visual_style.get("lora_scale", 1.0),
+                lora_paths=lora_paths,
+                lora_scales=lora_scales,
                 variant=visual_style.get("preferred_model", ""),
             )
             if "error" in result:
