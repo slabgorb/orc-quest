@@ -181,6 +181,45 @@ def compose_lora_stack(
     return [e for e in composed if tier in e["applies_to"]]
 
 
+def resolve_lora_args(visual_style: dict) -> tuple[list[str] | None, list[float] | None]:
+    """Pick lora_paths/lora_scales for send_render based on schema state.
+
+    Three valid input shapes:
+      1. `resolved_loras` present (set by load_visual_style when tier= was
+         passed) — preferred path; ship those entries' file+scale.
+      2. Legacy flat `lora:` + optional `lora_scale:` — promoted to a
+         single-entry array. Transitional; comes off when all
+         visual_style.yaml files migrate to the loras: schema.
+      3. Neither — return (None, None) for an un-LoRA'd render.
+
+    Hard-fails on the cross-schema case (`lora:` AND non-empty
+    `resolved_loras` both present): no silent precedence rule should
+    paper over a misconfigured YAML mid-migration.
+    """
+    has_legacy = bool(visual_style.get("lora"))
+    resolved = visual_style.get("resolved_loras") or []
+
+    if has_legacy and resolved:
+        raise ValueError(
+            "visual_style has both legacy `lora:` and resolved `loras:` — "
+            "pick one schema; the merged dict cannot represent both."
+        )
+
+    if resolved:
+        return (
+            [entry["file"] for entry in resolved],
+            [float(entry["scale"]) for entry in resolved],
+        )
+
+    if has_legacy:
+        return (
+            [visual_style["lora"]],
+            [float(visual_style.get("lora_scale", 1.0))],
+        )
+
+    return (None, None)
+
+
 def slugify(text: str) -> str:
     """Convert text to filesystem-safe slug."""
     return (
@@ -369,23 +408,13 @@ async def render_batch(
             continue
 
         try:
+            lora_paths, lora_scales = resolve_lora_args(visual_style)
             result = await send_render(
                 tier, positive, clip, negative, seed, steps,
                 art_style=visual_style.get("positive_suffix", ""),
                 visual_tag_overrides=visual_style.get("visual_tag_overrides"),
-                # Transitional: read legacy flat `lora:` / `lora_scale:` keys and
-                # promote to single-entry arrays. Task 4.4 replaces this with
-                # compose_lora_stack() once the extend/exclude/add schema lands.
-                lora_paths=(
-                    [visual_style["lora"]]
-                    if visual_style.get("lora")
-                    else None
-                ),
-                lora_scales=(
-                    [float(visual_style.get("lora_scale", 1.0))]
-                    if visual_style.get("lora")
-                    else None
-                ),
+                lora_paths=lora_paths,
+                lora_scales=lora_scales,
                 variant=visual_style.get("preferred_model", ""),
             )
             if "error" in result:

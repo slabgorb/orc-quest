@@ -23,6 +23,7 @@ from scripts.render_common import (
     ComposeError,
     compose_lora_stack,
     load_visual_style,
+    resolve_lora_args,
     send_render,
 )
 
@@ -198,3 +199,60 @@ def test_load_visual_style_world_loras_key_does_not_clobber_genre_loras(
         {"name": "g1", "file": "a.safetensors", "scale": 0.8,
          "applies_to": ["landscape"]},
     ]
+
+
+# ─── Task 4.4 wiring: resolve_lora_args precedence ────────────────────
+
+
+def test_resolve_lora_args_no_lora_returns_nones() -> None:
+    assert resolve_lora_args({}) == (None, None)
+
+
+def test_resolve_lora_args_legacy_only_promotes_to_arrays() -> None:
+    """Pre-migration YAMLs (`lora:` flat key) still flow through."""
+    style = {"lora": "/abs/path/style.ckpt", "lora_scale": 0.65}
+    paths, scales = resolve_lora_args(style)
+    assert paths == ["/abs/path/style.ckpt"]
+    assert scales == [0.65]
+
+
+def test_resolve_lora_args_legacy_default_scale_is_one() -> None:
+    """Legacy `lora:` without `lora_scale:` defaults to 1.0."""
+    paths, scales = resolve_lora_args({"lora": "/abs/path.ckpt"})
+    assert scales == [1.0]
+
+
+def test_resolve_lora_args_resolved_loras_used_directly() -> None:
+    """Migrated YAMLs (`loras:` schema → resolved_loras) bypass legacy path."""
+    style = {
+        "resolved_loras": [
+            {"name": "a", "file": "a.safetensors", "scale": 0.8,
+             "applies_to": ["landscape"]},
+            {"name": "b", "file": "b.safetensors", "scale": 0.5,
+             "applies_to": ["landscape"]},
+        ]
+    }
+    paths, scales = resolve_lora_args(style)
+    assert paths == ["a.safetensors", "b.safetensors"]
+    assert scales == [0.8, 0.5]
+
+
+def test_resolve_lora_args_both_schemas_present_raises() -> None:
+    """A YAML mid-migration with both keys is ambiguous → fail loud."""
+    style = {
+        "lora": "/old.ckpt",
+        "resolved_loras": [
+            {"name": "a", "file": "a.safetensors", "scale": 0.8,
+             "applies_to": ["landscape"]},
+        ],
+    }
+    with pytest.raises(ValueError, match="both legacy"):
+        resolve_lora_args(style)
+
+
+def test_resolve_lora_args_empty_resolved_falls_through_to_legacy() -> None:
+    """Empty resolved_loras (tier had no matching entries) is not a conflict."""
+    style = {"lora": "/old.ckpt", "lora_scale": 0.7, "resolved_loras": []}
+    paths, scales = resolve_lora_args(style)
+    assert paths == ["/old.ckpt"]
+    assert scales == [0.7]
