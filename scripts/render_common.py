@@ -99,8 +99,8 @@ async def send_render(
     *,
     art_style: str = "",
     visual_tag_overrides: dict | None = None,
-    lora_path: str = "",
-    lora_scale: float = 1.0,
+    lora_paths: list[str] | None = None,
+    lora_scales: list[float] | None = None,
     variant: str = "",
 ) -> dict:
     """Send a render request to the daemon and return the result.
@@ -128,9 +128,13 @@ async def send_render(
         params["positive_prompt"] = positive
         params["clip_prompt"] = clip
 
-    if lora_path:
-        params["lora_path"] = lora_path
-        params["lora_scale"] = lora_scale
+    if lora_paths:
+        if lora_scales is None or len(lora_scales) != len(lora_paths):
+            raise ValueError(
+                "lora_scales must be provided with the same length as lora_paths"
+            )
+        params["lora_paths"] = list(lora_paths)
+        params["lora_scales"] = list(lora_scales)
     if variant:
         params["variant"] = variant
 
@@ -253,8 +257,19 @@ async def render_batch(
                 tier, positive, clip, negative, seed, steps,
                 art_style=visual_style.get("positive_suffix", ""),
                 visual_tag_overrides=visual_style.get("visual_tag_overrides"),
-                lora_path=visual_style.get("lora", ""),
-                lora_scale=visual_style.get("lora_scale", 1.0),
+                # Transitional: read legacy flat `lora:` / `lora_scale:` keys and
+                # promote to single-entry arrays. Task 4.4 replaces this with
+                # compose_lora_stack() once the extend/exclude/add schema lands.
+                lora_paths=(
+                    [visual_style["lora"]]
+                    if visual_style.get("lora")
+                    else None
+                ),
+                lora_scales=(
+                    [float(visual_style.get("lora_scale", 1.0))]
+                    if visual_style.get("lora")
+                    else None
+                ),
                 variant=visual_style.get("preferred_model", ""),
             )
             if "error" in result:
