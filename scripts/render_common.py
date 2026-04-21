@@ -65,6 +65,99 @@ def load_visual_style(genre_dir: Path, world: str = "") -> dict:
     return base
 
 
+# ── Multi-LoRA stack composition (Phase 4 Task 4.3) ───────────────────
+#
+# Per ADR-083 Decision 4 + Architect correction #5: lives in render_common
+# rather than a dedicated scripts/lora/compose.py module. Pure function;
+# no I/O beyond the YAML-parsed dicts the caller hands in.
+
+
+class ComposeError(RuntimeError):
+    """Raised when genre+world LoRA composition violates schema rules."""
+
+
+_LORA_REQUIRED_FIELDS = ("name", "file", "scale", "applies_to")
+
+
+def _validate_lora_entry(entry: dict, source: str) -> None:
+    """Validate a single LoRA entry against the visual_style.yaml schema.
+
+    `source` is "genre" or "world" — surfaces the right context in errors so
+    the user knows which file to fix when validation trips.
+    """
+    for field in _LORA_REQUIRED_FIELDS:
+        if field not in entry:
+            raise ComposeError(
+                f"{source}: LoRA entry missing required field {field!r} "
+                f"(name={entry.get('name', '?')!r})"
+            )
+    applies_to = entry["applies_to"]
+    if not isinstance(applies_to, list) or not applies_to:
+        raise ComposeError(
+            f"{source}: LoRA {entry.get('name', '?')!r} has empty applies_to — "
+            f"misconfiguration (an entry that applies to no tier never fires)."
+        )
+
+
+def compose_lora_stack(
+    genre_style: dict,
+    world_style: dict,
+    tier: str,
+) -> list[dict]:
+    """Resolve the effective LoRA stack for a single render at the given tier.
+
+    Inputs are the YAML-parsed `visual_style.yaml` dicts for genre and
+    (optionally) world. Returns a flat list of LoRA entries that pass the
+    `applies_to` tier filter, in order: genre entries first, then any
+    world `add:` entries appended.
+
+    World schema (the new form, post-Task 4.6):
+        loras:
+          exclude: [name, ...]   # genre entries to drop before adding
+          add:                   # extra entries unique to this world
+            - name: ...
+              file: ...
+              ...
+
+    Hard fails on:
+      - missing required fields on any entry
+      - empty `applies_to` (never-fires entry is always misconfiguration)
+      - world.loras given as a list (legacy v1 schema — must be migrated
+        to the dict form before composition will accept it)
+      - world.add reusing a name still inherited from genre (use exclude
+        first to drop it, so the operator's intent is explicit)
+    """
+    base: list[dict] = list(genre_style.get("loras") or [])
+    for entry in base:
+        _validate_lora_entry(entry, source="genre")
+
+    world_loras = world_style.get("loras") or {}
+    if isinstance(world_loras, list):
+        raise ComposeError(
+            "world visual_style.yaml has legacy list-form `loras:`; "
+            "expected `{exclude: [...], add: [...]}` schema. Migrate the "
+            "world file or move its entries up to the genre level."
+        )
+
+    excluded = set(world_loras.get("exclude") or [])
+    base = [e for e in base if e["name"] not in excluded]
+
+    added: list[dict] = list(world_loras.get("add") or [])
+    for entry in added:
+        _validate_lora_entry(entry, source="world")
+
+    existing_names = {e["name"] for e in base}
+    for add_entry in added:
+        if add_entry["name"] in existing_names:
+            raise ComposeError(
+                f"world.loras.add declares duplicate name {add_entry['name']!r}; "
+                f"use world.loras.exclude first to drop the inherited entry."
+            )
+
+    composed = base + added
+    return [e for e in composed if tier in e["applies_to"]]
+
+
 def slugify(text: str) -> str:
     """Convert text to filesystem-safe slug."""
     return (
