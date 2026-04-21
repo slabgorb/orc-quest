@@ -104,34 +104,35 @@ sidequest-content/lora-datasets/{genre}/scene/
 preflight validates. The jsonl conversion mlx-examples wants happens
 immediately before training in Step 4.
 
-**Caption format:**
-```
-{trigger_word}, {style_tags}, {subject_tags}
-```
+**Caption convention for STYLE LoRAs: one tag per image, identical
+across the dataset.** That single tag is the trigger word — the bare
+genre name for genre-level LoRAs, the bare world name for world-level
+LoRAs. **Do not add style descriptors. Do not add subject tags.** This
+is non-obvious — the instinct is to describe each frame, but for a
+style LoRA that actively poisons the trained register: the model
+starts attributing the style's effect to "saloon" or "desert" or
+"film_grain" instead of to the trigger, and prompts using those tokens
+without the LoRA loaded will partially fire it. Validated against
+kohya-ss / ai-toolkit / civitai community consensus — captionless or
+single-trigger training is the standard for style work.
 
-**Trigger words** — one per LoRA, namespace by genre+tier:
-- `{genre}_{tier}` — e.g., `spaghetti_western_landscape`,
-  `elemental_harmony_portrait`. Used at inference to activate the LoRA's
-  trained register; declared in `visual_style.yaml::loras[].trigger`.
+| LoRA scope | Caption (every `.txt` is identical) |
+|---|---|
+| Genre-level (e.g., spaghetti_western) | `spaghetti_western` |
+| World-level (e.g., the_real_mccoy) | `the_real_mccoy` |
 
-**Style tags** — consistent across the set, derived from
-`genre_packs/{genre}/visual_style.yaml::positive_suffix`. Spaghetti
-western example:
-```
-film_still, cinematic, techniscope, high_contrast, film_grain,
-desaturated, washed_out_color, crushed_blacks, dust
-```
+That's the whole `.txt`. One token, no comma, no descriptors.
 
-**Subject tags** — per-image, describe the frame:
-```
-# Landscape
-desert, mesa, wide_shot, establishing_shot, heat_shimmer, empty_road
-saloon, interior, oil_lamp, wooden_bar, swinging_doors
+The matching `visual_style.yaml::loras[].trigger` field uses the same
+bare token (no `_landscape` / `_portrait` suffix — the `applies_to:`
+field is what scopes the LoRA to a tier; the trigger is just what the
+model learned to associate the style with).
 
-# Portrait
-extreme_close_up, eyes, weathered_face, hat_brim_shadow, sweat
-medium_shot, poncho, gun_belt, squinting, backlit
-```
+**SUBJECT LoRAs are different** — those need detailed per-image
+natural-language captions (`photo of {trigger}, woman, smiling, blue
+dress, three-quarter angle`) to enable prompt control. SideQuest
+hasn't trained any subject LoRAs yet; if you do, treat that as a
+separate skill flow.
 
 ---
 
@@ -157,9 +158,10 @@ A clean run prints `{'images': N, 'captions': N}`. Anything else aborts.
 **Manual eyes-on checklist** (the preflight doesn't catch these):
 - [ ] **Balance:** No single source dominates (>40% of images)
 - [ ] **Variety:** Multiple lighting conditions, times of day, weather
-- [ ] **Style alignment:** Style tags echo `visual_style.yaml::positive_suffix`
+- [ ] **Caption purity:** Every `.txt` is the bare trigger token only — no
+      style descriptors, no subject tags, no extra text. (Spot-check 5
+      random files: `for f in $(ls *.txt | shuf -n 5); do echo "=== $f ==="; cat "$f"; done`)
 - [ ] **Coverage:** Key location types from `cartography.yaml` represented
-- [ ] **Trigger word present:** Every caption starts with the trigger word
 
 ---
 
@@ -303,20 +305,24 @@ extending `scripts/lora/mlx_to_mflux_keymap.yaml`.
 
 **Goal:** Make the trained LoRA actually fire on production renders.
 
-Genre-level entry in `genre_packs/{genre}/visual_style.yaml`:
+Genre-level entry in `genre_packs/{genre}/visual_style.yaml` — note
+the `name` includes the tier (so `compose_lora_stack` can address it
+distinctly when multiple per-tier LoRAs share a genre), but the
+`trigger` is the bare genre name (matches the single-token caption
+from Step 2):
 
 ```yaml
 loras:
-  - name: {genre}_{tier}
+  - name: {genre}_{tier}                            # internal handle
     file: lora/{genre}/{genre}_{tier}.safetensors
     scale: 0.8
-    applies_to: [{tier}]      # e.g., [landscape, scene] for a landscape LoRA
-    trigger: {genre}_{tier}   # matches the trigger word from Step 2 captions
+    applies_to: [{tier}]                            # e.g., [landscape, scene]
+    trigger: {genre}                                # bare genre name — the trained token
 ```
 
 For a world-specific divergent register (e.g., `the_real_mccoy` is
 1878 Pittsburgh, not 1966 Almería), exclude the genre LoRA and add
-the world's:
+the world's. The world's `trigger` is the bare world name:
 
 ```yaml
 # genre_packs/{genre}/worlds/{world}/visual_style.yaml
@@ -327,7 +333,7 @@ loras:
       file: lora/{genre}/{world}_{tier}.safetensors
       scale: 0.8
       applies_to: [{tier}]
-      trigger: {world}_{tier}
+      trigger: {world}                              # bare world name
 ```
 
 The resolver `scripts/render_common.py::compose_lora_stack` enforces
