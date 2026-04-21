@@ -29,6 +29,7 @@ completed_epics:
   - '36'
   - '34'
   - '38'
+  - '41'
 completed_stories:
   - id: 13-8
     epic: ''
@@ -1409,3 +1410,78 @@ completed_stories:
     title: "Party-peer identity packet in game_state — canonical name/pronouns/race/class/level of other party members injected into each player's game_state so narrator references party-mates with stable pronouns across sealed-letter turns (playtest 3 2026-04-19: Blutka he/him in own save drifted to she/her in Orin's save because peer had zero canonical presence in Orin's game_state). Perception layer stays POV; physical identity is canonical. OTEL span on peer injection."
     points: 3
     completed: '2026-04-19'
+  - id: 42-1
+    epic: ''
+    title: Port StructuredEncounter + EncounterMetric + SecondaryStats + EncounterActor + EncounterPhase types; formalise Combatant as a Python Protocol; promote GameSnapshot.encounter from dict to typed
+    points: 5
+    completed: '2026-04-20'
+  - id: 41-0
+    epic: '41'
+    title: Scaffold sidequest-server — pyproject, FastAPI skeleton, pytest, OTEL, 15 empty packages, smoke test
+    points: 1
+    completed: '2026-04-20'
+  - id: 41-1
+    epic: '41'
+    title: Port sidequest.protocol — Phase 1 message subset (connect, PLAYER_ACTION, NARRATION, session lifecycle)
+    points: 3
+    completed: '2026-04-20'
+  - id: 41-2
+    epic: '41'
+    title: Port sidequest.genre + LayeredMerge consolidation — replace per-type genre-layered-derive expansions with single layered-resolution abstraction
+    points: 5
+    completed: '2026-04-20'
+  - id: 41-3
+    epic: '41'
+    title: Port sidequest.game (Phase 1 slice) — session, character, state transitions needed for narration turn
+    points: 5
+    completed: '2026-04-20'
+  - id: 41-4
+    epic: '41'
+    title: Port sidequest.telemetry — OTEL span catalog parity with Rust (names, attributes, GM-panel contract)
+    points: 3
+    completed: '2026-04-20'
+  - id: 41-5
+    epic: '41'
+    title: Port narrator agent + Phase 1 orchestrator — Claude CLI subprocess, prompt assembly, response parse
+    points: 5
+    completed: '2026-04-20'
+  - id: 41-6
+    epic: '41'
+    title: WebSocket + REST server dispatch — narration round-trip (connect → PLAYER_ACTION → NARRATION → persist)
+    points: 8
+    completed: '2026-04-20'
+  - id: 41-7
+    epic: '41'
+    title: Phase 1 integration playtest + cut-over readiness — all 6 genre packs load, schema drift accepted, handshake+session creation end-to-end
+    points: 3
+    completed: '2026-04-20'
+  - id: 41-8
+    epic: '41'
+    title: Phase 2 Story 2.1 — port CharacterBuilder state machine (BuilderPhase, scene walking, stat generators, HP formula, MechanicalEffects accumulation, build finalizer)
+    points: 5
+    completed: '2026-04-20'
+  - id: 41-9
+    epic: '41'
+    title: Phase 2 Story 2.2 — port dispatch_character_creation + CHARACTER_CREATION protocol (scene/continue/confirmation/back/edit, OTEL parity, error paths)
+    points: 5
+    completed: '2026-04-20'
+  - id: 41-10
+    epic: '41'
+    title: Phase 2 Story 2.3 — persistence + world seeding + opening-turn bootstrap (4 slices A-H; save→Playing transition→first narrator turn)
+    points: 8
+    completed: '2026-04-20'
+  - id: 41-11
+    epic: '41'
+    title: Close Phase 2.2 IOU — wire Culture.chargen filter into narrator world_context (culture reference injection + wiring tests)
+    points: 2
+    completed: '2026-04-20'
+  - id: 42-2
+    epic: ''
+    title: Port ResourcePool + ResourceThreshold + ResourcePatch(Op/Result/Error) + mint_threshold_lore; promote GameSnapshot.resources from pass-through list to typed list[ResourcePool] (recommended pull-forward from Phase 4)
+    points: 3
+    completed: '2026-04-21'
+  - id: 42-3
+    epic: ''
+    title: Port TensionTracker + PacingHint + DeliveryMode + CombatEvent classification + classify_round/classify_combat_outcome; wire PacingHint into narrator prompt zone (Rust-parity fixture suite)
+    points: 5
+    completed: '2026-04-21'

@@ -43,8 +43,6 @@ def collect_pois(genre_dir: Path) -> list[dict]:
         for chapter in chapters:
             chapter_id = chapter.get("id", "unknown")
             chapter_label = chapter.get("label", chapter_id)
-            atmosphere = chapter.get("atmosphere", "")
-            location = chapter.get("location", "")
 
             for poi in chapter.get("points_of_interest", []):
                 pois.append({
@@ -52,10 +50,9 @@ def collect_pois(genre_dir: Path) -> list[dict]:
                     "world": world,
                     "chapter_id": chapter_id,
                     "chapter_label": chapter_label,
-                    "atmosphere": atmosphere,
-                    "chapter_location": location,
                     "name": poi.get("name", "unknown"),
                     "description": poi.get("description", ""),
+                    "visual_prompt": poi.get("visual_prompt", ""),
                     "region": poi.get("region", ""),
                     "type": poi.get("type", ""),
                 })
@@ -73,16 +70,14 @@ def compose_prompt(poi: dict, visual_style: dict) -> tuple[str, str, str, int]:
     negative = visual_style.get("negative_prompt", "")
     base_seed = visual_style.get("base_seed", 42)
 
-    # Build a descriptive subject for the PromptComposer
-    parts = [f"{poi['name']}: {poi['description']}"]
+    # visual_prompt is Flux-native (single trigger + renderable subject).
+    # description is narrator-facing prose and is only used when the
+    # art-director has not yet authored a visual_prompt for this POI.
+    if poi.get("visual_prompt"):
+        subject = poi["visual_prompt"]
+    else:
+        subject = f"{poi['name']}: {poi['description']}"
 
-    if poi.get("atmosphere"):
-        parts.append(poi["atmosphere"])
-
-    if poi.get("chapter_location"):
-        parts.append(poi["chapter_location"])
-
-    subject = ", ".join(parts)
     subject = truncate_to_tokens(subject, TOKEN_LIMIT - 100)
 
     clip = "wide establishing shot, scenic vista, atmospheric"
