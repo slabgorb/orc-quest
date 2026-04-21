@@ -57,9 +57,14 @@ stories:
     title: Port TensionTracker + PacingHint + DeliveryMode + CombatEvent classification + classify_round/classify_combat_outcome; wire PacingHint into narrator prompt zone (Rust-parity fixture suite)
     points: 5
     priority: p0
-    status: backlog
+    status: done
+    assigned_to: keith.avery@1898andco.io
+    started: '2026-04-21'
     repos: server
     workflow: tdd
+    completed: '2026-04-21'
+    review_findings: '13 confirmed findings (6 HIGH severity per project rules: 2 silent-fallback asserts, 1 stringly-typed TurnClassification.kind, 1 _EventSpike not frozen, 1 vacuous is-not-None on enum members, 1 silent pytest.skip on missing Rust source); 6 MEDIUM (doc inaccuracies, test-file ruff missed by TEA scope, private-API coupling in tests, Any annotations); 1 OTEL span downgraded (Architect deferred to 42-4). All addressable in single green-rework pass — no test redesign needed.'
+    review_verdict: approved
   - id: 42-4
     title: Combat dispatch + OTEL catalog + narrator wiring — in_combat helper, find_confrontation_def, encounter resolution from tropes, strip_combat_brackets, combat.* span names byte-identical to Rust, e2e playtest gate
     points: 8

@@ -1480,3 +1480,8 @@ completed_stories:
     title: Port ResourcePool + ResourceThreshold + ResourcePatch(Op/Result/Error) + mint_threshold_lore; promote GameSnapshot.resources from pass-through list to typed list[ResourcePool] (recommended pull-forward from Phase 4)
     points: 3
     completed: '2026-04-21'
+  - id: 42-3
+    epic: ''
+    title: Port TensionTracker + PacingHint + DeliveryMode + CombatEvent classification + classify_round/classify_combat_outcome; wire PacingHint into narrator prompt zone (Rust-parity fixture suite)
+    points: 5
+    completed: '2026-04-21'
