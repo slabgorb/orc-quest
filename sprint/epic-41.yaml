@@ -96,3 +96,10 @@ stories:
     status: done
     repos: server
     workflow: tdd
+  - id: 41-11
+    title: Close Phase 2.2 IOU — wire Culture.chargen filter into narrator world_context (culture reference injection + wiring tests)
+    points: 2
+    priority: p1
+    status: done
+    repos: server
+    workflow: tdd
