@@ -208,14 +208,28 @@ python3 ~/Projects/mlx-examples/flux/dreambooth.py \
   --grad-accumulate 4 \
   --learning-rate 1e-4 \
   --warmup-steps 100 \
-  --resolution 512 512 \
+  --resolution 512x512 \
   --checkpoint-every 250 \
+  --progress-prompt "{trigger}, {representative scene that should reflect the trained register}" \
+  --progress-every 250 \
+  --progress-steps 8 \
   --output-dir "$OUT_DIR" \
   sidequest-content/lora-datasets/{genre}/{tier} \
   2>&1 | tee /tmp/{genre}_{tier}_train.log
 
 deactivate
 ```
+
+**`--progress-prompt` is required** — the trainer renders a sample image
+every `--progress-every` iterations using this prompt so you can eyeball
+whether the LoRA is converging. Pick something representative:
+- Genre-style LoRA: `"spaghetti_western, a wide shot of a sun-bleached desert town at noon"`
+- Portrait-tier LoRA: `"spaghetti_western, extreme close-up of a weathered face under a hat brim"`
+- World-style LoRA: `"the_real_mccoy, a Pittsburgh steel mill at dusk"`
+
+Keep `--progress-steps` low (8) — the progress renders are throwaway
+quality checks, not final renders. They land in `$OUT_DIR/` alongside
+the checkpoints.
 
 **Output:** `$OUT_DIR/final_adapters.safetensors` (~77 MB at rank 4,
 ~150 MB at rank 8) plus `{NNNNNNN}_adapters.safetensors` checkpoints
@@ -233,7 +247,8 @@ every `--checkpoint-every` iterations.
   doesn't monotonically improve.
 
 **RAM watch:** Activity Monitor should show ~50 GB peak. If it climbs
-toward 90+ GB, drop `--resolution 512 512` to `--resolution 384 384`
+toward 90+ GB, drop `--resolution 512x512` to `--resolution 384x384`
+(format is `WIDTHxHEIGHT` with a literal lowercase `x`)
 or run a smaller `--lora-rank`.
 
 ---
