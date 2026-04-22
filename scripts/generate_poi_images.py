@@ -80,7 +80,7 @@ def compose_prompt(poi: dict, visual_style: dict) -> tuple[str, str, str, int]:
 
     subject = truncate_to_tokens(subject, TOKEN_LIMIT - 100)
 
-    clip = "wide establishing shot, scenic vista, atmospheric"
+    clip = "wide establishing shot, atmospheric"
 
     seed_key = f"{poi['genre']}:{poi['world']}:{poi['name']}:landscape"
     seed = deterministic_seed(seed_key, base_seed)
