@@ -37,15 +37,13 @@ If you want the other mode, pick a different world or a different day. This is i
 
 **Identity = display name + cookie.** No accounts, no auth, no seat tokens. First visit prompts for a name; it's stored in `localStorage` and attached to every WebSocket connect frame. Server trusts it. Spoofing is a non-concern for the playgroup this game is built for (see `CLAUDE.md` — trusted gaming group, not public service).
 
-**Joining a multiplayer game:** anyone with the URL can connect at any time — before the game starts, during active play, after a long idle. There is no "lobby owner" to approve joins. A mid-game arrival either:
-- claims an unclaimed character slot, or
-- connects as a spectator (non-acting presence).
+**Joining a multiplayer game:** anyone with the URL can connect at any time — before the game starts, during active play, after a long idle. There is no "lobby owner" to approve joins. A mid-game arrival whose display name is already bound to a seat on this slug resumes that character; a new name runs chargen and claims a fresh seat. There is no separate spectator mode — if you're on the slug, you have a seat.
 
-The exact seat-claim UX is deferred; what matters for this spec is that joining is open and continuous.
+**Seat claim = soft binding, not identity.** Arriving with a display name already bound to a seat on this slug resumes that character. Arriving with a new name runs chargen and claims a fresh seat. The `(slug, display_name) → character` association is a claim, not an invariant: seats can be vacated, characters can die or retire, and a name can re-chargen into a new seat. The claim mechanism is already specified — see `PLAYER_SEAT` with `character_slot` in Plan 03 Task 3, and the `PlayerState`-in-`SharedGameSession` model in ADR-037. The exact vacate / retire / re-chargen UX is a follow-up; the data model supports it.
 
 **No "start the server" ceremony.** The first visitor to a slug that does not yet exist triggers creation: world select → mode pick → save file + Claude session allocated. Subsequent visitors simply connect. Whoever's machine happens to be running `sidequest-server` is the narrator-host for that slug (see "Narrator-Host" below).
 
-**Solo mode is single-slot.** A `/solo/...` URL accepts one active connection. A second browser opening the same URL is bounced — either hard-rejected or silently downgraded to a read-only spectator view. The important invariant: solo is not "multiplayer with one player," it's a different mode with different UX (no turn waits, no sealed letters, no party slots).
+**Solo mode is single-slot and hard-rejects second connections.** A `/solo/...` URL accepts exactly one active connection. A second browser opening the same URL is turned away — no spectator fallback, no read-only downgrade. If multi-viewer access is wanted, the game must be started in multiplayer mode from the start (pick a different world or a different day). The important invariant: solo is not "multiplayer with one player," it's a different mode with different UX (no turn waits, no sealed letters, no party slots, no filtered projections).
 
 **Drop-out = pause.** If anyone in the current party disconnects mid-game, the narrator does not advance. No timeout-based kick, no nudge UX, no auto-skip. The game waits until they reconnect. This matches Sunday-session reality and respects Alex's pacing needs (see `CLAUDE.md` primary audience).
 
@@ -61,7 +59,7 @@ One machine per slug is the **narrator-host**: the machine that booted the slug 
 - canonical holder of `~/.sidequest/saves/<slug>.db`;
 - the only node that talks to Claude for narrator calls.
 
-There is no election protocol in this spec. The narrator-host is implicitly "whichever machine is up." Discovery (how peers find the narrator-host on a given LAN / tunnel / shared hostname) is out of scope and belongs to a follow-up deployment spec.
+There is no election protocol in this spec. The narrator-host is implicitly "whichever machine is up." Discovery from the player's side is web-URL based: peers reach the game via a URL that resolves to whatever machine is currently serving, with no LAN discovery ceremony or "which machine is up?" prompt. The hosting-side specifics of that URL resolution (tunnel, shared hostname, LAN fallback) belong to a follow-up deployment spec.
 
 ### Peer saves are per-player projections, not replicas
 
@@ -88,26 +86,31 @@ On reconnect, peer sends `last_seen_seq`; narrator-host streams missed events (s
 
 ### Filtering
 
-The per-player filter on outbound events is a dedicated layer on the narrator-host. Exact filter rules (what information each player is entitled to see at each beat) are flagged as a follow-up and not specified here.
+The per-player filter on outbound events is a dedicated layer on the narrator-host. Its architecture is already specified across three existing documents:
+
+- **ADR-028 (Perception Rewriter)** — per-player narration rewrites driven by character status effects (Charmed, Blinded, Deafened, Frightened, Invisible). Canonical narration is preserved on the server; rewrites are produced per-recipient and run concurrently (`tokio::join!`), so total latency is the slowest single rewrite, not accumulated.
+- **ADR-037 (Shared-World / Per-Player State)** — the `TargetedMessage { target_player_id: Option<PlayerId> }` envelope is the visibility-tagging model: `None` = fan-out, `Some` = unicast. Region co-location via `resolve_region()` determines whether two players share narration context at all.
+- **Plan 03 (`mp-03-filtered-sync-and-projections.md`)** — the wire-level scaffolding: `EventLog` with monotonic `seq`, `ProjectionFilter` protocol returning `FilterDecision { include, payload_json }`, per-player IndexedDB cache, and `last_seen_seq` reconnect replay. Plan 03 ships a `PassThroughFilter` as the default — concrete rules drop into the same interface without re-wiring.
+
+In this spec's terms: the narrator-host appends every mutation to the EventLog, Perception Rewriter produces per-recipient narration variants where character state diverges, and ProjectionFilter is the final include/redact/omit gate per recipient before the socket send. Concrete filter-rule catalog (what each player is entitled to see at each beat beyond the status-effect rewrites) remains follow-up work, but the scaffolding it plugs into is fixed, not TBD.
 
 ## Non-Goals
 
 This spec deliberately does not solve:
 
 - **Presence/staleness heuristics.** The explicit mode choice plus pause-on-drop makes this unnecessary.
-- **Narrator-host election or failover.** Assumed single stable node per slug. Deployment/reachability is a separate spec.
+- **Narrator-host election or failover.** Assumed single stable node per slug; discovery is web-URL based. Deployment/reachability is a separate spec.
 - **Peer-authoritative state, CRDTs, conflict resolution.** No peer writes → no conflicts.
-- **Seat-claim UX for late joiners.** Stubbed as "anyone can join anytime"; detailed flow deferred.
-- **Spectator mode details.** Named as a fallback; specifics deferred.
+- **Seat-vacate / retire / re-chargen UX.** Seat-claim data model is defined (ADR-037, Plan 03 Task 3); the UX for dissolving a seat is follow-up.
+- **Multi-viewer solo.** No spectator fallback on `/solo/...`. Start a multiplayer game if more than one person needs to see it.
 - **Auth, accounts, anti-spoof.** Display-name + cookie is sufficient for the target audience.
 - **Mode-change paths.** No solo→MP or MP→solo conversion. Create a new slug instead.
 
 ## Open Follow-Ups (Flagged, Not Blocking)
 
-- Narrator-host discovery UX — "which machine is up right now for this slug?"
-- Filtering rule specification — what exactly each player's projection contains at each beat.
-- Solo-mode second-connection behavior — hard reject vs read-only spectate, to be decided at implementation.
-- Seat-claim flow for players arriving mid-game.
+- **Filter-rule catalog** — concrete rules beyond the ADR-028 status-effect rewrites (e.g. private-inventory reveals, whispered GM notes, perception-check gating) that slot into the `ProjectionFilter` interface from Plan 03. The *interface* is fixed; the *rules* are follow-up.
+- **Seat-vacate / retire / re-chargen UX** — the data model in ADR-037 and Plan 03 supports seat dissolution; the user-facing flow (how a player retires a character, how a seat is marked vacant, how a name is allowed to re-chargen) is follow-up.
+- **Narrator-host deployment/reachability** — web-URL discovery is the answer from the player's side, but the hosting-side specifics (tunnel, shared hostname, LAN fallback) belong to a separate deployment spec.
 
 ## Impact on Existing Code
 
