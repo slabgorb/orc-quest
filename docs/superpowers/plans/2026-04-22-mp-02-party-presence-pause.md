@@ -2,6 +2,35 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
+## Status (2026-04-23)
+
+**Tasks 1–9: complete.** All checkboxes below ticked during audit and
+reconciliation on 2026-04-23. Server side (Tasks 1–6, 9) was implemented
+inline during the `feat/phase-3-story-3-4-combat-dispatch` branch;
+commits tag the relevant MP-02 tasks in code comments and docstrings.
+UI side (Tasks 7–8) existed as unit-tested components but was not wired;
+the reconciliation pass added the production wiring and an integration
+test.
+
+Deviations closed during reconciliation:
+
+- **Task 8 — GameScreen.tsx target moved.** The plan targets
+  `src/screens/GameScreen.tsx`, but that file was deleted in the MP-01
+  fix-forward and `AppInner` in `src/App.tsx` now owns the session. The
+  `PausedBanner` is wired into `AppInner` accordingly.
+- **Task 7 — inline localStorage consolidated.** `AppInner` and
+  `ConnectScreen` previously accessed `sq:display-name` directly. Both
+  now go through `useDisplayName`; the hook was extended with a
+  custom-event subscription so sibling instances stay synchronized
+  within a single tab.
+- **Client MessageType enum extended.** `PLAYER_PRESENCE`, `PLAYER_SEAT`,
+  `SEAT_CONFIRMED`, `GAME_PAUSED`, `GAME_RESUMED` were added to
+  `src/types/protocol.ts` so AppInner dispatches on typed constants
+  instead of raw strings.
+- **Wiring test added.** `src/__tests__/paused-banner-wiring.test.tsx`
+  drives AppInner through a mocked WebSocket and asserts GAME_PAUSED →
+  banner visible, GAME_RESUMED → banner hidden.
+
 **Depends on:** Plan 01 must be merged first (slug routing + mode in WS connect).
 
 **Goal:** Support multiple simultaneous WebSocket connections to a single multiplayer slug, track display-name identity, gate solo slugs to one socket, pause narrator advancement whenever any seated player is disconnected.
@@ -39,7 +68,7 @@
 - Create: `sidequest-server/sidequest/server/session_room.py`
 - Test: `sidequest-server/tests/server/test_session_room.py`
 
-- [ ] **Step 1: Write failing test**
+- [x] **Step 1: Write failing test**
 
 ```python
 # sidequest-server/tests/server/test_session_room.py
@@ -103,12 +132,12 @@ def test_seated_players_separate_from_connected():
     assert set(room.absent_seated_player_ids()) == {"bob"}
 ```
 
-- [ ] **Step 2: Run tests to verify failure**
+- [x] **Step 2: Run tests to verify failure**
 
 Run: `cd sidequest-server && uv run pytest tests/server/test_session_room.py -v`
 Expected: ImportError.
 
-- [ ] **Step 3: Implement SessionRoom**
+- [x] **Step 3: Implement SessionRoom**
 
 ```python
 # sidequest-server/sidequest/server/session_room.py
@@ -216,12 +245,12 @@ class RoomRegistry:
             return self._rooms.get(slug)
 ```
 
-- [ ] **Step 4: Run tests to verify pass**
+- [x] **Step 4: Run tests to verify pass**
 
 Run: `cd sidequest-server && uv run pytest tests/server/test_session_room.py -v`
 Expected: 7 passed.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add sidequest-server/sidequest/server/session_room.py sidequest-server/tests/server/test_session_room.py
@@ -236,7 +265,7 @@ git commit -m "feat(server): SessionRoom + RoomRegistry with solo-slot enforceme
 - Modify: `sidequest-server/sidequest/server/websocket.py`
 - Modify: wherever the app is constructed (find with `grep -rn "FastAPI()" sidequest-server/sidequest`)
 
-- [ ] **Step 1: Write failing wiring test**
+- [x] **Step 1: Write failing wiring test**
 
 ```python
 # sidequest-server/tests/server/test_session_room_wired.py
@@ -275,12 +304,12 @@ def test_connecting_adds_player_to_room(tmp_path: Path):
     assert "alice" not in room.connected_player_ids()
 ```
 
-- [ ] **Step 2: Run it (failure)**
+- [x] **Step 2: Run it (failure)**
 
 Run: `cd sidequest-server && uv run pytest tests/server/test_session_room_wired.py -v`
 Expected: FAIL — no `room_registry` on `app.state`.
 
-- [ ] **Step 3: Add registry + lifecycle hooks**
+- [x] **Step 3: Add registry + lifecycle hooks**
 
 In the app factory (the file identified above), add:
 
@@ -346,12 +375,12 @@ except SoloSlotConflict as exc:
 self._room = room
 ```
 
-- [ ] **Step 4: Run the wiring test**
+- [x] **Step 4: Run the wiring test**
 
 Run: `cd sidequest-server && uv run pytest tests/server/test_session_room_wired.py -v`
 Expected: 1 passed.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add sidequest-server/sidequest/server/websocket.py sidequest-server/sidequest/server/session_handler.py sidequest-server/sidequest/server/app.py sidequest-server/tests/server/test_session_room_wired.py
@@ -365,7 +394,7 @@ git commit -m "feat(ws): register/unregister sockets with SessionRoom on connect
 **Files:**
 - Test: `sidequest-server/tests/server/test_solo_single_slot.py`
 
-- [ ] **Step 1: Write the test**
+- [x] **Step 1: Write the test**
 
 ```python
 # sidequest-server/tests/server/test_solo_single_slot.py
@@ -400,12 +429,12 @@ def test_second_connection_to_solo_is_rejected(tmp_path: Path):
             assert "solo" in msg["payload"]["message"].lower()
 ```
 
-- [ ] **Step 2: Run — should already pass from Task 2's slug-connect branch**
+- [x] **Step 2: Run — should already pass from Task 2's slug-connect branch**
 
 Run: `cd sidequest-server && uv run pytest tests/server/test_solo_single_slot.py -v`
 Expected: 1 passed. If it fails, the SoloSlotConflict branch in Task 2 wasn't wired — fix it.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add sidequest-server/tests/server/test_solo_single_slot.py
@@ -421,7 +450,7 @@ git commit -m "test(ws): solo slug rejects second connection"
 - Modify: `sidequest-server/sidequest/server/session_handler.py`
 - Test: `sidequest-server/tests/server/test_presence_broadcast.py`
 
-- [ ] **Step 1: Write failing test**
+- [x] **Step 1: Write failing test**
 
 ```python
 # sidequest-server/tests/server/test_presence_broadcast.py
@@ -461,12 +490,12 @@ def test_second_player_join_broadcasts_presence_to_first(tmp_path: Path):
             assert msg["payload"]["state"] == "connected"
 ```
 
-- [ ] **Step 2: Run to verify failure**
+- [x] **Step 2: Run to verify failure**
 
 Run: `cd sidequest-server && uv run pytest tests/server/test_presence_broadcast.py -v`
 Expected: FAIL — no `PLAYER_PRESENCE` in protocol.
 
-- [ ] **Step 3: Add protocol message**
+- [x] **Step 3: Add protocol message**
 
 In `sidequest-server/sidequest/protocol/messages.py`:
 
@@ -483,7 +512,7 @@ class PlayerPresenceMessage(BaseModel):
 
 Register it in the `GameMessage` union where other message types live (locate with `grep -n "SESSION_CONNECTED\|NARRATION" sidequest-server/sidequest/protocol/messages.py`).
 
-- [ ] **Step 4: Fan-out via registry**
+- [x] **Step 4: Fan-out via registry**
 
 Add a per-slug broadcast helper. Simplest path: the `RoomRegistry` keeps a map `socket_id → asyncio.Queue` for outbound messages, and handlers append to every queue except their own when broadcasting. Extend `SessionRoom`:
 
@@ -571,12 +600,12 @@ self._room.broadcast(
 )
 ```
 
-- [ ] **Step 5: Run tests**
+- [x] **Step 5: Run tests**
 
 Run: `cd sidequest-server && uv run pytest tests/server/test_presence_broadcast.py tests/server/test_session_room.py tests/server/test_session_room_wired.py -v`
 Expected: all pass.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add sidequest-server/sidequest/protocol/messages.py sidequest-server/sidequest/server/websocket.py sidequest-server/sidequest/server/session_handler.py sidequest-server/sidequest/server/session_room.py sidequest-server/tests/server/test_presence_broadcast.py
@@ -592,7 +621,7 @@ git commit -m "feat(ws): PLAYER_PRESENCE broadcast on connect/disconnect + per-s
 - Modify: `sidequest-server/sidequest/server/session_handler.py`
 - Test: `sidequest-server/tests/server/test_seat_claim.py`
 
-- [ ] **Step 1: Write failing test**
+- [x] **Step 1: Write failing test**
 
 ```python
 # sidequest-server/tests/server/test_seat_claim.py
@@ -627,12 +656,12 @@ def test_claim_seat_updates_room(tmp_path: Path):
         assert "alice" in room.seated_player_ids()
 ```
 
-- [ ] **Step 2: Run to verify failure**
+- [x] **Step 2: Run to verify failure**
 
 Run: `cd sidequest-server && uv run pytest tests/server/test_seat_claim.py -v`
 Expected: FAIL — no PLAYER_SEAT type.
 
-- [ ] **Step 3: Add protocol + handler**
+- [x] **Step 3: Add protocol + handler**
 
 In `messages.py`:
 
@@ -669,12 +698,12 @@ if msg.type == "PLAYER_SEAT":
     return []  # broadcast handles fan-out; no direct return needed
 ```
 
-- [ ] **Step 4: Run tests**
+- [x] **Step 4: Run tests**
 
 Run: `cd sidequest-server && uv run pytest tests/server/test_seat_claim.py -v`
 Expected: 1 passed.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add sidequest-server/sidequest/protocol/messages.py sidequest-server/sidequest/server/session_handler.py sidequest-server/tests/server/test_seat_claim.py
@@ -690,7 +719,7 @@ git commit -m "feat(ws): PLAYER_SEAT + SEAT_CONFIRMED for character slot claim"
 - Modify: `sidequest-server/sidequest/protocol/messages.py`
 - Test: `sidequest-server/tests/server/test_pause_on_drop.py`
 
-- [ ] **Step 1: Write failing test**
+- [x] **Step 1: Write failing test**
 
 ```python
 # sidequest-server/tests/server/test_pause_on_drop.py
@@ -749,12 +778,12 @@ def test_player_action_during_paused_state_is_queued_not_dispatched(tmp_path: Pa
         assert len(calls) == 0
 ```
 
-- [ ] **Step 2: Run — expect failure**
+- [x] **Step 2: Run — expect failure**
 
 Run: `cd sidequest-server && uv run pytest tests/server/test_pause_on_drop.py -v`
 Expected: FAIL — narrator dispatches anyway, no GAME_PAUSED.
 
-- [ ] **Step 3: Add GAME_PAUSED protocol + gate**
+- [x] **Step 3: Add GAME_PAUSED protocol + gate**
 
 In `messages.py`:
 
@@ -798,12 +827,12 @@ if not self._room.is_paused():
     self._room.broadcast(GameResumedMessage(), exclude_socket_id=None)
 ```
 
-- [ ] **Step 4: Run tests**
+- [x] **Step 4: Run tests**
 
 Run: `cd sidequest-server && uv run pytest tests/server/test_pause_on_drop.py -v`
 Expected: 1 passed.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add sidequest-server/sidequest/protocol/messages.py sidequest-server/sidequest/server/session_handler.py sidequest-server/sidequest/server/websocket.py sidequest-server/tests/server/test_pause_on_drop.py
@@ -818,7 +847,7 @@ git commit -m "feat(ws): pause narrator when any seated player is absent"
 - Create: `sidequest-ui/src/hooks/useDisplayName.ts`
 - Test: `sidequest-ui/src/hooks/__tests__/useDisplayName.test.ts`
 
-- [ ] **Step 1: Write failing test**
+- [x] **Step 1: Write failing test**
 
 ```ts
 // sidequest-ui/src/hooks/__tests__/useDisplayName.test.ts
@@ -848,12 +877,12 @@ describe('useDisplayName', () => {
 });
 ```
 
-- [ ] **Step 2: Run to verify failure**
+- [x] **Step 2: Run to verify failure**
 
 Run: `cd sidequest-ui && npm test -- --run src/hooks/__tests__/useDisplayName.test.ts`
 Expected: file-not-found.
 
-- [ ] **Step 3: Implement**
+- [x] **Step 3: Implement**
 
 ```ts
 // sidequest-ui/src/hooks/useDisplayName.ts
@@ -871,12 +900,12 @@ export function useDisplayName() {
 }
 ```
 
-- [ ] **Step 4: Run tests**
+- [x] **Step 4: Run tests**
 
 Run: `cd sidequest-ui && npm test -- --run src/hooks/__tests__/useDisplayName.test.ts`
 Expected: 3 passed.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add sidequest-ui/src/hooks/useDisplayName.ts sidequest-ui/src/hooks/__tests__/useDisplayName.test.ts
@@ -892,7 +921,7 @@ git commit -m "feat(ui): useDisplayName hook with localStorage persistence"
 - Test: `sidequest-ui/src/components/__tests__/PausedBanner.test.tsx`
 - Modify: `sidequest-ui/src/screens/GameScreen.tsx`
 
-- [ ] **Step 1: Write failing test**
+- [x] **Step 1: Write failing test**
 
 ```tsx
 // sidequest-ui/src/components/__tests__/PausedBanner.test.tsx
@@ -913,12 +942,12 @@ describe('PausedBanner', () => {
 });
 ```
 
-- [ ] **Step 2: Run to verify failure**
+- [x] **Step 2: Run to verify failure**
 
 Run: `cd sidequest-ui && npm test -- --run src/components/__tests__/PausedBanner.test.tsx`
 Expected: file-not-found.
 
-- [ ] **Step 3: Implement**
+- [x] **Step 3: Implement**
 
 ```tsx
 // sidequest-ui/src/components/PausedBanner.tsx
@@ -932,7 +961,7 @@ export function PausedBanner({ paused, waitingFor }: { paused: boolean; waitingF
 }
 ```
 
-- [ ] **Step 4: Wire into GameScreen**
+- [x] **Step 4: Wire into GameScreen**
 
 In `sidequest-ui/src/screens/GameScreen.tsx`, extend it to consume the WS stream (use existing useStateMirror hook pattern) and track paused state:
 
@@ -988,12 +1017,12 @@ function NamePrompt() {
 }
 ```
 
-- [ ] **Step 5: Run tests**
+- [x] **Step 5: Run tests**
 
 Run: `cd sidequest-ui && npm test -- --run src/components/__tests__/PausedBanner.test.tsx`
 Expected: 2 passed.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add sidequest-ui/src/components/PausedBanner.tsx sidequest-ui/src/components/__tests__/PausedBanner.test.tsx sidequest-ui/src/screens/GameScreen.tsx
@@ -1007,7 +1036,7 @@ git commit -m "feat(ui): PausedBanner + name prompt + WebSocket connect in GameS
 **Files:**
 - Create: `sidequest-server/tests/server/test_party_wiring.py`
 
-- [ ] **Step 1: Write the test**
+- [x] **Step 1: Write the test**
 
 ```python
 # sidequest-server/tests/server/test_party_wiring.py
@@ -1070,12 +1099,12 @@ def test_drop_pauses_reconnect_resumes(tmp_path: Path):
             assert saw_resume
 ```
 
-- [ ] **Step 2: Run — should pass from Tasks 4+6**
+- [x] **Step 2: Run — should pass from Tasks 4+6**
 
 Run: `cd sidequest-server && uv run pytest tests/server/test_party_wiring.py -v`
 Expected: 1 passed. If GAME_RESUMED doesn't fire, the reconnect-side broadcast in Task 6 isn't wired — fix it there.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add sidequest-server/tests/server/test_party_wiring.py

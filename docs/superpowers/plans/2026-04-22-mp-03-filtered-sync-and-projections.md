@@ -2,6 +2,59 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
+## Status (2026-04-23)
+
+**Tasks 1–9: complete.** All checkboxes below ticked during audit and
+reconciliation on 2026-04-23. Server side (Tasks 1–4, 9) was implemented
+inline during the `feat/phase-3-story-3-4-combat-dispatch` branch with
+explicit MP-03 tags in code comments; all 11 server tests pass
+(`test_event_log`, `test_projection_filter`, `test_event_log_wiring`,
+`test_event_replay_on_reconnect`, `test_sync_wiring`).
+
+UI side (Tasks 5–8) existed as passing unit tests but had **zero
+production consumers** — classic "tests pass but nothing is wired."
+Reconciliation path (b) was taken: delete the unused `useEventStream`
+duplicate, keep the battle-tested `useGameSocket` as sole WS owner,
+and layer the peer cache + `last_seen_seq` directly into `AppInner`.
+
+Deviations closed during reconciliation:
+
+- **`useEventStream` deleted.** It owned its own WebSocket, duplicating
+  `useGameSocket` (which already has reconnect, typed messages, and
+  session restore). Two WS connections would have been wrong. The three
+  files (`useEventStream.ts`, `useEventStream.test.tsx`,
+  `useEventStream-offline.test.tsx`) are gone per CLAUDE.md "dead code
+  is worse than no code."
+- **New hook `usePeerEventCache`.** Narrower than `useEventStream`: no
+  WebSocket, just the IDB open + ref-backed `getLatestSeq` + `appendEvent`.
+  Callable synchronously at connect time without awaiting IDB.
+- **localStorage hint.** IDB is async; if AppInner's slug-connect effect
+  gates on IDB open, state races in jsdom tests made `last_seen_seq`
+  flaky. Fixed by mirroring the high-water mark into `localStorage`
+  under `sq:<slug>:<player>:lastSeq` for synchronous cold-start reads.
+  IDB is still authoritative — writes go to both, reads prefer IDB.
+- **`peerEventStore.ts` typecheck fix.** Original file used constructor
+  parameter properties (`private db: IDBPDatabase`) which are banned by
+  `erasableSyntaxOnly`. Replaced with explicit field declarations.
+- **Plan target `GameScreen.tsx` moved to `AppInner`.** Same as MP-02:
+  that file was deleted in the MP-01 fix-forward. Wiring landed in
+  `AppInner` in `src/App.tsx`.
+- **Client MessageType constants.** Server-side protocol already carries
+  `seq`; client now dedupes incoming events by `${type}:${seq}` with a
+  ref-backed set, cleared on reconnect and handleLeave so replay works.
+- **OfflineBanner component.** Plan's `{offline && <div ...>}` inline
+  JSX became a proper component under `src/components/OfflineBanner.tsx`
+  with its own unit test. Wired into AppInner between ReconnectBanner
+  and PausedBanner, gated by a 3-second timer on `isReconnecting` so
+  transient flaps don't escalate to "offline."
+- **Wiring test added.** `src/__tests__/mp-03-event-sync-wiring.test.tsx`
+  drives AppInner through a mocked WebSocket with a seeded cache and
+  asserts `last_seen_seq` flows correctly on cold start, warm start,
+  and that persistence + dedupe happen end-to-end.
+
+Full UI suite delta: 1086 → 1095 passing (+9 tests), 45 failing
+unchanged (no regressions). Full MP-03 server tests: 11/11 green.
+
 **Depends on:** Plans 01 and 02 merged.
 
 **Goal:** Put all narrator-originated state mutations through a monotonic event log. Give each peer a filtered view of the log keyed by player_id, plus a client-side event cache so peers can boot UI from local state and catch up on reconnect with `last_seen_seq`.
@@ -41,7 +94,7 @@
 - Create: `sidequest-server/sidequest/game/event_log.py`
 - Test: `sidequest-server/tests/game/test_event_log.py`
 
-- [ ] **Step 1: Write failing test**
+- [x] **Step 1: Write failing test**
 
 ```python
 # sidequest-server/tests/game/test_event_log.py
@@ -92,12 +145,12 @@ def test_latest_seq(store):
     assert log.latest_seq() == 2
 ```
 
-- [ ] **Step 2: Run to verify failure**
+- [x] **Step 2: Run to verify failure**
 
 Run: `cd sidequest-server && uv run pytest tests/game/test_event_log.py -v`
 Expected: ImportError.
 
-- [ ] **Step 3: Add `events` table to SCHEMA_SQL**
+- [x] **Step 3: Add `events` table to SCHEMA_SQL**
 
 In `sidequest-server/sidequest/game/persistence.py`, append to `SCHEMA_SQL`:
 
@@ -111,7 +164,7 @@ CREATE TABLE IF NOT EXISTS events (
 CREATE INDEX IF NOT EXISTS idx_events_seq ON events (seq);
 ```
 
-- [ ] **Step 4: Implement EventLog**
+- [x] **Step 4: Implement EventLog**
 
 ```python
 # sidequest-server/sidequest/game/event_log.py
@@ -166,12 +219,12 @@ class EventLog:
         return int(row[0])
 ```
 
-- [ ] **Step 5: Run tests**
+- [x] **Step 5: Run tests**
 
 Run: `cd sidequest-server && uv run pytest tests/game/test_event_log.py -v`
 Expected: 4 passed.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add sidequest-server/sidequest/game/persistence.py sidequest-server/sidequest/game/event_log.py sidequest-server/tests/game/test_event_log.py
@@ -186,7 +239,7 @@ git commit -m "feat(game): events table + EventLog (append, read_since, latest_s
 - Create: `sidequest-server/sidequest/game/projection_filter.py`
 - Test: `sidequest-server/tests/game/test_projection_filter.py`
 
-- [ ] **Step 1: Write failing test**
+- [x] **Step 1: Write failing test**
 
 ```python
 # sidequest-server/tests/game/test_projection_filter.py
@@ -235,12 +288,12 @@ def test_filter_can_omit():
     assert f.project(event=_row(kind="SECRET_NOTE"), player_id="alice").include is True
 ```
 
-- [ ] **Step 2: Run to verify failure**
+- [x] **Step 2: Run to verify failure**
 
 Run: `cd sidequest-server && uv run pytest tests/game/test_projection_filter.py -v`
 Expected: ImportError.
 
-- [ ] **Step 3: Implement**
+- [x] **Step 3: Implement**
 
 ```python
 # sidequest-server/sidequest/game/projection_filter.py
@@ -273,12 +326,12 @@ class PassThroughFilter:
         return FilterDecision(include=True, payload_json=event.payload_json)
 ```
 
-- [ ] **Step 4: Run tests**
+- [x] **Step 4: Run tests**
 
 Run: `cd sidequest-server && uv run pytest tests/game/test_projection_filter.py -v`
 Expected: 3 passed.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add sidequest-server/sidequest/game/projection_filter.py sidequest-server/tests/game/test_projection_filter.py
@@ -294,7 +347,7 @@ git commit -m "feat(game): ProjectionFilter protocol + PassThroughFilter"
 - Modify: `sidequest-server/sidequest/protocol/messages.py` (add `seq` field to NARRATION / STATE_UPDATE payloads)
 - Test: `sidequest-server/tests/server/test_event_log_wiring.py`
 
-- [ ] **Step 1: Write failing test**
+- [x] **Step 1: Write failing test**
 
 ```python
 # sidequest-server/tests/server/test_event_log_wiring.py
@@ -341,12 +394,12 @@ def test_player_action_appends_narration_to_event_log(tmp_path: Path):
     assert any(r.kind == "NARRATION" for r in rows)
 ```
 
-- [ ] **Step 2: Run to verify failure**
+- [x] **Step 2: Run to verify failure**
 
 Run: `cd sidequest-server && uv run pytest tests/server/test_event_log_wiring.py -v`
 Expected: FAIL — `last_seen_seq` not accepted, no `seq` in payload, no rows in log.
 
-- [ ] **Step 3: Extend protocol**
+- [x] **Step 3: Extend protocol**
 
 In `messages.py`:
 
@@ -365,7 +418,7 @@ class NarrationPayload(BaseModel):
 
 Apply the same `seq` field to any other outbound-event payload that is persisted (STATE_UPDATE, COMBAT_EVENT, etc.). Find them with `grep -n "class .*Payload(BaseModel)" sidequest-server/sidequest/protocol/messages.py`.
 
-- [ ] **Step 4: Wire EventLog + filter into session_handler**
+- [x] **Step 4: Wire EventLog + filter into session_handler**
 
 In `session_handler.py`, in the slug-connect branch, after `self._room = room`:
 
@@ -415,12 +468,12 @@ If cleanup of direct `_connected` / `_outbound_queues` private access is needed,
 
 In the `PLAYER_ACTION` handler, replace the current `return [narration_msg]` with `return [self._emit_event("NARRATION", narration_payload)]`.
 
-- [ ] **Step 5: Run tests**
+- [x] **Step 5: Run tests**
 
 Run: `cd sidequest-server && uv run pytest tests/server/test_event_log_wiring.py -v`
 Expected: 1 passed.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add sidequest-server/sidequest/server/session_handler.py sidequest-server/sidequest/server/session_room.py sidequest-server/sidequest/protocol/messages.py sidequest-server/tests/server/test_event_log_wiring.py
@@ -435,7 +488,7 @@ git commit -m "feat(sync): route narrator outputs through EventLog + ProjectionF
 - Modify: `sidequest-server/sidequest/server/session_handler.py`
 - Test: `sidequest-server/tests/server/test_event_replay_on_reconnect.py`
 
-- [ ] **Step 1: Write failing test**
+- [x] **Step 1: Write failing test**
 
 ```python
 # sidequest-server/tests/server/test_event_replay_on_reconnect.py
@@ -493,12 +546,12 @@ def test_connect_with_last_seen_seq_equal_to_latest_replays_nothing(tmp_path: Pa
         # No replay follows — connection stays open, no more data.
 ```
 
-- [ ] **Step 2: Run to verify failure**
+- [x] **Step 2: Run to verify failure**
 
 Run: `cd sidequest-server && uv run pytest tests/server/test_event_replay_on_reconnect.py -v`
 Expected: FAIL — no replay.
 
-- [ ] **Step 3: Add replay after connect**
+- [x] **Step 3: Add replay after connect**
 
 In the slug-connect branch of `session_handler.py`, after emitting SESSION_CONNECTED but before returning:
 
@@ -531,12 +584,12 @@ def _build_message_for_kind(*, kind: str, payload_json: str, seq: int):
 
 Extend the dispatch table as you add kinds — don't silently fall back.
 
-- [ ] **Step 4: Run tests**
+- [x] **Step 4: Run tests**
 
 Run: `cd sidequest-server && uv run pytest tests/server/test_event_replay_on_reconnect.py -v`
 Expected: 2 passed.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add sidequest-server/sidequest/server/session_handler.py sidequest-server/tests/server/test_event_replay_on_reconnect.py
@@ -551,13 +604,13 @@ git commit -m "feat(sync): replay missed events since last_seen_seq on reconnect
 - Create: `sidequest-ui/src/lib/peerEventStore.ts`
 - Test: `sidequest-ui/src/lib/__tests__/peerEventStore.test.ts`
 
-- [ ] **Step 1: Add `idb` dependency**
+- [x] **Step 1: Add `idb` dependency**
 
 ```bash
 cd sidequest-ui && npm install idb@^8
 ```
 
-- [ ] **Step 2: Write failing test**
+- [x] **Step 2: Write failing test**
 
 ```ts
 // sidequest-ui/src/lib/__tests__/peerEventStore.test.ts
@@ -597,12 +650,12 @@ describe('PeerEventStore', () => {
 
 Add `fake-indexeddb` to dev deps: `npm install -D fake-indexeddb@^6`.
 
-- [ ] **Step 3: Run to verify failure**
+- [x] **Step 3: Run to verify failure**
 
 Run: `cd sidequest-ui && npm test -- --run src/lib/__tests__/peerEventStore.test.ts`
 Expected: module not found.
 
-- [ ] **Step 4: Implement**
+- [x] **Step 4: Implement**
 
 ```ts
 // sidequest-ui/src/lib/peerEventStore.ts
@@ -646,12 +699,12 @@ export class PeerEventStore {
 }
 ```
 
-- [ ] **Step 5: Run tests**
+- [x] **Step 5: Run tests**
 
 Run: `cd sidequest-ui && npm test -- --run src/lib/__tests__/peerEventStore.test.ts`
 Expected: 4 passed.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add sidequest-ui/src/lib/peerEventStore.ts sidequest-ui/src/lib/__tests__/peerEventStore.test.ts sidequest-ui/package.json sidequest-ui/package-lock.json
@@ -666,7 +719,7 @@ git commit -m "feat(ui): PeerEventStore — IndexedDB per-slug+player event cach
 - Create: `sidequest-ui/src/hooks/useEventStream.ts`
 - Test: `sidequest-ui/src/hooks/__tests__/useEventStream.test.tsx`
 
-- [ ] **Step 1: Write failing test**
+- [x] **Step 1: Write failing test**
 
 ```tsx
 // sidequest-ui/src/hooks/__tests__/useEventStream.test.tsx
@@ -719,12 +772,12 @@ describe('useEventStream', () => {
 
 Install `jest-websocket-mock`: `npm i -D jest-websocket-mock@^2`.
 
-- [ ] **Step 2: Run to verify failure**
+- [x] **Step 2: Run to verify failure**
 
 Run: `cd sidequest-ui && npm test -- --run src/hooks/__tests__/useEventStream.test.tsx`
 Expected: module not found.
 
-- [ ] **Step 3: Implement**
+- [x] **Step 3: Implement**
 
 ```ts
 // sidequest-ui/src/hooks/useEventStream.ts
@@ -774,12 +827,12 @@ export function useEventStream({ wsUrl, slug, playerId }: Args) {
 }
 ```
 
-- [ ] **Step 4: Run tests**
+- [x] **Step 4: Run tests**
 
 Run: `cd sidequest-ui && npm test -- --run src/hooks/__tests__/useEventStream.test.tsx`
 Expected: 2 passed.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add sidequest-ui/src/hooks/useEventStream.ts sidequest-ui/src/hooks/__tests__/useEventStream.test.tsx sidequest-ui/package.json sidequest-ui/package-lock.json
@@ -794,7 +847,7 @@ git commit -m "feat(ui): useEventStream — WS + IndexedDB cache with last_seen_
 - Modify: `sidequest-ui/src/screens/GameScreen.tsx`
 - Test: `sidequest-ui/src/screens/__tests__/GameScreen-event-wiring.test.tsx`
 
-- [ ] **Step 1: Write failing test**
+- [x] **Step 1: Write failing test**
 
 ```tsx
 // sidequest-ui/src/screens/__tests__/GameScreen-event-wiring.test.tsx
@@ -824,12 +877,12 @@ describe('GameScreen event wiring', () => {
 });
 ```
 
-- [ ] **Step 2: Run to verify failure**
+- [x] **Step 2: Run to verify failure**
 
 Run: `cd sidequest-ui && npm test -- --run src/screens/__tests__/GameScreen-event-wiring.test.tsx`
 Expected: FAIL — no narration-log testid yet.
 
-- [ ] **Step 3: Wire the hook**
+- [x] **Step 3: Wire the hook**
 
 In `sidequest-ui/src/screens/GameScreen.tsx`, replace the manual WS block with:
 
@@ -862,12 +915,12 @@ export function GameScreen({ mode }: { mode: 'solo' | 'multiplayer' }) {
 
 (If PausedBanner from Plan 02 is still needed, keep it — read `paused` state from events too, or from a separate `usePresence` hook. This plan doesn't regress Plan 02's PausedBanner wiring.)
 
-- [ ] **Step 4: Run tests**
+- [x] **Step 4: Run tests**
 
 Run: `cd sidequest-ui && npm test -- --run src/screens/__tests__/GameScreen-event-wiring.test.tsx`
 Expected: 1 passed.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add sidequest-ui/src/screens/GameScreen.tsx sidequest-ui/src/screens/__tests__/GameScreen-event-wiring.test.tsx
@@ -883,7 +936,7 @@ git commit -m "feat(ui): wire useEventStream into GameScreen, render narration l
 - Modify: `sidequest-ui/src/screens/GameScreen.tsx`
 - Test: `sidequest-ui/src/hooks/__tests__/useEventStream-offline.test.tsx`
 
-- [ ] **Step 1: Write failing test**
+- [x] **Step 1: Write failing test**
 
 ```tsx
 // sidequest-ui/src/hooks/__tests__/useEventStream-offline.test.tsx
@@ -911,12 +964,12 @@ describe('useEventStream offline mode', () => {
 });
 ```
 
-- [ ] **Step 2: Run to verify failure**
+- [x] **Step 2: Run to verify failure**
 
 Run: `cd sidequest-ui && npm test -- --run src/hooks/__tests__/useEventStream-offline.test.tsx`
 Expected: FAIL — `offline` not exposed.
 
-- [ ] **Step 3: Add offline state**
+- [x] **Step 3: Add offline state**
 
 Update `useEventStream.ts`:
 
@@ -944,12 +997,12 @@ return (
 );
 ```
 
-- [ ] **Step 4: Run tests**
+- [x] **Step 4: Run tests**
 
 Run: `cd sidequest-ui && npm test -- --run src/hooks/__tests__/useEventStream-offline.test.tsx`
 Expected: 1 passed.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add sidequest-ui/src/hooks/useEventStream.ts sidequest-ui/src/screens/GameScreen.tsx sidequest-ui/src/hooks/__tests__/useEventStream-offline.test.tsx
@@ -963,7 +1016,7 @@ git commit -m "feat(ui): read-only offline mode when narrator-host unreachable"
 **Files:**
 - Create: `sidequest-server/tests/server/test_sync_wiring.py`
 
-- [ ] **Step 1: Write the test**
+- [x] **Step 1: Write the test**
 
 ```python
 # sidequest-server/tests/server/test_sync_wiring.py
@@ -1011,12 +1064,12 @@ def test_late_joiner_catches_up(tmp_path: Path):
             assert replay["payload"]["seq"] == first_seq
 ```
 
-- [ ] **Step 2: Run**
+- [x] **Step 2: Run**
 
 Run: `cd sidequest-server && uv run pytest tests/server/test_sync_wiring.py -v`
 Expected: 1 passed.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add sidequest-server/tests/server/test_sync_wiring.py
