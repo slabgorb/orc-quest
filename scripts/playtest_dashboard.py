@@ -377,7 +377,6 @@ function renderTurnList() {
     const sel = S.selectedTurn === i ? ' selected' : '';
     let badge = '';
     if (f.is_degraded) badge = '<span class="ti-badge ti-degraded">DEGRADED</span>';
-    else if ((f.classified_intent||'') === 'Combat') badge = '<span class="ti-badge ti-combat">COMBAT</span>';
     return `<div class="turn-item${sel}" onclick="selectTurn(${i})">#${f.turn_id||i+1} ${esc(agent)} ${dur}s ${badge}</div>`;
   }).reverse().join('');
 }
@@ -391,7 +390,7 @@ function selectTurn(i) {
   const dur = f.total_duration_ms || f.agent_duration_ms || 1;
 
   // Flame chart
-  document.getElementById('flame-title').textContent = `Turn ${f.turn_id||'?'} · ${f.classified_intent||'?'} → ${f.agent_name||'?'} · ${(dur/1000).toFixed(1)}s`;
+  document.getElementById('flame-title').textContent = `Turn ${f.turn_id||'?'} → ${f.agent_name||'?'} · ${(dur/1000).toFixed(1)}s`;
 
   const spans = f.spans || [
     { name: 'agent_llm', component: f.agent_name||'narrator', start_ms: 0, duration_ms: dur }
@@ -421,7 +420,7 @@ function selectTurn(i) {
   document.getElementById('turn-meta-body').innerHTML = `
     <div style="color:var(--muted);font-size:12px;line-height:1.8">
     · <b>Input:</b> ${esc(f.player_input||'')}
-    <br>· <b>Intent:</b> ${f.classified_intent||'?'} &rarr; <b>Agent:</b> ${f.agent_name||'?'}
+    <br>· <b>Agent:</b> ${f.agent_name||'?'}
     <br>· <b>Tokens:</b> ${f.token_count_in||0} in / ${f.token_count_out||0} out &nbsp; <b>Tier:</b> ${f.extraction_tier||'?'} &nbsp; <b>Degraded:</b> ${f.is_degraded?'<span style="color:var(--red)">YES</span>':'no'}
     <br>· <b>Patches:</b> ${esc(patches)}
     <br>· <b>Beats:</b> ${esc(beats)}
