@@ -38,7 +38,7 @@
 - Create: `sidequest-server/sidequest/game/game_slug.py`
 - Test: `sidequest-server/tests/game/test_game_slug.py`
 
-- [ ] **Step 1: Write failing test**
+- [x] **Step 1: Write failing test**
 
 ```python
 # sidequest-server/tests/game/test_game_slug.py
@@ -77,12 +77,12 @@ def test_parse_slug_rejects_malformed_date():
         parse_slug("2026-13-40-moldharrow")
 ```
 
-- [ ] **Step 2: Run tests to verify failure**
+- [x] **Step 2: Run tests to verify failure**
 
 Run: `cd sidequest-server && uv run pytest tests/game/test_game_slug.py -v`
 Expected: ImportError — module does not exist.
 
-- [ ] **Step 3: Implement the module**
+- [x] **Step 3: Implement the module**
 
 ```python
 # sidequest-server/sidequest/game/game_slug.py
@@ -131,12 +131,12 @@ def parse_slug(slug: str) -> ParsedSlug:
     return ParsedSlug(date=parsed_date, world_slug=world)
 ```
 
-- [ ] **Step 4: Run tests to verify pass**
+- [x] **Step 4: Run tests to verify pass**
 
 Run: `cd sidequest-server && uv run pytest tests/game/test_game_slug.py -v`
 Expected: 6 passed.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add sidequest-server/sidequest/game/game_slug.py sidequest-server/tests/game/test_game_slug.py
@@ -151,7 +151,7 @@ git commit -m "feat(game): slug generation + parsing for game identity"
 - Modify: `sidequest-server/sidequest/game/persistence.py`
 - Test: `sidequest-server/tests/game/test_persistence_games_table.py`
 
-- [ ] **Step 1: Write failing test**
+- [x] **Step 1: Write failing test**
 
 ```python
 # sidequest-server/tests/game/test_persistence_games_table.py
@@ -218,12 +218,12 @@ def test_set_claude_session_id_persists(tmp_path: Path):
     assert row.claude_session_id == "claude-sess-abc123"
 ```
 
-- [ ] **Step 2: Run tests to verify failure**
+- [x] **Step 2: Run tests to verify failure**
 
 Run: `cd sidequest-server && uv run pytest tests/game/test_persistence_games_table.py -v`
 Expected: ImportError — `GameMode`, `db_path_for_slug`, `upsert_game`, `get_game` not defined.
 
-- [ ] **Step 3: Extend persistence.py**
+- [x] **Step 3: Extend persistence.py**
 
 Add to top of `sidequest-server/sidequest/game/persistence.py`:
 
@@ -313,12 +313,12 @@ def set_claude_session_id(store: SqliteStore, slug: str, claude_session_id: str)
 
 (If `SqliteStore._connect()` doesn't exist under that name, use whatever context-manager method the existing file provides — inspect the file for the pattern. Do **not** invent a new connection method.)
 
-- [ ] **Step 4: Run tests to verify pass**
+- [x] **Step 4: Run tests to verify pass**
 
 Run: `cd sidequest-server && uv run pytest tests/game/test_persistence_games_table.py -v`
 Expected: 5 passed.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add sidequest-server/sidequest/game/persistence.py sidequest-server/tests/game/test_persistence_games_table.py
@@ -333,7 +333,7 @@ git commit -m "feat(persistence): games table with frozen-at-creation mode + cla
 - Modify: `sidequest-server/sidequest/server/rest.py`
 - Test: `sidequest-server/tests/server/test_games_endpoints.py`
 
-- [ ] **Step 1: Write failing test**
+- [x] **Step 1: Write failing test**
 
 ```python
 # sidequest-server/tests/server/test_games_endpoints.py
@@ -408,12 +408,12 @@ def test_get_games_slug_404_for_unknown(client: TestClient):
     assert r.status_code == 404
 ```
 
-- [ ] **Step 2: Run tests to verify failure**
+- [x] **Step 2: Run tests to verify failure**
 
 Run: `cd sidequest-server && uv run pytest tests/server/test_games_endpoints.py -v`
 Expected: 404 or attribute errors — endpoints don't exist yet.
 
-- [ ] **Step 3: Add the endpoints**
+- [x] **Step 3: Add the endpoints**
 
 In `sidequest-server/sidequest/server/rest.py`, add after existing response models:
 
@@ -493,12 +493,12 @@ async def get_game_endpoint(slug: str, request: Request) -> GameResponse:
     )
 ```
 
-- [ ] **Step 4: Run tests to verify pass**
+- [x] **Step 4: Run tests to verify pass**
 
 Run: `cd sidequest-server && uv run pytest tests/server/test_games_endpoints.py -v`
 Expected: 5 passed.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add sidequest-server/sidequest/server/rest.py sidequest-server/tests/server/test_games_endpoints.py
@@ -514,7 +514,7 @@ git commit -m "feat(rest): POST /api/games + GET /api/games/{slug} with frozen-m
 - Modify: `sidequest-server/sidequest/server/session_handler.py`
 - Test: `sidequest-server/tests/server/test_session_handler_slug_connect.py`
 
-- [ ] **Step 1: Write failing test**
+- [x] **Step 1: Write failing test**
 
 ```python
 # sidequest-server/tests/server/test_session_handler_slug_connect.py
@@ -571,16 +571,16 @@ async def test_connect_by_unknown_slug_errors(seeded_game: Path):
     assert any(getattr(m, "type", None) == "ERROR" for m in outbound)
 ```
 
-- [ ] **Step 2: Run tests to verify failure**
+- [x] **Step 2: Run tests to verify failure**
 
 Run: `cd sidequest-server && uv run pytest tests/server/test_session_handler_slug_connect.py -v`
 Expected: `game_slug` not a valid field on `SessionEventPayload`.
 
-- [ ] **Step 3: Extend protocol**
+- [x] **Step 3: Extend protocol**
 
 In `sidequest-server/sidequest/protocol/messages.py`, add `game_slug: str | None = None` to `SessionEventPayload` (whichever class models the connect payload — locate with `grep -n "class SessionEventPayload" sidequest-server/sidequest/protocol/messages.py`). Leave legacy `genre`/`world`/`player_id` fields in place for backwards compat during migration.
 
-- [ ] **Step 4: Add slug-connect branch in session_handler**
+- [x] **Step 4: Add slug-connect branch in session_handler**
 
 In `sidequest-server/sidequest/server/session_handler.py`, locate `_handle_connect` (around line 237). Add at the top of that method, before the existing `genre_slug = payload.genre or ""` line:
 
@@ -620,12 +620,12 @@ mode: "GameMode | None" = None
 
 If `_error` / `_emit_session_connected` helpers don't exist by those names, replace them with the actual helper calls the existing legacy branch uses (locate by reading the legacy branch that follows this insertion point).
 
-- [ ] **Step 5: Run tests to verify pass**
+- [x] **Step 5: Run tests to verify pass**
 
 Run: `cd sidequest-server && uv run pytest tests/server/test_session_handler_slug_connect.py -v`
 Expected: 2 passed.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add sidequest-server/sidequest/protocol/messages.py sidequest-server/sidequest/server/session_handler.py sidequest-server/tests/server/test_session_handler_slug_connect.py
@@ -641,7 +641,7 @@ git commit -m "feat(ws): accept game_slug on SESSION_EVENT{connect}"
 - Create: `sidequest-ui/src/screens/GameScreen.tsx`
 - Test: `sidequest-ui/src/__tests__/slug-routing.test.tsx`
 
-- [ ] **Step 1: Write failing test**
+- [x] **Step 1: Write failing test**
 
 ```tsx
 // sidequest-ui/src/__tests__/slug-routing.test.tsx
@@ -676,12 +676,12 @@ describe('slug routing', () => {
 });
 ```
 
-- [ ] **Step 2: Run tests to verify failure**
+- [x] **Step 2: Run tests to verify failure**
 
 Run: `cd sidequest-ui && npm test -- --run src/__tests__/slug-routing.test.tsx`
 Expected: FAIL — App has no router.
 
-- [ ] **Step 3: Create GameScreen**
+- [x] **Step 3: Create GameScreen**
 
 ```tsx
 // sidequest-ui/src/screens/GameScreen.tsx
@@ -693,7 +693,7 @@ export function GameScreen({ mode }: { mode: 'solo' | 'multiplayer' }) {
 }
 ```
 
-- [ ] **Step 4: Rewire App.tsx router**
+- [x] **Step 4: Rewire App.tsx router**
 
 Read `sidequest-ui/src/App.tsx`, then replace the render tree with:
 
@@ -720,12 +720,12 @@ export default function App() {
 
 Where `LobbyRoot` is whatever the current App.tsx rendered at the root level; wrap that existing JSX in a `<div data-testid="lobby-root">`. Move the top-level `BrowserRouter` to `main.tsx` so tests' MemoryRouter works.
 
-- [ ] **Step 5: Run tests to verify pass**
+- [x] **Step 5: Run tests to verify pass**
 
 Run: `cd sidequest-ui && npm test -- --run src/__tests__/slug-routing.test.tsx`
 Expected: 3 passed.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add sidequest-ui/src/App.tsx sidequest-ui/src/screens/GameScreen.tsx sidequest-ui/src/main.tsx sidequest-ui/src/__tests__/slug-routing.test.tsx
@@ -740,7 +740,7 @@ git commit -m "feat(ui): /solo/:slug and /play/:slug routing"
 - Create: `sidequest-ui/src/screens/lobby/ModePicker.tsx`
 - Test: `sidequest-ui/src/screens/lobby/__tests__/ModePicker.test.tsx`
 
-- [ ] **Step 1: Write failing test**
+- [x] **Step 1: Write failing test**
 
 ```tsx
 // sidequest-ui/src/screens/lobby/__tests__/ModePicker.test.tsx
@@ -763,12 +763,12 @@ describe('ModePicker', () => {
 });
 ```
 
-- [ ] **Step 2: Run tests to verify failure**
+- [x] **Step 2: Run tests to verify failure**
 
 Run: `cd sidequest-ui && npm test -- --run src/screens/lobby/__tests__/ModePicker.test.tsx`
 Expected: file-not-found.
 
-- [ ] **Step 3: Implement ModePicker**
+- [x] **Step 3: Implement ModePicker**
 
 ```tsx
 // sidequest-ui/src/screens/lobby/ModePicker.tsx
@@ -809,12 +809,12 @@ export function ModePicker({
 }
 ```
 
-- [ ] **Step 4: Run tests to verify pass**
+- [x] **Step 4: Run tests to verify pass**
 
 Run: `cd sidequest-ui && npm test -- --run src/screens/lobby/__tests__/ModePicker.test.tsx`
 Expected: 2 passed.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add sidequest-ui/src/screens/lobby/ModePicker.tsx sidequest-ui/src/screens/lobby/__tests__/ModePicker.test.tsx
@@ -829,7 +829,7 @@ git commit -m "feat(ui): ModePicker radio for solo vs multiplayer"
 - Modify: `sidequest-ui/src/screens/lobby/useSessions.ts` (or the lobby "start game" handler — locate the current world-select submit)
 - Test: `sidequest-ui/src/screens/lobby/__tests__/useStartGame.test.tsx`
 
-- [ ] **Step 1: Write failing test**
+- [x] **Step 1: Write failing test**
 
 ```tsx
 // sidequest-ui/src/screens/lobby/__tests__/useStartGame.test.tsx
@@ -884,12 +884,12 @@ describe('useStartGame', () => {
 });
 ```
 
-- [ ] **Step 2: Run tests to verify failure**
+- [x] **Step 2: Run tests to verify failure**
 
 Run: `cd sidequest-ui && npm test -- --run src/screens/lobby/__tests__/useStartGame.test.tsx`
 Expected: file-not-found.
 
-- [ ] **Step 3: Implement the hook**
+- [x] **Step 3: Implement the hook**
 
 ```tsx
 // sidequest-ui/src/screens/lobby/useStartGame.ts
@@ -921,12 +921,12 @@ export function useStartGame() {
 }
 ```
 
-- [ ] **Step 4: Run tests to verify pass**
+- [x] **Step 4: Run tests to verify pass**
 
 Run: `cd sidequest-ui && npm test -- --run src/screens/lobby/__tests__/useStartGame.test.tsx`
 Expected: 2 passed.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add sidequest-ui/src/screens/lobby/useStartGame.ts sidequest-ui/src/screens/lobby/__tests__/useStartGame.test.tsx
@@ -940,12 +940,12 @@ git commit -m "feat(ui): useStartGame hook posts to /api/games + returns mode UR
 **Files:**
 - Modify: `sidequest-ui/src/screens/lobby/<current-world-select-component>.tsx` (locate with `grep -rn "worlds" sidequest-ui/src/screens/lobby`)
 
-- [ ] **Step 1: Find the current submit path**
+- [x] **Step 1: Find the current submit path**
 
 Run: `grep -rn "selectWorld\|startGame\|beginSession\|/api/saves/new" sidequest-ui/src/screens/lobby`
 Write down the filename + submit handler name.
 
-- [ ] **Step 2: Write failing integration test**
+- [x] **Step 2: Write failing integration test**
 
 ```tsx
 // sidequest-ui/src/screens/lobby/__tests__/world-select-mode-wiring.test.tsx
@@ -989,12 +989,12 @@ describe('world-select mode wiring', () => {
 });
 ```
 
-- [ ] **Step 3: Run to verify failure**
+- [x] **Step 3: Run to verify failure**
 
 Run: `cd sidequest-ui && npm test -- --run src/screens/lobby/__tests__/world-select-mode-wiring.test.tsx`
 Expected: FAIL (no mode radio, no navigation wiring).
 
-- [ ] **Step 4: Wire it into the world-select component**
+- [x] **Step 4: Wire it into the world-select component**
 
 In the component identified in step 1, add:
 
@@ -1017,12 +1017,12 @@ async function handleStart(genreSlug: string, worldSlug: string) {
 
 Render `<ModePicker value={mode} onChange={setMode} />` in the selected-world panel, and wire the "Start" button to `() => handleStart(selectedGenre, selectedWorld)`.
 
-- [ ] **Step 5: Run tests to verify pass**
+- [x] **Step 5: Run tests to verify pass**
 
 Run: `cd sidequest-ui && npm test -- --run src/screens/lobby/__tests__/world-select-mode-wiring.test.tsx`
 Expected: 1 passed.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add sidequest-ui/src/screens/lobby/
@@ -1036,7 +1036,7 @@ git commit -m "feat(ui): wire ModePicker + useStartGame into lobby world-select"
 **Files:**
 - Create: `sidequest-server/tests/server/test_slug_wiring.py`
 
-- [ ] **Step 1: Write the wiring test**
+- [x] **Step 1: Write the wiring test**
 
 ```python
 # sidequest-server/tests/server/test_slug_wiring.py
@@ -1074,17 +1074,17 @@ def test_create_game_then_connect_by_slug(app_client: TestClient):
         assert msg["type"] in ("SESSION_CONNECTED", "NARRATION", "STATE_UPDATE")
 ```
 
-- [ ] **Step 2: Locate the app factory**
+- [x] **Step 2: Locate the app factory**
 
 Run: `grep -rn "def create_app\|FastAPI()" sidequest-server/sidequest`
 If no `create_app` factory exists, import the app instance directly from wherever it's constructed and skip the `create_app(save_dir=...)` arg — instead `app.state.save_dir = tmp_path` after import.
 
-- [ ] **Step 3: Run the wiring test**
+- [x] **Step 3: Run the wiring test**
 
 Run: `cd sidequest-server && uv run pytest tests/server/test_slug_wiring.py -v`
 Expected: 1 passed. If it fails because SESSION_EVENT isn't returning anything recognizable, that's a real wiring bug — fix it in session_handler so the slug branch does emit SESSION_CONNECTED.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add sidequest-server/tests/server/test_slug_wiring.py
@@ -1098,7 +1098,7 @@ git commit -m "test(wiring): end-to-end — POST /api/games then WS connect by s
 **Files:**
 - Modify: `sidequest-server/sidequest/server/rest.py`
 
-- [ ] **Step 1: Mark legacy endpoints**
+- [x] **Step 1: Mark legacy endpoints**
 
 In `rest.py`, add deprecation log warnings to `GET /api/saves`, `POST /api/saves/new`, `DELETE /api/saves/{genre}/{world}/{player}`:
 
@@ -1113,7 +1113,7 @@ async def legacy_saves_new(...):
 
 Do **not** delete these yet. Plans 02/03 depend on nothing here; we can schedule removal as a chore after Plan 03 is in.
 
-- [ ] **Step 2: Commit**
+- [x] **Step 2: Commit**
 
 ```bash
 git add sidequest-server/sidequest/server/rest.py
