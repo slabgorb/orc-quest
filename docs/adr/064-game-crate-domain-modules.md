@@ -154,3 +154,14 @@ boundaries are the idiomatic Rust approach. Rejected.
   created by the refactor.
 - **Risk:** Over-nesting. If a domain has only 1-2 files, keep it flat at root
   rather than creating a directory for one file.
+
+## Post-port mapping (ADR-082)
+
+The game-crate domain split carried to `sidequest-server/sidequest/game/`,
+where each domain is a flat module at package root (not a subdirectory). Notable
+submodules: `projection/` (field projection with predicate rules), which is the
+one domain that did grow to directory scope.
+
+The over-nesting risk called out in the original ADR held up — no domain with
+1-2 files was given its own subdirectory during the port. The Python tree is
+flatter than the decomposition originally envisioned, which is correct.

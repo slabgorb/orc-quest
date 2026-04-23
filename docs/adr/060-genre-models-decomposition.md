@@ -92,3 +92,13 @@ benefit. Rejected.
 - **Negative:** One-time migration churn. Mitigated by the re-export strategy.
 - **Risk:** Over-splitting. If a domain module ends up under 50 lines, fold it back into
   its nearest neighbor.
+
+## Post-port mapping (ADR-082)
+
+The decomposition decision carried forward to Python intact. Rust layout →
+Python layout:
+
+- `sidequest-genre/src/models.rs` (monolithic) → `sidequest-server/sidequest/genre/models/` (package directory)
+- Submodules preserved by domain: `pack.py`, `world.py`, `character.py`, `narrative.py`, `lore.py`, `progression.py`, `confrontation.py`, `audio.py`, `scenario.py`, `inventory.py`, `voice.py`
+- Re-export strategy translates to `__init__.py` — public imports remain `from sidequest.genre.models import GenrePack, OceanProfile, …`
+- Rust's "impl blocks colocate with types" constraint does not apply in Python; methods live on the class in the same file as the class definition.

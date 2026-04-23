@@ -87,3 +87,20 @@ The pipeline is not polymorphic — there's one dispatch path. Rejected.
   an afterthought at the bottom of the file.
 - **Negative:** Pipeline reading requires jumping between files. Mitigated by `mod.rs`
   serving as the readable orchestration sequence with clear stage calls.
+
+## Post-port mapping (ADR-082)
+
+The dispatch-splitting decision is realized in Python as
+`sidequest-server/sidequest/server/dispatch/` (a package, not a single module).
+Each Rust pipeline stage became a sibling Python module:
+
+- `chargen_loadout.py`, `chargen_summary.py` — character creation stages
+- `combat_brackets.py`, `confrontation.py` — combat + confrontation engine hooks
+- `culture_context.py` — culture/voice injection
+- `encounter_lifecycle.py` — encounter state transitions
+- `opening_hook.py` — session opener
+- `scenario_bind.py` — scenario pack binding
+
+The `mod.rs`-as-orchestration-sequence pattern translates to `__init__.py` plus
+the top-level dispatch coordinator in `session_handler.py`. Aside handling is
+first-class in the pipeline.

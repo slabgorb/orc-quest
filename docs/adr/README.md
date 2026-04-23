@@ -1,7 +1,27 @@
 # Architecture Decision Records
 
-> Ported from sq-2 (Python) and adapted for the Rust rewrite.
-> Language-specific details updated; game design decisions preserved.
+> Ported from sq-2 (Python), adapted for the Rust rewrite (~2026-03-30 to 2026-04-19),
+> then carried back to Python per ADR-082.
+> Game design decisions preserved across both language transitions.
+
+## Port-era context
+
+The backend was **Rust** (`sidequest-api`) from ~2026-03-30 to 2026-04-19, then
+**ported back to Python** (`sidequest-server`) per **ADR-082**. Cutover completed
+2026-04-23. The Rust tree is preserved read-only at
+<https://github.com/slabgorb/sidequest-api> but no longer exists in the working
+tree. **ADR-085** governed tracker hygiene through the port window.
+
+When reading ADRs authored during the Rust era (roughly ADR-060 through ADR-081),
+interpret references to crates, `lib.rs`, `cargo`, `tokio`, `axum`, `serde`, and
+`rusqlite` as historical. The design decisions survived the port; the Rust-specific
+mechanism descriptions did not. Decomposition ADRs (060-065, 072) carry
+**"Post-port mapping"** notes at their tails that translate crate layouts to the
+current Python package structure. Narrative and game-system ADRs (014, 017-025,
+041-043, etc.) describe language-agnostic design and are unaffected by the port.
+
+Current backend reference documents: `docs/architecture.md`, `docs/tech-stack.md`,
+`docs/api-contract.md`.
 
 ## Core Architecture
 

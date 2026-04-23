@@ -83,3 +83,16 @@ or needs to be shared with another consumer. Rejected for now.
 - **Risk:** `accumulate.rs` may need access to `LoreStore` internals. If so, keep
   accumulation methods as `impl LoreStore` in `accumulate.rs` (Rust allows impl
   blocks in any module within the same crate).
+
+## Post-port mapping (ADR-082)
+
+Post-port, lore responsibilities are split across sibling modules in
+`sidequest-server/sidequest/game/`:
+
+- `lore_store.py` — `LoreStore`, fragment lookup, injection budgeting
+- `lore_seeding.py` — genre pack seeding
+- `lore_embedding.py` — cross-process embedding bridge to the daemon (ADR-048)
+
+The Rust `sidequest-game/src/lore.rs` single-file origin is historical. The
+"impl blocks in any module" accommodation in the original ADR is unnecessary in
+Python — accumulator methods live on `LoreStore` in `lore_store.py`.

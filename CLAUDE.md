@@ -54,14 +54,9 @@ sidequest-content/            # Genre packs — single source of truth (subrepo)
 │   ├── caverns_and_claudes/
 │   ├── elemental_harmony/
 │   ├── heavy_metal/
-│   ├── low_fantasy/
 │   ├── mutant_wasteland/
-│   ├── neon_dystopia/
-│   ├── pulp_noir/
-│   ├── road_warrior/
 │   ├── space_opera/
 │   ├── spaghetti_western/
-│   ├── victoria/
 │   └── <genre>/worlds/<world>/
 └── CLAUDE.md
 
@@ -111,6 +106,10 @@ sidequest-daemon/             # Python media services (subrepo)
 - **Genre packs** live in `sidequest-content/genre_packs/` (single source of truth), loaded by the server from `SIDEQUEST_GENRE_PACKS`
 - **Media daemon** is a Python sidecar for image/audio generation (Flux / Z-Image / ACE-Step)
 - **Save files** live at `~/.sidequest/saves/` (SQLite `.db` files, one per genre/world session) — not in the repo. See `.pennyfarthing/guides/save-management.md` for cleanup, inspection, and migration procedures
+
+### Port history
+
+The backend was briefly a Rust workspace (`sidequest-api`, ~2026-03-30 to 2026-04-19). **ADR-082** ported it back to Python as `sidequest-server`; **ADR-085** governed tracker hygiene through cutover. The Rust tree no longer exists on disk locally, but is preserved as a read-only reference at **https://github.com/slabgorb/sidequest-api** — use it when an ADR references a Rust-specific layout and you need to trace the original implementation. Older ADRs that reference Rust-specific layouts (crates, `lib.rs`, cargo decomposition) are preserved as historical design records — see `docs/adr/README.md` for the port-era context header and per-ADR post-port mapping notes.
 
 ## Commands
 

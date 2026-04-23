@@ -85,3 +85,19 @@ would worsen that problem. Rejected.
 - **Negative:** More `use` imports in each submodule. Acceptable trade-off.
 - **Negative:** `websocket.rs` will be ~800 lines. Still large, but it's a single
   cohesive concern (WS lifecycle) rather than six unrelated ones.
+
+## Post-port mapping (ADR-082)
+
+The `lib.rs` extraction decision was realized directly in the Python port.
+`sidequest-server/src/lib.rs` has no Python counterpart by name; the six concerns
+live as separate modules in `sidequest-server/sidequest/server/`:
+
+- **Watcher / OTEL types** → `watcher.py`
+- **App state / session mgmt** → `session_handler.py`, `session_room.py`
+- **Router construction / HTTP handlers** → `app.py`, `rest.py`
+- **WebSocket lifecycle** → `websocket.py`
+- **Dispatch pipeline** → `dispatch/` package (see ADR-063)
+
+CLI args live in `app.py`'s entry point (`main()`) rather than a dedicated struct;
+uvicorn + FastAPI handles server bootstrap. The "lib.rs as junk drawer" failure
+mode cannot recur — there is no lib.rs.
