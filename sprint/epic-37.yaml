@@ -594,3 +594,15 @@ stories:
       - No call sites remain referencing either the legacy endpoints or the old helper (grep is clean).
       - All existing tests pass; any tests that exercised the legacy helpers are deleted or retargeted at the session-scoped replacement.
     type: chore
+  - id: 37-53
+    title: Verify playtest 2026-04-23 fixes — slug-connect player_name + watcher reload-safety end-to-end
+    points: 1
+    priority: p1
+    status: done
+    repos: ui,server
+    workflow: trivial
+    completed: '2026-04-23'
+    type: chore
+    branch: feat/37-53-playtest-verify-2026-04-23
+    review_findings: AC 2, AC 3, AC 4 incomplete — Family A (orthogonal to Family B finding) needs Playwright verification. Dev's Family B finding accepted as delivery finding. Send back for AC 2 + AC 3 + AC 4 verification.
+    review_verdict: approved
