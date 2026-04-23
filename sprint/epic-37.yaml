@@ -606,3 +606,11 @@ stories:
     branch: feat/37-53-playtest-verify-2026-04-23
     review_findings: AC 2, AC 3, AC 4 incomplete — Family A (orthogonal to Family B finding) needs Playwright verification. Dev's Family B finding accepted as delivery finding. Send back for AC 2 + AC 3 + AC 4 verification.
     review_verdict: approved
+  - id: 37-54
+    title: 'Family B scope correction — remove inert watcher reload code from PR #31, keep hello-frame guard, rewrite AC for symptom-based verification'
+    points: 2
+    priority: p2
+    status: backlog
+    repos: server
+    workflow: tdd
+    type: refactor
