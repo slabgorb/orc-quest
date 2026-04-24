@@ -54,8 +54,12 @@ cascade decides *how it's painted*.
 
 ### Out of scope
 
-- **PC fidelity pipeline** (ADR-034) — this spec surfaces the PC/NPC split in
-  the catalog but does not implement IP-Adapter re-rendering
+- **Runtime model conditioning for PC fidelity** — ADR-034's tiered
+  img2img + IP-Adapter approach was superseded by ADR-086 on 2026-04-24.
+  This spec delivers character identity through catalog-authored per-LOD
+  tokens; if token authoring proves insufficient for player ownership
+  of their PCs in practice, a future ADR can revisit — but that work is
+  not in this spec.
 - **Per-world `visual_style.yaml` authoring** (ADR-086 story 3) — this spec
   wires the world layer; the worlds themselves get authored later
 - **Per-world `cultures/<slug>.yaml` authoring** (ADR-086 story 5) — same;
