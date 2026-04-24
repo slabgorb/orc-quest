@@ -34,7 +34,6 @@
 | [ADR-055: Room Graph Navigation](055-room-graph-navigation.md) | ◇ proposed | — |
 | [ADR-058: Claude Subprocess OTEL Passthrough](058-claude-subprocess-otel-passthrough.md) | ◇ proposed | — |
 | [ADR-065: Protocol Message Decomposition — Split message.rs by Domain](065-protocol-message-decomposition.md) | ◇ proposed | — |
-| [ADR-071: Tactical ASCII Grid Maps — Deterministic Room Layout via ASCII Art](071-tactical-ascii-grid-maps.md) | ◇ proposed | [ADR-087: Post-Port Subsystem Restoration Plan](087-post-port-subsystem-restoration-plan.md) |
 | [ADR-072: System/Milieu Decomposition — Separating Mechanics from Aesthetic](072-system-milieu-decomposition.md) | ◇ proposed | — |
 | [ADR-074: Dice Resolution Protocol — Player-Facing Rolls via WebSocket](074-dice-resolution-protocol.md) | ◇ proposed | — |
 | [ADR-075: 3D Dice Rendering — Three.js + Rapier Physics Overlay](075-3d-dice-rendering.md) | ◇ proposed | — |

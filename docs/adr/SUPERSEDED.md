@@ -26,6 +26,10 @@
 - [ADR-032: Genre-Specific LoRA Style Training for Flux Image Generation](032-genre-lora-style-training.md) — superseded
 - [ADR-084: Compositional-Dimension Specialization for Style LoRAs](084-lora-composition-dimension.md) — superseded
 
+### Superseded by [ADR-086: Image-Composition Taxonomy — Portraits, POIs, Illustrations](086-image-composition-taxonomy.md)
+
+- [ADR-071: Tactical ASCII Grid Maps — Deterministic Room Layout via ASCII Art](071-tactical-ascii-grid-maps.md) — superseded
+
 ## Historical — no successor
 
 These ADRs describe features or decisions that were cut without direct replacement.
