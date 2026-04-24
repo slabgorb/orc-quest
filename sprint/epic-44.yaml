@@ -1,0 +1,45 @@
+id: '44'
+type: epic
+title: Visual Recipes — canary + live-render wiring
+description: Follow-on work from the Explicit Visual Recipes plan (merged 2026-04-24, sidequest-daemon#47 / content#119 / server#44 / orchestrator#133). The composer is green end-to-end against the fixture pack; live renders are not yet wired. This epic tracks the three deferred items that gate the Leone canary from the plan's Phase 10.
+priority: p2
+status: backlog
+repos: daemon,content
+stories:
+  - id: 44-1
+    title: Leone canary — live extreme_closeup_leone render validation
+    description: |-
+      Run Plan Phase 10 Task 42 — the Leone live-render canary that proves extreme_closeup_leone produces a believable cropped portrait end-to-end. Composer and CLI are green (daemon#47); this story covers the prerequisites that gate a live render.
+
+      **Pre-requisite wiring (must land first):**
+      1. Migrate sidequest-daemon/sidequest_daemon/media/daemon.py compose block (lines ~412-453) and sidequest_daemon/media/renderer.py:77 off the old PromptComposer(visual_tag_overrides=…).compose(cue, style) signature. Both call sites are currently broken post-Task-13 rewrite but uncalled by any test. Route through workers/zimage_mlx_worker.compose_prompt_for(cue) which already exists.
+      2. Thread world and genre through the JSON-line worker protocol so the worker can scope CharacterCatalog/PlaceCatalog/StyleCatalog per render. StageCue.metadata['world'] and ['genre'] are the contract but the transport needs them set by the server (or inferred from the active save).
+      3. Post-processing wiring in the worker: after Z-Image inference, camera_loader.get(cue.camera).post, required_render_size for pre-crop budget, apply_post after render. Pieces exist (post_processor.py, camera_specs.py.post) — just need to be wired into the render loop.
+
+      **Canary procedure:**
+      - Pick canary A: npc:odige_fuseborn in mutant_wasteland/flickering_reach (requires content-side LOD authoring, tracked separately as a content-writer follow-up)
+      - Pick canary B: a caverns_and_claudes major NPC with full LODs authored
+      - Build StageCue(tier=PORTRAIT, subject='npc:<x>', characters=['npc:<x>'], camera=CameraPreset.extreme_closeup_leone, metadata={'world':'…','genre':'…'})
+      - Submit via daemon RPC; inspect output image
+      - Judge: does it read as a Leone extreme close-up? Does post-crop work (output is a smaller portion of a larger render)? Does character identity survive the crop?
+
+      **Output:**
+      - docs/leone-canary-results.md (or docs/content-drift-triage.md append) with findings per canary
+      - If successful: mark extreme_closeup_leone validated for production use
+      - If not: propose one of (a) stronger prompt, (b) higher pre-crop resolution, (c) face-detection crop center, (d) downgrade preset claims
+
+      **Dependencies this story doesn't cover** (each should be its own follow-up):
+      - flickering_reach portrait_manifest + history LOD authoring (blocked on either ruamel.yaml migration upgrade OR manual authoring pass)
+      - T5 tokenizer + visual_budget.yaml CI gate (ADR-086 story 1 — plan's closing note calls this out as the next logical follow-on)
+    points: 5
+    priority: p2
+    status: backlog
+    repos: daemon,content
+    workflow: tdd
+    acceptance_criteria:
+      - daemon.py and renderer.py compose sites use compose_prompt_for(cue) — no references to PromptComposer(visual_tag_overrides=…) remain
+      - Worker JSON-line protocol carries world/genre (schema change + one passing integration test)
+      - 'Post-processing wired: extreme_closeup_leone renders at pre-crop resolution, apply_post produces the declared 25% center crop'
+      - Live render of one mutant_wasteland canary and one caverns_and_claudes canary submitted and saved
+      - docs/leone-canary-results.md committed with findings per canary
+      - OTEL span render.prompt_composed visible in GM panel during the live render
