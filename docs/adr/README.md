@@ -57,202 +57,230 @@ Current backend reference documents: `docs/architecture.md`, `docs/tech-stack.md
 `docs/api-contract.md`. An abbreviated index of this document is reproduced in
 `CLAUDE.md` for agent activation context.
 
+<!-- ADR-INDEX:GENERATED:BEGIN -->
+
+> **Generated.** Do not edit this section by hand. Update frontmatter on the individual ADR files and rerun `scripts/regenerate_adr_indexes.py`. The preamble above the BEGIN marker and any prose below the END marker are preserved.
+
 ## Core Architecture
 
-| ADR | Status | Summary |
-|-----|--------|---------|
-| [Claude CLI Only](001-claude-cli-only.md) | Accepted | All LLM calls via `claude -p` subprocess, no Anthropic SDK |
-| [SOUL Principles](002-soul-principles.md) | Accepted | SOUL.md parsed and injected into every agent prompt |
-| [Genre Pack Architecture](003-genre-pack-architecture.md) | Accepted | Swappable YAML directories configure all game systems |
-| [Lazy Genre Binding](004-lazy-genre-binding.md) | Accepted | Server starts genre-agnostic; genre bound at runtime on connect |
-| [Background-First Pipeline](005-background-first-pipeline.md) | Accepted | Only text response is critical path; everything else spawns |
-| [Graceful Degradation](006-graceful-degradation.md) | Accepted | Fallback chains across all subsystems |
-| [Unified Character Model](007-unified-character-model.md) | Accepted | Narrative identity + mechanical stats in one struct |
+| ADR | Status | Impl |
+|-----|--------|------|
+| [ADR-001: Claude CLI Only](001-claude-cli-only.md) | ✓ accepted | live |
+| [ADR-002: SOUL Principles](002-soul-principles.md) | ✓ accepted | — |
+| [ADR-003: Genre Pack Architecture](003-genre-pack-architecture.md) | ✓ accepted | live |
+| [ADR-004: Lazy Genre Binding](004-lazy-genre-binding.md) | ✓ accepted | live |
+| [ADR-005: Background-First Pipeline](005-background-first-pipeline.md) | ✓ accepted | live |
+| [ADR-006: Graceful Degradation](006-graceful-degradation.md) | ✓ accepted | live |
+| [ADR-007: Unified Character Model](007-unified-character-model.md) | ✓ accepted | live |
 
 ## Prompt Engineering
 
-| ADR | Status | Summary |
-|-----|--------|---------|
-| [Three-Tier Rule Taxonomy](008-three-tier-prompt-taxonomy.md) | Accepted | Critical/Firm/Coherence rules with genre pack overrides |
-| [Attention-Aware Prompt Zones](009-attention-aware-prompt-zones.md) | Accepted | EARLY/VALLEY/LATE zones position content by attention priority |
+| ADR | Status | Impl |
+|-----|--------|------|
+| [ADR-008: Three-Tier Rule Taxonomy](008-three-tier-prompt-taxonomy.md) | ✓ accepted | live |
+| [ADR-009: Attention-Aware Prompt Zones](009-attention-aware-prompt-zones.md) | ✓ accepted | live |
 
 ## Agent System
 
-| ADR | Status | Summary |
-|-----|--------|---------|
-| [Intent-Based Agent Routing](010-intent-based-agent-routing.md) | **Superseded by ADR-067** | LLM classifier routed player input to specialist agents (historical) |
-| [World State JSON Patches](011-world-state-json-patches.md) | Accepted | Agents emit patches, not full state replacements |
-| [Agent Session Management](012-agent-session-management.md) | Accepted | Persistent Claude sessions with stale recovery |
-| [Lazy JSON Extraction](013-lazy-json-extraction.md) | Superseded by ADR-057 | Three-tier fallback replaced by sidecar tool calls |
+| ADR | Status | Impl |
+|-----|--------|------|
+| [ADR-011: World State JSON Patches](011-world-state-json-patches.md) | ✓ accepted | live |
+| [ADR-012: Agent Session Management](012-agent-session-management.md) | ✓ accepted | live |
+| [ADR-066: Persistent Opus Narrator Sessions](066-persistent-opus-narrator-sessions.md) | ✓ accepted | live |
+| [ADR-067: Unified Narrator Agent — Collapse Multi-Agent into Single Persistent Session](067-unified-narrator-agent.md) | ✓ accepted | live |
 
 ## Game Systems
 
-| ADR | Status | Summary |
-|-----|--------|---------|
-| [Diamonds and Coal](014-diamonds-and-coal.md) | Accepted | `narrative_weight` scales detail across all output systems |
-| [Character Builder State Machine](015-character-builder-state-machine.md) | Accepted | Genre-driven scene-based creation with narrative hooks |
-| [Three-Mode Character Creation](016-three-mode-chargen.md) | Accepted | Menu, guided, and freeform creation — same Character output |
-| [Cinematic Chase Engine](017-cinematic-chase-engine.md) | Accepted | Beat-based chases with Lead variable and rig mechanics |
-| [Trope Engine](018-trope-engine.md) | Accepted | Genre-defined narrative pacing via trope lifecycle |
-| [Cartography Discovery](019-cartography-discovery.md) | Accepted | Graph-based world topology with origin-seeded fog of war |
-| [NPC Disposition System](020-npc-disposition-system.md) | Accepted | Numeric disposition with qualitative attitude derivation |
-| [Progression System](021-progression-system.md) | Accepted | Four tracks: milestones, affinities, item evolution, wealth |
-| [WorldBuilder Maturity](022-world-builder-maturity.md) | Accepted | Campaign maturity states for in medias res starts |
-| [Session Persistence](023-session-persistence.md) | Accepted | State + narrative log with "Previously On..." recap |
-| [Dual-Track Tension Model](024-dual-track-tension-model.md) | Accepted | drama_weight from gambler's ramp + HP stakes + event spikes |
-| [Pacing Detection](025-pacing-detection.md) | Accepted | Quiet turn counting + trope-aware escalation hints |
-| [Dice Resolution Protocol](074-dice-resolution-protocol.md) | Proposed | Server-authoritative dice rolls via WebSocket with sealed-letter integration |
-| [Dogfight Subsystem](077-dogfight-subsystem.md) | Proposed | StructuredEncounter extension for sealed-letter fighter duels (per-actor descriptors + cross-product lookup table) |
-| [Edge / Composure + Mechanical Advancement + Push-Currency Rituals](078-edge-composure-advancement-rituals.md) | Proposed | Replace phantom HP with first-class `EdgePool` on `CreatureCore`; first hard link from ADR-021 progression to engine state; extend `pact_working` beats with `resource_deltas` for push-currency spellcraft |
-| [Unified Narrative Weight Trait](080-unified-narrative-weight-trait.md) | Accepted | ADR-014 enforcement — `NarrativeWeight` newtype + `Weighted` trait unifies weight across inventory, tropes, beats, scenes, NPCs, encounters |
-| [Advancement Effect Variant Expansion (v1)](081-advancement-effect-variant-expansion.md) | Proposed | Adds `AllyEdgeIntercept` + `ConditionalEffectGating` variants to ADR-078's `AdvancementEffect` enum for Prot'Thokk's *Lil' Sebastian Stands* and Th`rook's *The Dose Helps* |
+| ADR | Status | Impl |
+|-----|--------|------|
+| [ADR-014: Diamonds and Coal](014-diamonds-and-coal.md) | ✓ accepted | — |
+| [ADR-015: Character Builder State Machine](015-character-builder-state-machine.md) | ✓ accepted | live |
+| [ADR-016: Three-Mode Character Creation](016-three-mode-chargen.md) | ✓ accepted | live |
+| [ADR-018: Trope Engine](018-trope-engine.md) | ✓ accepted | **drift** → ADR-087 |
+| [ADR-019: Cartography Discovery](019-cartography-discovery.md) | ✓ accepted | live |
+| [ADR-020: NPC Disposition System](020-npc-disposition-system.md) | ✓ accepted | **drift** → ADR-087 |
+| [ADR-021: Progression System](021-progression-system.md) | ✓ accepted | live |
+| [ADR-022: WorldBuilder Maturity](022-world-builder-maturity.md) | ✓ accepted | live |
+| [ADR-023: Session Persistence](023-session-persistence.md) | ✓ accepted | live |
+| [ADR-024: Dual-Track Tension Model](024-dual-track-tension-model.md) | ✓ accepted | live |
+| [ADR-025: Pacing Detection](025-pacing-detection.md) | ✓ accepted | live |
+| [ADR-074: Dice Resolution Protocol — Player-Facing Rolls via WebSocket](074-dice-resolution-protocol.md) | ◇ proposed | deferred |
+| [ADR-077: Dogfight Subsystem via StructuredEncounter Extension](077-dogfight-subsystem.md) | ◇ proposed | deferred → ADR-087 |
+| [ADR-078: Edge / Composure Combat, Mechanical Advancement, and Push-Currency Rituals](078-edge-composure-advancement-rituals.md) | ◇ proposed | deferred → ADR-087 |
+| [ADR-080: Unified Narrative Weight Trait](080-unified-narrative-weight-trait.md) | ✓ accepted | — |
+| [ADR-081: Advancement Effect Variant Expansion (v1)](081-advancement-effect-variant-expansion.md) | ◇ proposed | deferred → ADR-087 |
 
 ## Frontend / Protocol
 
-| ADR | Status | Summary |
-|-----|--------|---------|
-| [Client-Side State Mirror](026-client-state-mirror.md) | Accepted | Server piggybacks state deltas; slash commands resolve locally |
-| [Reactive State Messaging](027-reactive-state-messaging.md) | Accepted | State changes emit typed events to connected clients |
-| [3D Dice Rendering](075-3d-dice-rendering.md) | Proposed | Three.js + Rapier overlay with genre-themed skins and deterministic replay |
-| [Genre Theme Unification](079-genre-theme-unification.md) | Accepted | Single-source genre CSS with `:root[data-genre]` specificity; kill ThemeProvider and JS bridge |
+| ADR | Status | Impl |
+|-----|--------|------|
+| [ADR-026: Client-Side State Mirror](026-client-state-mirror.md) | ✓ accepted | live |
+| [ADR-027: Reactive State Messaging](027-reactive-state-messaging.md) | ✓ accepted | live |
+| [ADR-075: 3D Dice Rendering — Three.js + Rapier Physics Overlay](075-3d-dice-rendering.md) | ◇ proposed | deferred |
+| [ADR-079: Genre Theme System Unification](079-genre-theme-unification.md) | ✓ accepted | live |
 
 ## Multiplayer
 
-| ADR | Status | Summary |
-|-----|--------|---------|
-| [Perception Rewriter](028-perception-rewriter.md) | Accepted | Per-player narrative rewriting based on status effects |
-| [Guest NPC Players](029-guest-npc-players.md) | Proposed | Guest players control consequential NPCs |
-| [Scenario Packs](030-scenario-packs.md) | Proposed | Hidden-role scenario engine with clue DAGs |
-| [Multiplayer Turn Coordination](036-multiplayer-turn-coordination.md) | Accepted | Three-mode FSM with adaptive barrier and claim-election |
-| [Shared-World / Per-Player State](037-shared-world-per-player-state.md) | Accepted | SharedGameSession keyed by genre:world, sync-to-locals pattern |
-| [WebRTC Voice Chat (Disabled)](054-webrtc-voice-chat-disabled.md) | Historical | Was disabled for echo feedback; WebRTC + Whisper files since **deleted** along with TTS removal |
+| ADR | Status | Impl |
+|-----|--------|------|
+| [ADR-028: Perception Rewriter](028-perception-rewriter.md) | ✓ accepted | live |
+| [ADR-029: Guest NPC Players](029-guest-npc-players.md) | ◇ proposed | deferred |
+| [ADR-030: Scenario Packs](030-scenario-packs.md) | ◇ proposed | deferred |
+| [ADR-036: Multiplayer Turn Coordination](036-multiplayer-turn-coordination.md) | ✓ accepted | live |
+| [ADR-037: Shared-World / Per-Player State Split](037-shared-world-per-player-state.md) | ✓ accepted | live |
 
 ## Transport / Infrastructure
 
-| ADR | Status | Summary |
-|-----|--------|---------|
-| [Unix Socket IPC for Python Sidecar](035-unix-socket-ipc-sidecar.md) | Accepted | Rust/Python split via Unix socket JSON-RPC, daemon stays warm |
-| [WebSocket Transport Architecture](038-websocket-transport-architecture.md) | Accepted | Reader/writer split, three broadcast channels, ProcessingGuard |
-| [Prompt Injection Sanitization](047-prompt-injection-sanitization.md) | Accepted | Protocol-layer sanitization of all player text before agent prompts |
-| [GPU Memory Budget Coordinator](046-gpu-memory-budget-coordinator.md) | Accepted | LRU eviction across ML models on 80GB Apple Silicon budget |
+| ADR | Status | Impl |
+|-----|--------|------|
+| [ADR-035: Unix Socket IPC for Python Sidecar](035-unix-socket-ipc-sidecar.md) | ✓ accepted | live |
+| [ADR-038: WebSocket Transport Architecture](038-websocket-transport-architecture.md) | ✓ accepted | live |
+| [ADR-046: GPU Memory Budget Coordinator](046-gpu-memory-budget-coordinator.md) | ✓ accepted | live |
+| [ADR-047: Prompt Injection Sanitization Layer](047-prompt-injection-sanitization.md) | ✓ accepted | live |
 
 ## Narrator / Text
 
-| ADR | Status | Summary |
-|-----|--------|---------|
-| [Narrator Structured Output](039-narrator-structured-output.md) | Accepted | JSON sidecar block — all extractions in single parse pass |
-| [Narrator Verbosity × Vocabulary](049-narrator-verbosity-vocabulary.md) | Accepted | Two orthogonal axes for text length and diction complexity |
-| [Narrative Character Sheet](040-narrative-character-sheet.md) | Accepted | No raw stats exposed — all values narrated through genre voice |
-| [Narrative Axis System](052-narrative-axis-system.md) | Accepted | Data-driven /tone command with genre-defined axes and presets |
+| ADR | Status | Impl |
+|-----|--------|------|
+| [ADR-040: Narrative Character Sheet (No Raw Stats)](040-narrative-character-sheet.md) | ✓ accepted | live |
+| [ADR-049: Narrator Verbosity and Vocabulary (Two-Axis Text Tuning)](049-narrator-verbosity-vocabulary.md) | ✓ accepted | live |
+| [ADR-052: Narrative Axis System (/tone Command)](052-narrative-axis-system.md) | ✓ accepted | live |
+| [ADR-057: Narrator Crunch Separation — LLM Narrates, Scripts Crunch](057-narrator-crunch-separation.md) | ✓ accepted | *partial* → ADR-059 |
 
 ## NPC / Character Systems
 
-| ADR | Status | Summary |
-|-----|--------|---------|
-| [Genie Wish / Consequence Engine](041-genie-wish-consequence-engine.md) | Accepted | "Yes, and" power-grab handling with rotating consequence types |
-| [OCEAN Personality Live Evolution](042-ocean-personality-live-evolution.md) | Accepted | Narrator-extracted events shift NPC personality profiles in play |
-| [Conlang Morpheme System](043-conlang-morpheme-system.md) | Accepted | Seeded procedural naming with morphological root consistency |
-| [Scenario System](053-scenario-system.md) | Accepted | Clue DAG, belief state, gossip propagation, accusation evaluator |
+| ADR | Status | Impl |
+|-----|--------|------|
+| [ADR-041: Genie Wish / Consequence Engine](041-genie-wish-consequence-engine.md) | ✓ accepted | **drift** → ADR-087 |
+| [ADR-042: OCEAN Personality Live Evolution](042-ocean-personality-live-evolution.md) | ✓ accepted | **drift** → ADR-087 |
+| [ADR-043: Conlang Morpheme System](043-conlang-morpheme-system.md) | ✓ accepted | **drift** → ADR-087 |
+| [ADR-053: Scenario System (Clue Graph, Belief State, Gossip Propagation)](053-scenario-system.md) | ✓ accepted | **drift** → ADR-087 |
 
 ## Media / Audio / Rendering
 
-| ADR | Status | Summary |
-|-----|--------|---------|
-| [Speculative Prerendering](044-speculative-prerendering.md) | Accepted | Latency-hiding image renders queued against turn boundaries (originally "during TTS playback") |
-| [Client Audio Engine](045-client-audio-engine.md) | Partially superseded | Web Audio graph now two-channel (music + SFX) after TTS removal; Crossfader still active |
-| [Image Pacing Throttle](050-image-pacing-throttle.md) | Accepted | Configurable cooldown with DM force-override, separate from BeatFilter |
-| [Lore RAG Store](048-lore-rag-store.md) | Accepted | Cross-process embedding pipeline with budget-aware context selection |
-| [MLX Image Renderer](070-mlx-image-renderer.md) | Accepted | Replace PyTorch/diffusers Flux worker with Apple MLX runtime |
-| [Multi-LoRA Stacking and Verification Pipeline](083-multi-lora-stacking-and-verification.md) | **Superseded by ADR-070** | Historical — LoRA pipeline withdrawn 2026-04-24 in favor of Z-Image's text-prompt adherence |
-| [Image-Composition Taxonomy (Portraits / POIs / Illustrations)](086-image-composition-taxonomy.md) | Proposed | Three-category prompt-layer taxonomy; GENRE → WORLD → SCENE cascade; CAMERA parameter; token-budget discipline for the no-LoRA pipeline |
+| ADR | Status | Impl |
+|-----|--------|------|
+| [ADR-044: Speculative Prerendering During TTS Playback](044-speculative-prerendering.md) | ✓ accepted | **drift** → ADR-087 |
+| [ADR-045: Client Audio Engine](045-client-audio-engine.md) | ✓ accepted | *partial* → ADR-076 |
+| [ADR-048: Lore RAG Store with Cross-Process Embedding](048-lore-rag-store.md) | ✓ accepted | live |
+| [ADR-050: Image Pacing Throttle](050-image-pacing-throttle.md) | ✓ accepted | live |
+| [ADR-070: MLX Image Renderer — Replace PyTorch/diffusers with Apple MLX](070-mlx-image-renderer.md) | ✓ accepted | live |
+| [ADR-083: Multi-LoRA Stacking and Verification Pipeline](083-multi-lora-stacking-and-verification.md) | ◇ proposed | deferred |
+| [ADR-086: Image-Composition Taxonomy — Portraits, POIs, Illustrations](086-image-composition-taxonomy.md) | ◇ proposed | deferred |
 
 ## Turn Management
 
-| ADR | Status | Summary |
-|-----|--------|---------|
-| [Two-Tier Turn Counter](051-two-tier-turn-counter.md) | Accepted | Interaction (monotonic) vs Round (narrative beats) separation |
+| ADR | Status | Impl |
+|-----|--------|------|
+| [ADR-051: Two-Tier Turn Counter (Interaction vs. Round)](051-two-tier-turn-counter.md) | ✓ accepted | live |
 
 ## Room Graph / Dungeon Crawl
 
-| ADR | Status | Summary |
-|-----|--------|---------|
-| [Room Graph Navigation](055-room-graph-navigation.md) | Accepted | Graph-based dungeon navigation with resource pressure |
-| [Tactical ASCII Grid Maps](071-tactical-ascii-grid-maps.md) | Proposed | Deterministic room layout via ASCII art for tactical play |
+| ADR | Status | Impl |
+|-----|--------|------|
+| [ADR-055: Room Graph Navigation](055-room-graph-navigation.md) | ◇ proposed | deferred |
+| [ADR-071: Tactical ASCII Grid Maps — Deterministic Room Layout via ASCII Art](071-tactical-ascii-grid-maps.md) | ◇ proposed | deferred → ADR-087 |
 
 ## Code Generation / Tooling
 
-| ADR | Status | Summary |
-|-----|--------|---------|
-| [Script Tool Generators](056-script-tool-generators.md) | Accepted | Offload structured generation from LLM to Rust CLI binaries |
-| [Monster Manual — Server-Side Pre-Generation](059-monster-manual-server-side-pregen.md) | Accepted | Pre-gen NPCs/encounters via Rust tools, inject into game_state |
-| [Scenario Fixtures](069-scenario-fixtures.md) | Accepted | Pre-configured world states for testing |
-
-## Narrator Architecture
-
-| ADR | Status | Summary |
-|-----|--------|---------|
-| [Narrator Crunch Separation](057-narrator-crunch-separation.md) | Accepted | LLM narrates prose, sidecar tools handle mechanical state |
-| [Persistent Opus Narrator Sessions](066-persistent-opus-narrator-sessions.md) | Accepted | Long-lived Opus sessions for narrator continuity |
-| [Unified Narrator Agent](067-unified-narrator-agent.md) | Accepted (migration in progress) | Collapse multi-agent into single persistent session — `intent_router` still resident |
-| [Local Fine-Tuned Model Architecture](073-local-fine-tuned-model-architecture.md) | Accepted | Local fine-tuned model plan to replace generic Claude prompting for narrator |
-| [Narration Protocol Collapse Post-TTS](076-narration-protocol-collapse-post-tts.md) | Proposed | Remove `NarrationChunk` and TTS-era UI buffer plumbing |
+| ADR | Status | Impl |
+|-----|--------|------|
+| [ADR-059: Monster Manual — Server-Side Pre-Generation via Game-State Injection](059-monster-manual-server-side-pregen.md) | ✓ accepted | **drift** → ADR-087 |
+| [ADR-069: Scenario Fixtures — Pre-configured World States for Testing](069-scenario-fixtures.md) | ✓ accepted | **drift** → ADR-087 |
 
 ## Observability
 
-| ADR | Status | Summary |
-|-----|--------|---------|
-| [Claude Subprocess OTEL Passthrough](058-claude-subprocess-otel-passthrough.md) | Accepted | See inside Claude CLI subprocess calls via OTEL spans |
+| ADR | Status | Impl |
+|-----|--------|------|
+| [ADR-058: Claude Subprocess OTEL Passthrough](058-claude-subprocess-otel-passthrough.md) | ◇ proposed | deferred |
 
 ## Codebase Decomposition
 
-| ADR | Status | Summary |
-|-----|--------|---------|
-| [Genre Models Decomposition](060-genre-models-decomposition.md) | Accepted | Split models.rs by domain |
-| [Lore Module Decomposition](061-lore-module-decomposition.md) | Accepted | Split lore.rs by responsibility |
-| [Server lib.rs Extraction](062-server-lib-extraction.md) | Accepted | Route groups, state, and watcher events |
-| [Dispatch Handler Splitting](063-dispatch-handler-splitting.md) | Accepted | Split dispatch by pipeline stage |
-| [Game Crate Domain Modules](064-game-crate-domain-modules.md) | Partially accepted | Most files flat at `sidequest/game/` root; `projection/` is the one subdirectory |
-| [Protocol Message Decomposition](065-protocol-message-decomposition.md) | Proposed (unexecuted) | Plan to split message.rs by domain; `message.rs` remains a single file |
-| [Magic Literal Extraction](068-magic-literal-extraction.md) | Accepted | Domain-scoped constants replace magic literals |
-| [System/Milieu Decomposition](072-system-milieu-decomposition.md) | Proposed | Split genre packs into mechanics (system), aesthetic (milieu), and world instances |
+| ADR | Status | Impl |
+|-----|--------|------|
+| [ADR-060: Genre Models Decomposition — Split models.rs by Domain](060-genre-models-decomposition.md) | ✓ accepted | live |
+| [ADR-061: Lore Module Decomposition — Split lore.rs by Responsibility](061-lore-module-decomposition.md) | ✓ accepted | live |
+| [ADR-062: Server lib.rs Extraction — Route Groups, State, and Watcher Events](062-server-lib-extraction.md) | ✓ accepted | live |
+| [ADR-063: Dispatch Handler Splitting — By Pipeline Stage](063-dispatch-handler-splitting.md) | ✓ accepted | live |
+| [ADR-064: Game Crate Domain Modules — Organize 69 Flat Files](064-game-crate-domain-modules.md) | ✓ accepted | live |
+| [ADR-065: Protocol Message Decomposition — Split message.rs by Domain](065-protocol-message-decomposition.md) | ◇ proposed | deferred |
+| [ADR-068: Magic Literal Extraction — Domain-Scoped Constants](068-magic-literal-extraction.md) | ✓ accepted | live |
+| [ADR-072: System/Milieu Decomposition — Separating Mechanics from Aesthetic](072-system-milieu-decomposition.md) | ◇ proposed | deferred |
+| [ADR-088: ADR Frontmatter Schema and Auto-Generated Indexes](088-adr-frontmatter-schema.md) | ✓ accepted | deferred |
 
-## Media Pipeline (stays in sidequest-daemon)
+## Narrator Architecture
 
-These decisions govern the Python media daemon, not the Rust API. Listed here
-for reference — the daemon is a separate repo (`sidequest-daemon`).
+| ADR | Status | Impl |
+|-----|--------|------|
+| [ADR-073: Local Fine-Tuned Model Architecture](073-local-fine-tuned-model-architecture.md) | ✓ accepted | live |
+| [ADR-076: Narration Protocol Collapse Post-TTS Removal](076-narration-protocol-collapse-post-tts.md) | ◇ proposed | deferred |
 
-| ADR | Origin | Status | Summary |
-|-----|--------|--------|---------|
-| Renderer Daemon | sq-2 | Active | Persistent daemon with Unix socket and multi-model GPU pool |
-| Flux Worker | sq-2 | Active | Schnell for text overlays, dev for scene art and cartography |
-| Scene Interpreter | sq-2 | Active | Pattern-matching narrative text to structured stage cues |
-| Pre-Generated Audio | sq-2 | Active | ACE-Step at build time, library playback at runtime |
-| Thematic Audio Variations | sq-2 | Active | Theme families with mood-intensity variation selection |
-| Kokoro TTS | sq-2 | **Removed (2026-04)** | Was Kokoro primary + Piper fallback; the entire TTS path has been removed — see ADR-076 |
-| Scene Cache | sq-2 | Active | SHA256-keyed LRU render cache on disk |
-| Subject Extractor | sq-2 | Active | Claude CLI translates prose to visual descriptions |
-| Beat Filter | sq-2 | Active | Heuristic gate for image generation worthiness |
-| Library Backend | sq-2 | Active | DJ/radio separation for audio track selection vs playback |
-| Stale Render Policy | sq-2 | Active | Only TEXT_OVERLAY tier is discardable after scene change |
-| Music Director Agent | sq-2 | Active | LLM selects music by narrative mood, not heuristics |
+## Genre Mechanics
+
+| ADR | Status | Impl |
+|-----|--------|------|
+| [ADR-031: Game Watcher — Semantic Telemetry for AI Agent Observability](031-game-watcher-semantic-telemetry.md) | ✓ accepted | live |
+| [ADR-033: Genre Mechanics Engine — Confrontations & Resource Pools](033-confrontation-engine-resource-pools.md) | ✓ accepted | *partial* → ADR-087 |
+| [ADR-034: Portrait Identity Consistency — Tiered Character Recognition Pipeline](034-portrait-identity-consistency.md) | ◇ proposed | deferred |
 
 ## Project Lifecycle / Meta
 
-| ADR | Status | Summary |
-|-----|--------|---------|
-| [Port API Rust to Python](082-port-api-rust-to-python.md) | Accepted | Port `sidequest-api` back to Python as `sidequest-server`; Rust tree becomes read-only spec |
-| [LoRA Composition Dimension](084-lora-composition-dimension.md) | **Superseded by ADR-070** | Historical — LoRA pipeline withdrawn 2026-04-24 in favor of Z-Image's text-prompt adherence |
-| [Rust→Python Port-Drift Tracker Hygiene](085-rust-to-python-port-drift.md) | Accepted | Sprint-tracker status reflects live Python backend, not Rust archive; audit procedure for in-flight epics |
-| [Post-Port Subsystem Restoration Plan](087-post-port-subsystem-restoration-plan.md) | Proposed | Verdict (RESTORE / REWIRE / REDESIGN / VERIFY / DEFER / SUPERSEDE) for every non-parity subsystem found by the port-drift audit; priority-tiered. |
-| [ADR Frontmatter Schema and Auto-Generated Indexes](088-adr-frontmatter-schema.md) | Accepted | YAML frontmatter on every ADR + script-generated indexes; adds `tags` and `implementation-status` fields. |
+| ADR | Status | Impl |
+|-----|--------|------|
+| [ADR-082: Port `sidequest-api` from Rust back to Python](082-port-api-rust-to-python.md) | ✓ accepted | live |
+| [ADR-085: Tracker hygiene during the Rust→Python port — handling port-drift](085-rust-to-python-port-drift.md) | ✓ accepted | live |
+| [ADR-087: Post-Port Subsystem Restoration Plan](087-post-port-subsystem-restoration-plan.md) | ◇ proposed | deferred |
 
-## Skipped (superseded or not applicable)
+## Superseded / Historical
 
-- ~~Discord Multiplayer~~ — superseded by WebSocket server
-- ~~Illustrated Book TUI~~ — superseded by React client
-- ~~Custom Game Client~~ — superseded by React client
-- ~~Voice Pipeline Dual Engine~~ — was superseded by Kokoro TTS; all voice synthesis now removed from the system (2026-04)
-- ~~React Web Client~~ — describes the UI we already have (see api-contract.md)
-- ~~RAG Lore Retrieval~~ — implemented as [Lore RAG Store](048-lore-rag-store.md) using daemon embeddings
-- ~~Inter-Agent Channel~~ — minimal usage; replaced by in-memory channels in Rust
-- ~~TDD Enforcement Tests~~ — process doc, not architecture
+Retired ADRs. See [SUPERSEDED.md](SUPERSEDED.md) for the grouped view.
+
+| ADR | Status | Successor |
+|-----|--------|-----------|
+| [ADR-010: Intent-Based Agent Routing](010-intent-based-agent-routing.md) | ✗ superseded | [ADR-067](067-unified-narrator-agent.md) |
+| [ADR-013: Lazy JSON Extraction](013-lazy-json-extraction.md) | ✗ superseded | [ADR-057](057-narrator-crunch-separation.md) |
+| [ADR-017: Cinematic Chase Engine](017-cinematic-chase-engine.md) | ✗ superseded | [ADR-033](033-confrontation-engine-resource-pools.md) |
+| [ADR-032: Genre-Specific LoRA Style Training for Flux Image Generation](032-genre-lora-style-training.md) | ✗ superseded | [ADR-070](070-mlx-image-renderer.md) |
+| [ADR-039: Narrator Structured Output (JSON Sidecar Block)](039-narrator-structured-output.md) | ✗ superseded | [ADR-057](057-narrator-crunch-separation.md) |
+| [ADR-054: WebRTC Voice Chat (Disabled — Echo Feedback Loop)](054-webrtc-voice-chat-disabled.md) | ✗ historical | — |
+| [ADR-056: Script Tool Generators — Offloading Structured Generation from LLM to Rust Binaries](056-script-tool-generators.md) | ✗ superseded | [ADR-059](059-monster-manual-server-side-pregen.md) |
+| [ADR-084: Compositional-Dimension Specialization for Style LoRAs](084-lora-composition-dimension.md) | ✗ superseded | [ADR-070](070-mlx-image-renderer.md) |
+
+## Implementation Drift
+
+ADRs whose implementation is absent, partial, or deferred. See [DRIFT.md](DRIFT.md) for priority-tier details.
+
+| ADR | Impl | Pointer |
+|-----|------|---------|
+| [ADR-029: Guest NPC Players](029-guest-npc-players.md) | deferred | — |
+| [ADR-030: Scenario Packs](030-scenario-packs.md) | deferred | — |
+| [ADR-034: Portrait Identity Consistency — Tiered Character Recognition Pipeline](034-portrait-identity-consistency.md) | deferred | — |
+| [ADR-055: Room Graph Navigation](055-room-graph-navigation.md) | deferred | — |
+| [ADR-058: Claude Subprocess OTEL Passthrough](058-claude-subprocess-otel-passthrough.md) | deferred | — |
+| [ADR-065: Protocol Message Decomposition — Split message.rs by Domain](065-protocol-message-decomposition.md) | deferred | — |
+| [ADR-071: Tactical ASCII Grid Maps — Deterministic Room Layout via ASCII Art](071-tactical-ascii-grid-maps.md) | deferred | [ADR-087](087-post-port-subsystem-restoration-plan.md) |
+| [ADR-072: System/Milieu Decomposition — Separating Mechanics from Aesthetic](072-system-milieu-decomposition.md) | deferred | — |
+| [ADR-074: Dice Resolution Protocol — Player-Facing Rolls via WebSocket](074-dice-resolution-protocol.md) | deferred | — |
+| [ADR-075: 3D Dice Rendering — Three.js + Rapier Physics Overlay](075-3d-dice-rendering.md) | deferred | — |
+| [ADR-076: Narration Protocol Collapse Post-TTS Removal](076-narration-protocol-collapse-post-tts.md) | deferred | — |
+| [ADR-077: Dogfight Subsystem via StructuredEncounter Extension](077-dogfight-subsystem.md) | deferred | [ADR-087](087-post-port-subsystem-restoration-plan.md) |
+| [ADR-078: Edge / Composure Combat, Mechanical Advancement, and Push-Currency Rituals](078-edge-composure-advancement-rituals.md) | deferred | [ADR-087](087-post-port-subsystem-restoration-plan.md) |
+| [ADR-081: Advancement Effect Variant Expansion (v1)](081-advancement-effect-variant-expansion.md) | deferred | [ADR-087](087-post-port-subsystem-restoration-plan.md) |
+| [ADR-083: Multi-LoRA Stacking and Verification Pipeline](083-multi-lora-stacking-and-verification.md) | deferred | — |
+| [ADR-086: Image-Composition Taxonomy — Portraits, POIs, Illustrations](086-image-composition-taxonomy.md) | deferred | — |
+| [ADR-087: Post-Port Subsystem Restoration Plan](087-post-port-subsystem-restoration-plan.md) | deferred | — |
+| [ADR-088: ADR Frontmatter Schema and Auto-Generated Indexes](088-adr-frontmatter-schema.md) | deferred | — |
+| [ADR-018: Trope Engine](018-trope-engine.md) | **drift** | [ADR-087](087-post-port-subsystem-restoration-plan.md) |
+| [ADR-020: NPC Disposition System](020-npc-disposition-system.md) | **drift** | [ADR-087](087-post-port-subsystem-restoration-plan.md) |
+| [ADR-041: Genie Wish / Consequence Engine](041-genie-wish-consequence-engine.md) | **drift** | [ADR-087](087-post-port-subsystem-restoration-plan.md) |
+| [ADR-042: OCEAN Personality Live Evolution](042-ocean-personality-live-evolution.md) | **drift** | [ADR-087](087-post-port-subsystem-restoration-plan.md) |
+| [ADR-043: Conlang Morpheme System](043-conlang-morpheme-system.md) | **drift** | [ADR-087](087-post-port-subsystem-restoration-plan.md) |
+| [ADR-044: Speculative Prerendering During TTS Playback](044-speculative-prerendering.md) | **drift** | [ADR-087](087-post-port-subsystem-restoration-plan.md) |
+| [ADR-053: Scenario System (Clue Graph, Belief State, Gossip Propagation)](053-scenario-system.md) | **drift** | [ADR-087](087-post-port-subsystem-restoration-plan.md) |
+| [ADR-059: Monster Manual — Server-Side Pre-Generation via Game-State Injection](059-monster-manual-server-side-pregen.md) | **drift** | [ADR-087](087-post-port-subsystem-restoration-plan.md) |
+| [ADR-069: Scenario Fixtures — Pre-configured World States for Testing](069-scenario-fixtures.md) | **drift** | [ADR-087](087-post-port-subsystem-restoration-plan.md) |
+| [ADR-033: Genre Mechanics Engine — Confrontations & Resource Pools](033-confrontation-engine-resource-pools.md) | *partial* | [ADR-087](087-post-port-subsystem-restoration-plan.md) |
+| [ADR-045: Client Audio Engine](045-client-audio-engine.md) | *partial* | [ADR-076](076-narration-protocol-collapse-post-tts.md) |
+| [ADR-057: Narrator Crunch Separation — LLM Narrates, Scripts Crunch](057-narrator-crunch-separation.md) | *partial* | [ADR-059](059-monster-manual-server-side-pregen.md) |
+
+<!-- ADR-INDEX:GENERATED:END -->
