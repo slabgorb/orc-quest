@@ -1,0 +1,38 @@
+name: just otel smoke
+
+on:
+  pull_request:
+    paths:
+      - "justfile"
+      - "scripts/playtest_dashboard.py"
+      - ".github/workflows/just-otel-smoke.yml"
+  push:
+    branches: [main]
+
+jobs:
+  just-otel:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install just
+        run: |
+          curl --proto '=https' --tlsv1.2 -sSf https://just.systems/install.sh \
+            | bash -s -- --to /usr/local/bin
+
+      - name: Install uv
+        run: curl -LsSf https://astral.sh/uv/install.sh | sh && echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+
+      - name: Install Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Sync orchestrator deps
+        run: uv sync
+
+      - name: Smoke-test `just otel`
+        run: timeout 5 just otel || [ $? -eq 124 ]
+        # exit 124 = timeout fired = recipe started and is listening
