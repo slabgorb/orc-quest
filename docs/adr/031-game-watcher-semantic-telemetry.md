@@ -7,14 +7,16 @@ deciders: [Keith Avery]
 supersedes: []
 superseded-by: null
 related: []
-tags: [genre-mechanics]
+tags: [genre-mechanics, observability]
 implementation-status: live
 implementation-pointer: null
 ---
 
 # ADR-031: Game Watcher — Semantic Telemetry for AI Agent Observability
 
-> New for Rust port. No Python equivalent — sq-2 uses ad-hoc logging.
+> Originally specified for the Rust backend. Python port (ADR-082) preserved
+> the architecture; ADR-090 documents the post-port restoration. This ADR's
+> prose remains the canonical statement of the three-layer model.
 
 ## Context
 SideQuest has an LLM adjudicating an RPG. Unlike a deterministic game engine, Claude makes
@@ -185,3 +187,29 @@ game messages. Events are JSON-serialized `tracing` output filtered to game-rele
 - ADR-018: Trope engine lifecycle
 - ADR-026: Client state mirror
 - ADR-027: Reactive state messaging
+
+---
+
+## Python-port note (2026-04-25)
+
+After ADR-082 ported the backend from Rust to Python, the canonical
+implementation lives in:
+
+- `sidequest-server/sidequest/telemetry/spans.py` — span name catalog,
+  `SpanRoute` mechanism, `SPAN_ROUTES`, `FLAT_ONLY_SPANS`, helper
+  context managers.
+- `sidequest-server/sidequest/server/watcher.py` — `WatcherSpanProcessor`
+  translator (Layer 1 + typed-event routing).
+- `sidequest-server/sidequest/telemetry/validator.py` — Layer-3 narrative
+  validator (`Validator` class, five checks: entity, inventory,
+  patch-legality, trope-alignment, subsystem-exercise).
+- `sidequest-server/sidequest/telemetry/turn_record.py` — `TurnRecord`
+  dataclass (per-turn audit record submitted to the validator queue).
+
+Code references in this ADR pre-2026-04-19 point at the Rust tree archived
+at https://github.com/slabgorb/sidequest-api. The Rust phasing table is
+preserved as historical context but the active phase descriptions are
+superseded by ADR-090.
+
+`implementation-status: live` is re-affirmed for the Python port as of
+ADR-090's completion.
