@@ -193,6 +193,7 @@ Current backend reference documents: `docs/architecture.md`, `docs/tech-stack.md
 | ADR | Status | Impl |
 |-----|--------|------|
 | [ADR-058: Claude Subprocess OTEL Passthrough](058-claude-subprocess-otel-passthrough.md) | ◇ proposed | deferred |
+| [ADR-090: OTEL Dashboard Restoration after Python Port](090-otel-dashboard-restoration.md) | ✓ accepted | live |
 
 ## Codebase Decomposition
 
