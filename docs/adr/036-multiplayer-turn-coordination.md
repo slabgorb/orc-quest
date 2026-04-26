@@ -94,3 +94,53 @@ The `resolution_lock` mutex serializes the claim check itself.
 - The claim election logic is subtle — a missed CAS means a player's action is silently
   dropped from that turn's narration, which must be monitored via OTEL spans.
 - AdaptiveTimeout tuning for large player counts is empirical, not formally derived.
+
+## Implementation notes (2026-04-26)
+
+ADR-082 port from Rust to Python (~2026-04-19) carried over the
+`TurnManager.submit_input()` barrier API at
+`sidequest-server/sidequest/game/turn.py:93–101` but did **not** re-implement
+the dispatch-side wiring. `_handle_player_action` continued to call
+`_execute_narration_turn` immediately on every WebSocket submission,
+which is FreePlay semantics regardless of player count. The barrier
+existed in the codebase as dead code with zero production callers
+(`grep -rn submit_input sidequest-server/sidequest --include='*.py' | grep -v tests`
+returned only the definition).
+
+This was discovered live in the 2026-04-26 caverns_and_claudes/grimvault
+playtest — both players submitted, both received independent narrations,
+neither acknowledged the other's action. Filed as `[S5-ARCH]` in the
+playtest pingpong.
+
+The Cinematic mode is now wired in `_handle_player_action` via:
+
+- `SessionRoom.pending_actions: dict[str, PendingAction]` — round-level
+  action buffer keyed by player_id.
+- `SessionRoom.dispatch_lock: asyncio.Lock` — serializes elected handlers.
+- `SessionRoom.last_dispatched_round: int` — CAS guard against duplicate
+  dispatch when two handlers wake from the same barrier flip.
+
+The Rust `TurnBarrier` (tokio::Notify) and `AtomicU64` CAS were not ported
+literally — Python's asyncio Lock + plain int counter cover the same
+guarantees with simpler primitives. The "last submitter runs the
+dispatch" pattern replaces the CAS-then-Notify-then-claim sequence; it's
+equivalent for single-event-loop asyncio servers because no two handlers
+can be inside the same `async with` block simultaneously.
+
+`AdaptiveTimeout` and the "remains silent" default are still deferred per
+CLAUDE.md primary-audience guidance (Alex / slow typist). v1 blocks the
+round indefinitely; the table waits, the narrator does not gallop ahead.
+Reintroduce the timeout when player feedback demands it.
+
+OTEL events `mp.barrier_fired` and `mp.round_dispatched` are emitted on
+every multiplayer round so the GM panel can audit the engagement of the
+cinematic-mode pipeline.
+
+`record_interaction()` is called exactly once per round, inside
+`_execute_narration_turn` (existing call site preserved unchanged). An
+earlier draft of the implementation also called it from the elected
+branch, which silently double-incremented `turn_manager.interaction` in
+multiplayer; the redundant call was removed before merge.
+
+Spec: `docs/superpowers/specs/2026-04-26-mp-cinematic-mode-wiring-design.md`.
+Plan: `docs/superpowers/plans/2026-04-26-mp-cinematic-mode-wiring.md`.
