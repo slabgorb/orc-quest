@@ -1,14 +1,12 @@
 [project]
 name = "sidequest-orchestrator-scripts"
 version = "0.1.0"
-description = "Cross-repo tooling scripts for SideQuest (LoRA pipeline, POI gen, music gen, etc.)"
+description = "Cross-repo tooling scripts for SideQuest (image gen, playtest, migrations, ADR tooling, etc.)"
 requires-python = ">=3.11"
 dependencies = [
     "numpy>=1.24",
     "pyyaml>=6.0",
     "rich>=13.0",
-    "safetensors>=0.4",
-    "torch>=2.0",
     "websockets>=12.0",
 ]
 
@@ -24,7 +22,7 @@ build-backend = "hatchling.build"
 [tool.hatch.build.targets.wheel]
 # This project is not meant to be installed as a wheel. It exists to give
 # the scripts/ and tests/ trees a pyproject.toml so pytest discovers them
-# and relative imports (`from scripts.lora.X import Y`) resolve.
+# and relative imports from the scripts/ tree resolve.
 packages = ["scripts"]
 
 [tool.pytest.ini_options]
