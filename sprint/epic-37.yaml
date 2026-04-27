@@ -564,10 +564,13 @@ stories:
     title: "Fix @react-three/fiber useLoader mock — unblock 5 pre-existing dice test failures (character-creation-wiring, confrontation-wiring, dice-overlay-wiring-34-5, deterministicReplay, DiceOverlay). D20Mesh at src/dice/DiceScene.tsx:198 uses useLoader which is not mocked; 45 tests fail with 'useLoader is not a function' style errors. Surfaced during MP-01 fix-forward review (PR #151) but predates it. Fix the shared test mock so all 5 files go green."
     points: 1
     priority: p2
-    status: backlog
+    status: done
+    started: '2026-04-27'
     repos: ui
     workflow: trivial
+    completed: '2026-04-27'
     type: chore
+    review_verdict: approved
   - id: 37-50
     title: MP-01 slug-mode metadata-error retry button a11y polish — wire aria-describedby on the Retry button at src/App.tsx:1056 to point to the role=alert paragraph so screen readers associate the failed-to-load message with the retry affordance. Minor a11y improvement; non-blocking for playgroup but the cost is trivial.
     points: 1

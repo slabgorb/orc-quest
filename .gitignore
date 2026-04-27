@@ -29,6 +29,7 @@ playtest-*.png
 sq-playtest-screenshots/
 .playtest-screenshots
 .playwright-mcp/
+.sample-renders/
 
 # Pennyfarthing runtime
 .session/*
